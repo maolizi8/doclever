@@ -3142,6 +3142,8 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
         if(typeof(text)=="object")
         {
             text=JSON.stringify(text).replace(/\s/g,"&nbsp;");
+        }else{
+            text=text.toString()
         }
         root.output+=text+"<br>";
     }

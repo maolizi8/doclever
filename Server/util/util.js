@@ -60,12 +60,12 @@ log4js.configure({
     categories: { default: { appenders: ['log'], level: loggerlevel } }
 });
 const logger = log4js.getLogger('log');
-//logger.level = 'debug'; // default level is OFF - which means no logs at all.
 logger.debug('util.js>>>>');
 
 
-var NodeRSA = require('node-rsa');
 
+
+var NodeRSA = require('node-rsa');
 function wordwrap(L, t) {
     t = t || 64;
     if (!L) {
@@ -1269,7 +1269,17 @@ function convertToCode(data) {
             }
             else
             {
-                str+=`<div class='testCodeLine'>var ${obj.name}=${obj.data};</div>`
+                
+                //str+=`<div class='testCodeLine'>var ${obj.name}=${obj.data};</div>`
+                if (obj.data.indexOf('match')>-1) {
+                    logger.info("---var----${obj.data} match")
+                    str+=`<div class='testCodeLine'>var ${obj.name}=${obj.data};deasync.sleep(3);</div>`
+                }else{
+                    str+=`<div class='testCodeLine'>var ${obj.name}=${obj.data};</div>`
+                }
+
+                // logger.info("---var----${obj.data}")
+                // logger.info(obj.data)
             }
         }
         else if(obj.type=="return")
@@ -3314,8 +3324,8 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
     pollTestIndex=pollTest.length-1;
 
 
-    // logger.info('server>util.js>runTestCode3>before eval>text')
-    // logger.info(text)
+    logger.info('server>util.js>runTestCode3>before eval>text')
+    logger.info(text)
     var ret=eval("(async function () {"+text+"})()").then(function (ret) {
         logger.debug('server>util.js>runTestCode3>in eval>start-------------')
 
