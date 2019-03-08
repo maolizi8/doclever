@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自动化测试 定时任务 - DOClever</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="API管理平台,接口管理平台,mock测试,接口文档管理,接口文档平台,接口文档系统,API文档管理"/>
+    <meta name="description" content="DOClever是一款开源免费的可视化接口管理工具，专业的api接口管理系统，集接口文档、接口自动化测试、Mock数据、团队协作、接口快照等于一身的移动时代首选接口管理平台！"/>
+    <link rel="shortcut icon" href="../resource/pic/logo.ico">
+    <link type="text/css"  rel="stylesheet" href="../common/css/common.css">
+    <link type="text/css"  rel="stylesheet" href="../common/lib/font-awesome/css/font-awesome.min.css">
+    <link type="text/css"  rel="stylesheet" href="../../../node_modules/animate.css/animate.min.css">
+    <link type="text/css"  rel="stylesheet" href="../common/lib/highlight/highlight.css">
+    <link type="text/css"  rel="stylesheet" href="../common/lib/element/index.css">
+    <link type="text/css"  rel="stylesheet" href="../../../node_modules/prismjs/themes/prism.css">
+    <link type="text/css"  rel="stylesheet" href="../common/css/left_tab.css">
+    <style>
+    .el-table td, .el-table th{
+        padding: 2px 0;
+    }
+    </style>
+</head>
+<body>
+    <div class="container" id="app" v-cloak>
+        <el-container>
+			<el-header>
+				<mainheader :menu="menu" ref="mainheader" :islist="islist"></mainheader>
+            </el-header>
+            <list ref="list"  v-if="type==0"></list>
+			<info ref="info"  v-else></info>
+        </el-container>
+    </div>
+
+    <script src="../common/js/yyyencrypt.js"></script>
+    <script src="../common/js/jsencrypt.js"></script>
+<script src="../common/js/params.js"> </script>
+<script src="../../dist/vendor.bundle.js"></script>
+<script src="../common/lib/element/index.js"></script>
+<script src="../../../node_modules/socket.io-client/dist/socket.io.js"></script>
+<script src="../../../node_modules/socket.io-stream/socket.io-stream.js"></script>
+<script src="../../../node_modules/markdown-it/dist/markdown-it.min.js"></script>
+<script src="../common/lib/highlight/highlight.js"></script>
+<script src="../../../node_modules/prismjs/prism.js"></script>
+<script src="../../dist/testpoll.js"></script>
+
+</body>
+</html>

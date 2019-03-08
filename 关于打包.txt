@@ -1,0 +1,8 @@
+高版本的webpack打包会有问题，可使用以下版本：
+npm install -g webpack@2.7.0
+
+根目录下：
+npm i markdown -S
+
+
+npm install -g sleep@6.0.0

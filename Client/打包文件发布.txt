@@ -1,0 +1,2 @@
+client 目录下：
+webpack --progress

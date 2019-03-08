@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>用例编写-DOClever 移动时代首选接口管理平台！</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="API管理平台,接口管理平台,mock测试,接口文档管理,接口文档平台,接口文档系统,API文档管理"/>
+    <meta name="description" content="DOClever是一款开源免费的可视化接口管理工具，专业的api接口管理系统，集接口文档、接口自动化测试、Mock数据、团队协作、接口快照等于一身的移动时代首选接口管理平台！"/>
+    <link href="../common/common.css" rel="stylesheet">
+    <style>
+        .container{
+            padding:10px 20px;
+        }
+        .table{
+            width: 100%;
+            padding: 10px;
+            display: table;
+            border-collapse: collapse;
+            border-spacing: 2px;
+            border:1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+            background-color: white;
+        }
+        .box-shadow{
+            border-radius: 5px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.24);
+            background-color: white;
+        }
+        .table th{
+            background-color: #E0EEEE;
+        }
+        .table th,.table td{
+            vertical-align: middle;
+            padding: 5px;
+            text-align: center;
+            border:1px solid #cccccc;
+        }
+        .clear{
+            height:20px;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="main">
+         
+        <!-- <h3>药城购物车 测试报告</h3>
+        <p>
+            测试用例共（<b>3</b>），成功（<b>2</b>），失败（<b>1</b>），未校验（<b>0</b>）
+        </p>
+        
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width:10%">测试用例</th>
+                    <th style="width:80%">接口运行信息</th>
+                    <th style="width:10%">状态</th>
+                </tr>
+            </thead>
+            <tbody id="testinfo">
+                <tr>
+                    <td>首页弹层推广</td>
+                    <td>
+                        <table class="table">
+                            <tr>
+                                <td>1</td>
+                                <td style="text-align:left;">
+                                    https://gateway.fangkuaiyi.com/xpassport/getSwByDeviceId （耗时<span style="dolor:green;">21.040</span>秒）（<span style="color:red;">未设置baseUrl</span>）
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>成功</td>
+                </tr>
+            </tbody>
+        </table> -->
+    </div>
+
+
+</body>
+
+<script type="text/javascript">
+    var pollInfo={
+            "pollName": "药城购物动线",
+            "projectName": "药城测试",
+            "collectionName": "购物车相关",
+            "_id": "5c189ca8abbfd832b4644355",
+            "poll": "5c1891202312451dcc1f657d",
+            "status": 3,
+            "testProject": "5c08dcc957a8473f9c2153e3",
+            "testCollection": "5c1741c375c9a11930eeea3f",
+            "testTotal":3,
+            "testFail":1,
+            "testSuccess":2,
+            "testUnkown":0,
+            "tests": [{
+                "testName": "首页弹层推广",
+                "testGroup": "促销活动",
+                "testModule": "订单",
+                "status": 2,
+                "interfaces": [{
+                    "interName": "首页弹层推广",
+                    "interBaseUrl": "https://gateway.fangkuaiyi.com",
+                    "interPath": "/xpassport/getSwByDeviceId",
+                    "runTime": "21.040",
+                    "errMessage": "connect ETIMEDOUT 10.6.80.229:443",
+                    "outPut": "",
+                    "_id": "5c189ca8abbfd832b464435a",
+                    "interId": "5bffbdbf4b27bb6d50bd9e5e"
+                }],
+                "_id": "5c189ca8abbfd832b4644359",
+                "testId": "5c17411e75c9a11930eeea3a",
+                "mode": "ui"
+            }, {
+                "testName": "MP查询套餐活动",
+                "testGroup": "促销活动",
+                "testModule": "订单",
+                "status": 0,
+                "interfaces": [{
+                    "interName": "首页登录(自动化批发登录)",
+                    "interBaseUrl": "http://mall.yaoex.com",
+                    "interPath": "/front/login/pc_login",
+                    "runTime": "21.007",
+                    "errMessage": "connect ETIMEDOUT 10.6.80.229:80",
+                    "outPut": "",
+                    "_id": "5c189ca8abbfd832b4644358",
+                    "interId": "5bfb94284e9f843afc3199f6"
+                }, {
+                    "interName": "MP查询套餐活动(根据活动名称查询)",
+                    "interBaseUrl": "http://promotion.yaoex.com",
+                    "interPath": "http://promotion.yaoex.com",
+                    "runTime": "0.2",
+                    "errMessage": "",
+                    "outPut": "",
+                    "_id": "5c189ca8abbfd832b4644357",
+                    "interId": "5bade8afc6295a666a181f05"
+                }],
+                "_id": "5c189ca8abbfd832b4644356",
+                "testId": "5c17416a75c9a11930eeea3d",
+                "mode": "ui"
+            }],
+            "createdAt": "2018-12-18 15:07:20",
+            "updatedAt": "2018-12-18 15:07:20",
+            "__v": 0
+        }
+       function renderContent(pollInfo){
+            var html=`<h2><span style="font-size:80%;font-weight:normal;">测试集合：</span>${pollInfo.pollName}</h2>
+                        <table class="table" style="width:300px;">
+                            <tr>
+                                <th>失败</th>
+                                <th>总共</th>
+                                <th>成功</th>
+                                <th>未校验</th>
+                            </tr>
+                            <tr>
+                                <td style="color:red;">${pollInfo.testFail}</td>
+                                <td>${pollInfo.testTotal}</td>
+                                <td>${pollInfo.testSuccess}</td>
+                                <td>${pollInfo.testUnkown}</td>
+                            </tr>
+                        </table>
+                        <div class="clear"></div>
+                        
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width:10%">测试用例</th>
+                                    <th style="width:80%">接口运行信息</th>
+                                    <th style="width:10%">状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="testinfo">`
+            
+            var tests=pollInfo.tests;
+            for (let i = 0; i < tests.length; i++) {
+                html+=`         <tr>
+                                    <td>${tests[i].testName}</td>
+                                    <td>
+                                        <table class="table">`
+                
+                var interfaces=tests[i].interfaces;
+                for (let j = 0; j < interfaces.length; j++) {
+                    html+=`                 <tr>
+                                                <td>${j+1}</td>
+                                                <td style="text-align:left;">
+                                                        ${interfaces[j].interBaseUrl}${interfaces[j].interPath} （耗时<span style="dolor:green;">${interfaces[j].runTime||"-"}</span>秒）（<span style="color:red;">${interfaces[j].errMessage||""}</span>）
+                                                </td>
+                                            </tr>`
+                    
+                }
+                html+=`                 </table>
+                                    </td>
+                                    <td style="color:${tests[i].status==0?"grey":(tests[i].status==1?"green":"red")}">${tests[i].status==0?"未校验":(tests[i].status==1?"成功":"失败")}</td>
+                                </tr>`
+            }
+            html+=`         </tbody>
+                        </table>`    
+            document.getElementById('main').innerHTML=html
+       }
+     window.onload=renderContent(pollInfo);
+    </script>
+
+</html>

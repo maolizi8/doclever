@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>项目管理</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="API管理平台,接口管理平台,mock测试,接口文档管理,接口文档平台,接口文档系统,API文档管理"/>
+    <meta name="description" content="DOClever是一款开源免费的可视化接口管理工具，专业的api接口管理系统，集接口文档、接口自动化测试、Mock数据、团队协作、接口快照等于一身的移动时代首选接口管理平台！"/>
+    <link href="../resource/pic/logo.ico" rel="shortcut icon">
+    <link type="text/css"  rel="stylesheet" href="../../common/css/common.css">
+    <link type="text/css"  rel="stylesheet" href="../../common/lib/font-awesome/css/font-awesome.min.css">
+    <link type="text/css"  rel="stylesheet" href="../../../../node_modules/animate.css/animate.min.css">
+    <link type="text/css"  rel="stylesheet" href="../../common/lib/highlight/highlight.css">
+    <link type="text/css"  rel="stylesheet" href="../../common/lib/element/index.css">
+    <link type="text/css"  rel="stylesheet" href="../../../../node_modules/prismjs/themes/prism.css">
+    <link type="text/css"  rel="stylesheet" href="../../common/css/left_tab.css">
+    <style>
+    a{text-decoration: none;}
+    a.left_tab{display: block;}
+    a.active-true{width: 100%;height: 100px;color:#ffffff;}
+    a.active-false{width: 100%;height: 100px;color:#888888;}
+    i.active-true{width: 32px;height: 32px;margin-top: 15px;color:#ffffff;}
+    i.active-false{width: 32px;height: 32px;margin-top: 15px;color:#888888;}
+    </style>
+</head>
+<body>
+<div class="container" id="app" v-cloak>
+    <el-row class="row" style="height: 60px;line-height: 60px">
+        <el-col class="col" style="width: 100px;line-height: 60px;text-align: center;background-color:#17B9E6 ">
+            <a href="/">
+                <img src="../../resource/pic/logo-transparent.png" style="width:40px;height:40px;margin-top: 10px">
+            </a>
+        </el-col>
+        <el-col class="col" style="width: calc(100vw - 100px);background-color: white;box-shadow: rgba(0, 0, 0, 0.15) 0px 1px 3px 0px; ">
+            <el-row class="row" style="text-align: center">
+                <el-col class="col" :span="6">
+                    <el-tooltip class="item" effect="dark" :content="backTitle" placement="bottom" v-if="(type==0 && !session.projectId && session.teamId) || (type==1 && session.teamId)">
+                        <el-button icon="el-icon-back" type="text" size="medium" style="font-size: 20px;float: left;margin-left: 20px;margin-top: 8px" @click="back"></el-button>
+                    </el-tooltip>
+                    <el-tooltip class="item" effect="dark" :content="backTitle" placement="bottom" v-else-if="type==0 && session.projectId">
+                        <el-button icon="el-icon-back" type="text" size="medium" style="font-size: 20px;float: left;margin-left: 20px;margin-top: 8px" @click="back"></el-button>
+                    </el-tooltip>
+                    <span v-else>
+                        &nbsp;
+                    </span>
+                </el-col>
+                <el-col class="col" :span="12" style="font-size: 15px;font-weight: bold;color:#17B9E6 ">
+                    {{title}}
+                </el-col>
+                <el-col class="col" :span="6" style="height: 60px;text-align: right;padding-right: 20px">
+                    <img v-proxy="session.photo" style="width: 40px;height: 40px; border-radius:50%;margin-top: 10px">&nbsp;
+                    <el-dropdown @command="handleCommand" style="top: -15px;">
+                        <span class="el-dropdown-link" style="color: #50bfff;cursor: pointer">
+                            <span>
+                                {{session.name}}
+                            </span>
+                            <i class="el-icon-caret-bottom el-icon--right"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item>
+                                Proxy:<br>
+                                <el-switch v-model="proxy" active-color="#13ce66" inactive-color="#ff4949" @click.native.stop="">
+                                </el-switch>
+                            </el-dropdown-item>
+                            <el-dropdown-item command="update">检查更新</el-dropdown-item>
+                            <el-dropdown-item command="help">帮助中心</el-dropdown-item>
+                            <el-dropdown-item command="quit">退出</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </el-col>
+                <!-- <el-button type="text" style="color: #00adef;position: absolute;top: 10px;right: calc(25%);" @click="window.open('http://doclever.cn/controller/desktop/desktop.html','_blank')">
+                    桌面端下载
+                </el-button> -->
+            </el-row>
+        </el-col>
+    </el-row>
+    <el-row class="row" style="height: calc(100vh - 60px);position: fixed">
+            
+        <el-col class="col" style="width: 100px; background-color: #333333">
+            <a href="project.html" style="" class="row left_tab active-true">
+                <i class="fa fa-list-alt fa-2x active-true" aria-hidden="true" ></i>
+                <br>项目1
+            </a>
+            <a href="group.html" class="row left_tab active-false">
+                <i class="fa fa-bullseye fa-2x active-false" aria-hidden="true"></i>
+                <br>团队
+            </a>
+            <a href="setting.html" class="row left_tab active-false">
+                <i class="fa fa-cog fa-2x active-false" aria-hidden="true"></i>
+                <br>设置
+            </a>
+            <a href="message.html" class="row left_tab active-false">
+                <i class="fa fa-commenting-o fa-2x active-false" aria-hidden="true"></i>
+                <br>消息
+                <div style="position: absolute;width: 10px;height: 10px;border-radius: 5px;background-color: red;top: 10px;right: 25px" v-if="showDot">
+                    </div>
+            </a>
+        </el-col>
+        <el-col class="col" style="width: calc(100vw - 100px);overflow-y: hidden" id="showContent">
+                <!-- <project ref="project"></project>
+                <team ref="team"></team>
+                <person ref="person"></person>
+                <message ref="message"></message> -->
+        </el-col>
+    </el-row>
+</div>
+<script src="../../../dist/vendor.bundle.js"></script>
+<script src="../../common/lib/element/index.js"></script>
+<script src="../../../../node_modules/socket.io-client/dist/socket.io.js"></script>
+<script src="../../../../node_modules/socket.io-stream/socket.io-stream.js"></script>
+<script src="../../../../node_modules/markdown-it/dist/markdown-it.min.js"></script>
+<script src="../../common/lib/highlight/highlight.js"></script>
+<script src="../../../../node_modules/prismjs/prism.js"></script>
+<script src="../../../dist/console.js"></script>
+
+</body>
+</html>

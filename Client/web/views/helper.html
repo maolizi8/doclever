@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>接口录入教程</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="API管理平台,接口管理平台,mock测试,接口文档管理,接口文档平台,接口文档系统,API文档管理"/>
+    <meta name="description" content="DOClever是一款开源免费的可视化接口管理工具，专业的api接口管理系统，集接口文档、接口自动化测试、Mock数据、团队协作、接口快照等于一身的移动时代首选接口管理平台！"/>
+    <link rel="shortcut icon" href="../resource/pic/logo.ico">
+    <link type="text/css"  rel="stylesheet" href="../common/css/common.css">
+    <link type="text/css"  rel="stylesheet" href="../common/lib/font-awesome/css/font-awesome.min.css">
+    <link type="text/css"  rel="stylesheet" href="../../../node_modules/animate.css/animate.min.css">
+    
+    <style>
+        .container{
+            background-color: #f5f7fa;
+        }
+        .main{
+
+        }
+        .left_side{
+
+        }
+        .content{
+            padding:20px;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 2px 4px 0px; 
+            
+            margin: 10px 20px; 
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <div id="interface" class="content">
+            <h4> 
+                <i class="fa fa-bookmark" style="color:chocolate"></i>
+                关于接口录入
+            </h4>
+            <p>
+            1. 必填信息：<br />
+            &nbsp;&nbsp; （a）<b>接口名称</b>（所取名称能让人明白接口的功能，另如测试环境和生产环境域名不一样的，请备注下）<br />
+            &nbsp;&nbsp; （b）<b>根路径BaseUrl</b>（即域名，例如：http://mall.yaoex.com。由于https请求暂时还有问题未解决，可能会失败。请尽量使用http，避开https。）<br />
+            &nbsp;&nbsp; （c）<b>路径url</b>（即请求地址，例如：/passport/sso/pc_login）<br />
+            &nbsp;&nbsp; （d）<b>请求方式</b>（常见的请求方式：GET、POST，请根据接口的实际请求方式填写）<br />
+            <div>
+                    <img src="images/interface-info.png" alt="接口信息录入图"  style="padding:3px;border:1px solid #BFBFBF;box-shadow:2px 2px 3px #aaaaaa;">
+            </div>
+            
+            </p>
+            <p>
+            2. 接口参数：<br />
+            &nbsp;&nbsp; （a）如果是<span style="color:red; font-weight:bold">GET</span> 请求，一般来说，接口的参数就在url的？问号之后（例如：http://mall.yaoex.com/product/toSearchPage?search=999&keyword=999&from=0）。<br />
+            直接复制整个链接放入接口的“路径”中，系统会自动识别参数，将参数录入<span style="color:red; font-weight:bold">Query</span> 中。如下图所示：<br />
+            <div>
+                    <img src="images/get_inputparams.png" alt="接口get请求参数录入图"  style="padding:3px;border:1px solid #BFBFBF;box-shadow:2px 2px 3px #aaaaaa;">
+            </div>
+            &nbsp;&nbsp; （b）如果是<span style="color:red; font-weight:bold">POST</span> 请求，接口的参数一般是form形式，可以在Form Data中找到。
+            参数较多时，可以利用抓包工具获取Key=Value&Key1=Value1 类型的字符串。
+            下图以fiddler为例，Inspectors>TextView中的字符串进行复制，然后在接口录入的Body下点击“导入Body字符串”，将前面复制的字符串粘贴，确定后便能自动识别参数，将参数录入<span style="color:red; font-weight:bold">Body</span> 中。
+            如下图所示：<br />
+            <div>
+                    <img src="images/post_formdata.png" alt="接口post请求参数fiddler字符串图"  style="padding:3px;border:1px solid #BFBFBF;box-shadow:2px 2px 3px #aaaaaa;">
+            </div>
+            <div>
+                    <img src="images/post_importdata.png" alt="接口post请求参数录入图"  style="padding:3px;border:1px solid #BFBFBF;box-shadow:2px 2px 3px #aaaaaa;">
+            </div>
+            &nbsp;&nbsp; （c）有些<span style="color:red; font-weight:bold">POST</span> 请求的接口，参数是json形式。
+            在接口录入时正确选择参数类型，然后按照以上（b）的方法从抓包工具例如fiddler中获取json字符串，最后点击“导入JSON”粘贴即可。<br />
+            <div>
+                    <img src="images/post_json.png" alt="接口post请求JSON参数图"  style="padding:3px;border:1px solid #BFBFBF;box-shadow:2px 2px 3px #aaaaaa;">
+            </div>
+            
+            &nbsp;&nbsp; （d）有些<span style="color:red; font-weight:bold">POST</span> 请求的接口，url里面也有参数。
+            那么url的？问号之后的参数放入<span style="color:red; font-weight:bold">Query</span> 中，
+            Form Data中的参数则录入到<span style="color:red; font-weight:bold">Body</span> 中。<br />
+            <div>
+                    <img src="images/get_and_post.png" alt="接口post混合get参数请求图"  style="padding:3px;border:1px solid #BFBFBF;box-shadow:2px 2px 3px #aaaaaa;">
+            </div>
+
+            
+        </div>  
+        
+        <div id="example" class="content">
+            <h4> 
+                <i class="fa fa-bookmark" style="color:chocolate"></i>
+                关于接口实例
+            </h4>
+            <p>
+                1. 在接口运行界面，保存不同的运行实例：不同的参数不同的检查点。
+            </p>
+            <p>
+                2. 在接口运行界面，保存不同的运行实例：不同的参数不同的检查点
+            </p>
+        </div>
+    
+    </div>
+
+
+</body>
+</html>
