@@ -361,7 +361,7 @@ function  Poll() {
                null,
                 {
                     sort:"-createdAt",
-                    limit:6
+                    limit:10
                 }));
             
             util.ok(res,obj,"ok");
