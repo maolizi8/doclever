@@ -48,6 +48,7 @@ model.configOutputField(null,[
     "createdAt",
     "updatedAt"
 ]);
+model.index({"updatedAt":-1,"name":1})
 var dbManage=db.model("Interface",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));
 module.exports=dbManage;

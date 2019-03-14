@@ -22,7 +22,7 @@
                             <el-col class="col" :span="5">
                                 测试项目/集合
                             </el-col>
-                            <el-col class="col" :span="8">
+                            <el-col class="col" :span="7">
                                 测试模块/业务/用例
                             </el-col>
                             <el-col class="col" :span="2">
@@ -34,7 +34,7 @@
                             <el-col class="col" :span="3">
                                运行时间
                             </el-col>
-                            <el-col class="col" :span="2">
+                            <el-col class="col" :span="3">
                                 操作
                             </el-col>
                         </el-row>
@@ -48,7 +48,7 @@
                                         <span>{{item.projectName}}/{{item.collectionName}}</span>
                                     </el-tooltip>
                                 </el-col>
-                                <el-col class="col" :span="8" style="text-align:left;font-size:14px;padding: 2px 0;">
+                                <el-col class="col" :span="7" style="text-align:left;font-size:14px;padding: 2px 0;">
                                     共{{item.testTotal}}个测试用例（失败{{item.testFail}}个，成功{{item.testSuccess}}个，未校验{{item.testUnkown}}个）
                                     <!-- <table class="table table-light">
                                         <tr v-for="(test,index) in item.tests" :key="index">
@@ -75,9 +75,14 @@
                                 <el-col class="col" :span="3">
                                     {{item.createdAt}}
                                 </el-col>
-                                <el-col class="col" :span="2">
+                                <el-col class="col" :span="3">
                                     <a :href="'report.html?id='+item._id" target="_blank" style="color: purple;font-size:12px;">详情</a>
-                                    
+                                    <el-button type="text" size="mini" style="margin-left:3px;" @click.native="editFailReason(item)" v-if="item.status==3 || item.status==4 ">
+                                        失败原因
+                                    </el-button>
+                                    <el-button type="text" size="mini" style="margin-left:3px;" @click.native="deleteRunRecord(item._id)" v-if="item.status==99 || sysRole ">
+                                        删除
+                                    </el-button>
                                 </el-col>
                             </el-row>
                         </el-row>
@@ -141,14 +146,14 @@
         data:function () {
             return {
 
-                showAdd:false,
-                addPending:false,
+                // showReason:false,
+                // recordPending:false,
 
-                showConfig:false,
-                confPending:false,
+                // showConfig:false,
+                // confPending:false,
 
-                runPending:false,
-                collectionId:""
+                // runPending:false,
+                // collectionId:""
             }
         },
         
@@ -157,6 +162,13 @@
             
         },
         computed:{
+            sysRole:function () {
+                if (session.get("role")==0 || session.get("role")==2 ) {
+                    return true
+                } else {
+                    return false
+                }
+            },
             pollId:function () {
                
                 return this.$store.state.pollid;
@@ -212,13 +224,50 @@
                     if(data.code==200)
                     {
                          $.notify("任务开始执行，请去历史记录查看运行结果",1);
+                         
+                        window.location.reload()
                     }
                     else
                     {
                         $.notify(data.msg,0)
                     }
                 })
-            }
+            },
+            editFailReason:function (runitem) {
+                var _this=this;
+
+                var child=$.showBox(_this,require("./recordFailRunReason.vue"),{
+                    "pollRun":runitem
+                    // "pollRun":{
+                    //     "reason":data.failReason?data.failReason:99,
+                    //     "other":data.otherReasons?data.otherReasons:"其他"
+                    // }
+                })
+                child.$on("save",function (data) {
+                    console.log(data)
+                     window.location.reload()
+                })
+               
+            },
+            deleteRunRecord:function (runid) {
+                var _this=this;
+                
+                $.notify("功能开发中",1);
+                // net.post("/poll/run",{
+                //     poll:pollid,
+                //     operator:session.get("name")
+                // }).then(function (data) {
+                //     console.log("runPoll");
+                //     if(data.code==200)
+                //     {
+                //          $.notify("任务开始执行，请去历史记录查看运行结果",1);
+                //     }
+                //     else
+                //     {
+                //         $.notify(data.msg,0)
+                //     }
+                // })
+            },
             
         }
     }

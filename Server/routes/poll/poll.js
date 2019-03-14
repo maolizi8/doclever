@@ -436,6 +436,31 @@ function  Poll() {
         }
     }//gql add
 
+    this.pollRunInfo=async (req,res)=> {
+        try
+        {
+            let query={
+                failReason:{
+                    reason:req.clientParam.reason,
+                    other:req.clientParam.other,
+                    recorder:req.clientParam.recorder
+                }
+            }
+            let obj=await (pollRun.findOneAndUpdateAsync({
+                _id:req.clientParam.id
+            },query,{
+                new:true
+            }))
+            
+            util.ok(res,obj,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }//gql add 
+   
     
 }
 

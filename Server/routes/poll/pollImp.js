@@ -218,6 +218,25 @@ var interface=[
         "data":String,
         handle:poll.runInfo2
     },//gql add
+
+    
+    {
+        "method":"POST",
+        "path":"/poll/saveruninfo",
+        "param": {
+            id:{
+                type:String,
+            },
+            reason:Number,
+            other:{
+                type:String,
+                optional:1
+            },
+            recorder:String
+        },
+        "data":String,
+        handle:poll.pollRunInfo
+    },//gql add
 ];
 
 module.exports=interface;
