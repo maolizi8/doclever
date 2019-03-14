@@ -479,7 +479,7 @@ var interface=[
 
         },
         user:1,
-        handle:[test.interfaceList]
+        handle:[test.interfaceList2]
     },
     {
         "method":"GET",

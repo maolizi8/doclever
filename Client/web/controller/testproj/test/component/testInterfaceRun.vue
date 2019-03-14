@@ -194,7 +194,7 @@
     var testBody=require("./testBody.vue");
     var testInject=require("./testInject.vue");
     module.exports={
-        props:["interface","url","status","index","netInterface"],
+        props:["interface","url","status","index","netInterface","interfaceList"],
         data:function () {
             return {
 				isEditPop:this.interface?1:0,
@@ -204,7 +204,8 @@
                     if(this.interface)
                     {
                         var val=this.interface._id;
-                        var arr=this.$store.state.interfaceList;
+                        //var arr=this.$store.state.interfaceList;
+                        var arr=this.interfaceList;
                         var ret=[];
                         (function _map(arr) {
                             for(var i=0;i<arr.length;i++)
@@ -410,10 +411,11 @@
             arrInterface:function () {
 
                 console.log("testproj>test>component>testInterfaceRun.vue>arrinterface")
-                console.log("this.$store.state.interfaceList:")
-                console.log(this.$store.state.interfaceList)
+                console.log("this.interfaceList:")
+                console.log(this.interfaceList)
 
-                return this.$store.state.interfaceList
+                //return this.$store.state.interfaceList
+                return this.interfaceList;
             },
             paramTab:function () {
                 return "Param ("+this.param.length+")";

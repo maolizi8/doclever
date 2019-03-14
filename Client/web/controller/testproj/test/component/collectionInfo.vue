@@ -367,7 +367,10 @@ line13:<testbaseurl style="width: 300px"></testbaseurl>
             },
             add:function () {
                 var _this=this;
-                var child=$.showBox(this,require("./testChooseTest.vue"));
+
+                var child=$.showBox(this,require("./testChooseTest.vue"),{
+                    choosedTestList:_this.arr
+                });
                 child.$on("save",function (obj) {
                     obj.data.forEach(function (o) {
                         _this.arr.push({

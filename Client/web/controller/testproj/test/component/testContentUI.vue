@@ -325,35 +325,50 @@
 
             insertInterface:function () {
                 var _this=this;
-                var child=$.showBox(_this,require("./testInterfaceRun.vue"),{
-                    url:[],
-                    status:[],
-                    index:0,
-                });
-                child.$on("save",function (obj,example) {
-                    console.log('--------------insertInterface>obj')
-                    console.log(obj)
-                    delete(obj['outParam'])
-                    delete(obj['outInfo'])
+                var interfaceList=[];
 
-                    var id=_this.getNewId();
-                    var o={
-                        type:"interface",
-                        id:id,
-                        name:example?(obj.name+"("+example+")"):obj.name,
-                        data:JSON.stringify(obj),
-                        argv:{
-							requestObj:{},//gql add
-                            param:{},
-                            query:{},
-                            header:{},
-                            body:{}
-                        },
-                        status:0,
-                        modify:0
-                    };
-                    _this.arr.push(o);
-                })
+                net.get("/test/interfacelist",{}).then(function (dt) {
+                    if(dt.code==200)
+                    {   
+                        console.log("testContentUI.vue>insertInterface>interfacelist-dt")
+                        console.log(dt)
+                        interfaceList=dt.data;
+
+                        var child=$.showBox(_this,require("./testInterfaceRun.vue"),{
+                            url:[],
+                            status:[],
+                            index:0,
+                            interfaceList:interfaceList
+                        });
+                        child.$on("save",function (obj,example) {
+                            console.log('--------------insertInterface>obj')
+                            console.log(obj)
+                            delete(obj['outParam'])
+                            delete(obj['outInfo'])
+
+                            var id=_this.getNewId();
+                            var o={
+                                type:"interface",
+                                id:id,
+                                name:example?(obj.name+"("+example+")"):obj.name,
+                                data:JSON.stringify(obj),
+                                argv:{
+                                    requestObj:{},//gql add
+                                    param:{},
+                                    query:{},
+                                    header:{},
+                                    body:{}
+                                },
+                                status:0,
+                                modify:0
+                            };
+                            _this.arr.push(o);
+                        })
+                    }else{
+                         $.notify(dt.msg,0);
+                    }
+                });
+                
             },
             editInterface:function (item,index) {
                 if(item.modify==2)
@@ -404,39 +419,47 @@
                             }
                             var index1=helper.handleTestInterface(objInterface,obj3.data,obj2.data,_this.type?1:0);
                             
-                            var child=$.showBox(_this,require("./testInterfaceRun.vue"),{
-                                url:obj1.data.baseUrl,
-                                status:obj2.data,
-                                interface:objInterface,
-                                index:index1,
-                                netInterface:obj3.data
-                            });
-							
-							// console.log("testContentUI.vue>before testInterfaceRun save>argv")
-							// console.log(item.argv)
-							//编辑接口也会把argv清空，已修改
-                            child.$on("save",function (obj,example,clearManuParams) {
-								console.log('--------------editInterface>obj')
-                                console.log(obj)
-                                delete(obj['outParam'])
-                                delete(obj['outInfo'])
+                            net.get("/test/interfacelist",{}).then(function (obj5) {
+                                if(obj5.code==200){  
+                                    var child=$.showBox(_this,require("./testInterfaceRun.vue"),{
+                                        url:obj1.data.baseUrl,
+                                        status:obj2.data,
+                                        interface:objInterface,
+                                        index:index1,
+                                        netInterface:obj3.data,
+                                        interfaceList:obj5.data
+                                    });
+                                    
+                                    // console.log("testContentUI.vue>before testInterfaceRun save>argv")
+                                    // console.log(item.argv)
+                                    //编辑接口也会把argv清空，已修改
+                                    child.$on("save",function (obj,example,clearManuParams) {
+                                        console.log('--------------editInterface>obj')
+                                        console.log(obj)
+                                        delete(obj['outParam'])
+                                        delete(obj['outInfo'])
 
-                                item.data=JSON.stringify(obj);
+                                        item.data=JSON.stringify(obj);
 
-                                item.name=example?(obj.name+"("+example+")"):obj.name;
-								if(clearManuParams){
-									item.argv={
-										requestObj:{},//gql add
-										param:{},
-										query:{},
-										header:{},
-										body:{}
-									}
-								}
-                                // console.log("testContentUI.vue>after testInterfaceRun save>argv")
-								// console.log(item.argv)
-                                item.modify=0;
+                                        item.name=example?(obj.name+"("+example+")"):obj.name;
+                                        if(clearManuParams){
+                                            item.argv={
+                                                requestObj:{},//gql add
+                                                param:{},
+                                                query:{},
+                                                header:{},
+                                                body:{}
+                                            }
+                                        }
+                                        // console.log("testContentUI.vue>after testInterfaceRun save>argv")
+                                        // console.log(item.argv)
+                                        item.modify=0;
+                                    })
+                                }else{
+                                    $.notify(obj5.msg,0);
+                                }
                             })
+                            
                         }
                         else
                         {

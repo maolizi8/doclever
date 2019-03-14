@@ -28,6 +28,7 @@
 
 <script>
     module.exports = {
+        props:["choosedTestList"],
         data: function () {
             return {
                 showDialog:false,
@@ -46,6 +47,10 @@
         },
         computed:{
             arrTest:function () {
+                console.log("testChooseTest.vue>arrTest(this.$store.state.data)")
+                console.log(this.$store.state.data)
+                console.log("testChooseTest.vue>choosedTestList")
+                console.log(this.choosedTestList)
                 return this.$store.state.data
             }
         },

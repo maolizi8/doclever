@@ -1616,6 +1616,223 @@ function Test() {
             util.catch(res,err);
         }
     }
+
+    this.interfaceList2=async (req,res)=>{
+        try
+        {
+            let ret=[];
+            let arrTemp=await (teamGroup.findAsync({
+                "users":{
+                    $elemMatch:{
+                        user:req.userInfo._id,
+                        role:{
+                            $in:[0,2]
+                        }
+                    }
+                }
+            },"team",{
+                //sort:"-createdAt",
+                sort:"name",
+                populate:{
+                    path:"team",
+                    select:"name"
+                }
+            }))
+            ret=arrTemp.map(function (obj) {
+                let o=obj.team;
+                o.access=1;
+                return o;
+            });
+            arrTemp=await (teamGroup.findAsync({
+                "users":{
+                    $elemMatch:{
+                        user:req.userInfo._id,
+                        role:1
+                    }
+                }
+            },"team",{
+                //sort:"-createdAt",
+                sort:"name",
+                populate:{
+                    path:"team",
+                    select:"name"
+                }
+            }))
+            ret=ret.concat(arrTemp.map(function (obj) {
+                let o=obj.team;
+                o.access=0;
+                return o;
+            }));
+            ret.unshift({
+                _id:"",
+                name:"无团队",
+                access:1
+            });
+            for(let objTeam of ret)
+            {
+                let query={},arrProject=[];
+                if(objTeam._id)
+                {
+                    let access=objTeam.access;
+                    delete objTeam.access;
+                    if(access)
+                    {
+                        query={
+                            team:objTeam._id,
+                        }
+                    }
+                    else
+                    {
+                        query={
+                            team:objTeam._id,
+                            $or:[
+                                {
+                                    owner:req.userInfo._id
+                                },
+                                {
+                                    "users.user":req.userInfo._id
+                                }
+                            ]
+                        }
+                    }
+                    arrProject=await (project.findAsync(query,"name",{
+                        sort:"-createdAt"
+                    }))
+                }
+                else
+                {
+                    query={
+                        team:{
+                            $exists:false
+                        },
+                        $or:[
+                            {
+                                owner:req.userInfo._id
+                            },
+                            {
+                                "users.user":req.userInfo._id
+                            }
+                        ]
+                    }
+                    arrProject=await (project.findAsync(query,"name",{
+                        sort:"-createdAt"
+                    }))
+                }
+                (objTeam._doc?objTeam._doc:objTeam).data=arrProject;
+
+                // console.log('test>interfaceList>arrProject')
+                // console.log(arrProject)
+                for(let objPro of arrProject)
+                {
+                    /**
+                     * 
+                    let arrVersion=[];
+                    arrVersion=await (version.findAsync({
+                        project:objPro._id
+                    },"version",{
+                        sort:"-createdAt"
+                    }))
+                    arrVersion.forEach(function (obj) {
+                        obj._doc.name=obj.version;
+                        delete obj._doc.version
+                    })
+                    arrVersion.unshift({
+                        _id:"",
+                        name:"master",
+                    })
+                    if(objPro._doc)
+                    {
+                        objPro._doc.data=arrVersion;
+                    }
+                    else
+                    {
+                        objPro.data=arrVersion;
+                    }
+                    let curProjectID=objPro._id;
+                    for(let objVersion of arrVersion)
+                    {
+                        let groupModel=group;
+                        let interfaceModel=interface;
+                        if(objVersion._id)
+                        {
+                            groupModel=groupVersion;
+                            interfaceModel=interfaceVersion;
+                        }
+                        let getChild=async function(id,obj,bInter) {
+                            let query={
+                                project:id,
+                                parent:obj?obj.id:{
+                                    $exists:false
+                                }
+                            }
+                            if(objVersion._id)
+                            {
+                                query.version=objVersion._id
+                            }
+                            let arr=await (groupModel.findAsync(query,"name id",{
+                                sort:"name"
+                            }))
+                            for(let obj of arr)
+                            {
+                                obj._doc.data=await (getChild(id,obj,bInter));
+                                delete obj._doc.id;
+                            }
+                            if(bInter && obj)
+                            {
+                                let arrInterface=await (interfaceModel.findAsync({
+                                    group:obj._id
+                                },"name",{
+                                    sort:"name"
+                                }));
+                                arr=arr.concat(arrInterface);
+                            }
+                            return arr;
+                        }
+                        let arr=await (getChild(curProjectID,null,1));
+                        (objVersion._doc?objVersion._doc:objVersion).data=arr;
+                    }
+                    */
+                    let groupModel=group;
+                    let interfaceModel=interface;
+                    let curProjectID=objPro._id;
+                    let getChild=async function(id,obj,bInter) {
+                        let query={
+                            project:id,
+                            parent:obj?obj.id:{
+                                $exists:false
+                            }
+                        }
+                        
+                        let arr=await (groupModel.findAsync(query,"name id",{
+                            sort:"name"
+                        }))
+                        for(let obj of arr)
+                        {
+                            obj._doc.data=await (getChild(id,obj,bInter));
+                            delete obj._doc.id;
+                        }
+                        if(bInter && obj)
+                        {
+                            let arrInterface=await (interfaceModel.findAsync({
+                                group:obj._id
+                            },"name",{
+                                sort:"name"
+                            }));
+                            arr=arr.concat(arrInterface);
+                        }
+                        return arr;
+                    }
+                    let arr=await (getChild(curProjectID,null,1));
+                    (objPro._doc?objPro._doc:objPro).data=arr;
+                }
+            }
+            util.ok(res,ret,"ok")
+        }
+        catch (err)
+        {
+            util.catch(res,err);
+        }
+    }//gql modify
     this.interfaceInfo=async (req,res)=>{
         try
         {
