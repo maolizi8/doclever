@@ -7,7 +7,7 @@ var vue=new Vue({
     data:{
         id:"",
         info:{},
-        infoone:{}
+        tests:[]
     },
     directives:{
         
@@ -33,7 +33,6 @@ var vue=new Vue({
         let query={id:_this.id}
         net.get("/poll/runinfo2",query).then(function (data) {
             console.log("runInfo");
-            $.stopLoading();
             if(data.code==200)
             {
                _this.info=data.data
@@ -42,6 +41,7 @@ var vue=new Vue({
             {
                 $.notify(data.msg,0)
             }
+            $.stopLoading();
         }).catch(function (err) {
             $.stopLoading();
             $.stopHud();
@@ -49,11 +49,11 @@ var vue=new Vue({
         })
         
         // Promise.all([
-        //     net.get("/poll/runinfo",query),
-        //     net.get("/poll/runinfo2",query)
-        // ]).then(function (data) {
-        //     var obj1=data[0];
-        //     var obj2=data[1];
+        //     net.get("/poll/runinfo2",query),
+        //     net.get("/poll/runinfotests",query)
+        // ]).then(function (result) {
+        //     var obj1=result[0];
+        //     var obj2=result[1];
         //     if(obj1.code==200)
         //     {
         //         _this.info=obj1.data
@@ -64,13 +64,19 @@ var vue=new Vue({
         //     }
         //     if(obj2.code==200)
         //     {
-        //         _this.infoone=obj2.data
+        //         _this.tests=obj2.data
+        //         console.log("report.js>_this.tests")
+        //         console.log(_this.tests)
         //     }
         //     else
         //     {
         //         throw obj2.msg;
         //     }
         //     $.stopLoading();
+        // }).catch(function (err) {
+        //     $.stopLoading();
+        //     $.stopHud();
+        //     $.notify(err,0);
         // })
 
         

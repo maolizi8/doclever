@@ -218,7 +218,17 @@ var interface=[
         "data":String,
         handle:poll.runInfo2
     },//gql add
-
+    {
+        "method":"GET",
+        "path":"/poll/runinfotests",
+        "param": {
+            id:{
+                type:String,
+            }
+        },
+        "data":String,
+        handle:poll.runInfoTests
+    },//gql add
     
     {
         "method":"POST",

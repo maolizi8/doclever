@@ -29,7 +29,7 @@
                 </tr>
             </thead>
             <tbody id="testinfo">
-                <tr v-for="(item,index) in info.tests" :key="index">
+                <tr v-for="(item,index) in runTestLists" :key="index">
                     <td>{{item.testOrder?item.testOrder:'-'}}</td>
                      <td>{{item.testModule}}/{{item.testGroup}}</td>
                     <td>
@@ -42,28 +42,39 @@
                         <span v-else-if="item.status==1" style="color: green"><i class="el-icon-success"></i>成功</span> 
                         <span v-else-if="item.status==2" style="color: red"><i class="el-icon-error"></i>失败</span> 
                         <span v-else-if="item.status==99"><i class="el-icon-loading"></i>运行中</span> 
+                         <span v-else style="color: gray"><i class="el-icon-question"></i>未知</span> 
                     </td>
                     <!-- <td :style="{color:item.status==0?'grey':(item.status==1?'green':'red')}">{{item.status==0?"未校验":(item.status==1?"成功":"失败")}}</td> -->
                     <td>
                         <table class="table table-light">
-                            <tr v-for="(inter,index) in item.interfaces" :key="index" style="font-size:14px;">
-                                <td class="line-num">{{index+1}}</td>
-                                <td style="text-align:left;word-break: break-all;">
-                                    <u>{{inter.interBaseUrl}}{{inter.interPath}}</u>
-                                    <span v-if="inter.runTime">（耗时:<span style="color:green;">{{inter.runTime}}</span>秒）</span>
-                                    <span v-if="inter.errMessage">（<span style="color:red;">{{inter.errMessage}}</span>）</span>
-                                </td>
-                                <td style="width:32px;">
-                                   <span v-if="inter.result.status" :style="{color:inter.result.status=='200'?'green':'red'}">{{inter.result.status}}</span>
-                                </td>
-                                <td style="width:32px;font-size:12px;">
-                                    <span @click="showDetails(inter)">详情</span>
-                                </td>
-                            </tr>
+                            <tbody>
+                                <tr v-for="(inter,index) in item.interfaces" :key="index" style="font-size:14px;">
+                                    <td class="line-num">{{index+1}}</td>
+                                    <td style="text-align:left;word-break: break-all;">
+                                        <u>{{inter.interBaseUrl}}{{inter.interPath}}</u>
+                                        <span v-if="inter.runTime">（耗时:<span style="color:green;">{{inter.runTime}}</span>秒）</span>
+                                        <span v-if="inter.errMessage">（<span style="color:red;">{{inter.errMessage}}</span>）</span>
+                                    </td>
+                                    <td style="width:32px;">
+                                    <span v-if="inter.result.status" :style="{color:inter.result.status=='200'?'green':'red'}">{{inter.result.status}}</span>
+                                    </td>
+                                    <td style="width:32px;font-size:12px;">
+                                        <span @click="showDetails(inter)">详情</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            
                         </table>
                     </td>
                 </tr>
             </tbody>
+            <tfoot>
+                <tr style="text-align: center;vertical-align: middle">
+                    <td colspan="7">
+                        <page @change="changePage" ref="page"></page>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </el-row>
    
@@ -135,19 +146,23 @@
 </style>
 
 <script>
-    
+    var page=require("component/page.vue");
     module.exports={
-        props:["info"],
+        props:["info","runTestList"],
         data:function () {
             return {
-                
+                runinfotests:[]
             }
         },
         directives:{
             
         },
         computed:{
-            
+            // runTestLists:function () {
+            //     console.log("report.vue>this.tests")
+            //     console.log(this.tests)
+            //     return this.tests;
+            // },
         },
         methods:{
            showDetails:function(inter){
@@ -171,10 +186,44 @@
                     $.tip("该用例无输出",0);
                 }
             },
-           
+           changePage:function (page) {
+                var query={
+                    page:page
+                }
+                
+                // $.startHud();
+                // this.$store.dispatch("userList",query).then(function (data) {
+                //     $.stopHud();
+                //     if(data.code!=200)
+                //     {
+                //         $.notify(data.msg,0);
+                //     }
+                // });
+            },
         },
         created:function () {
-           
+            var id=getUrlParam("id");
+
+            var _this=this;
+            let query={id:id}
+            net.get("/poll/runinfotests",query).then(function (data) {
+                console.log("report.vue>runTestLists");
+                if(data.code==200)
+                {
+                    _this.runTestLists=data.data
+                    console.log("report.vue>_this.runTestLists")
+                    console.log(_this.runTestLists)
+                }
+                else
+                {
+                    $.notify(data.msg,0)
+                }
+                $.stopLoading();
+            }).catch(function (err) {
+                $.stopLoading();
+                $.stopHud();
+                $.notify(err,0);
+            })
         }
     }
 </script>

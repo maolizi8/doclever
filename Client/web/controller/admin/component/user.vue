@@ -111,11 +111,11 @@
                     </template>
                 </tbody>
                 <tfoot>
-                <tr style="text-align: center;vertical-align: middle">
-                    <td colspan="7">
-                        <page @change="changePage" ref="page"></page>
-                    </td>
-                </tr>
+                    <tr style="text-align: center;vertical-align: middle">
+                        <td colspan="7">
+                            <page @change="changePage" ref="page"></page>
+                        </td>
+                    </tr>
                 </tfoot>
             </table>
         </el-row>

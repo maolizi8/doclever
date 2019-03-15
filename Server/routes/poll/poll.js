@@ -421,13 +421,37 @@ function  Poll() {
                 //     select:"name"
                 // }]
             }));
-            obj._doc.tests=await (pollRunTest.findAsync({
-                pollRun:req.clientParam.id
-            },null,{
-                sort:"-status"
-            }));
+            // obj._doc.tests=await (pollRunTest.findAsync({
+            //     pollRun:req.clientParam.id
+            // },null,{
+            //     sort:"-status"
+            // }));
             
             util.ok(res,obj,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }//gql add
+
+    this.runInfoTests=async (req,res)=> {
+        try
+        {
+            let query={
+                _id:req.clientParam.id
+            }
+            
+            let tests=await (pollRunTest.findAsync({
+                pollRun:req.clientParam.id
+            },null,{
+                sort:"-status",
+                limit:100
+            }));
+            
+            //console.log(tests)
+            util.ok(res,tests,"ok");
         }
         catch (err)
         {   
