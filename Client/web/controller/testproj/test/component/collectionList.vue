@@ -5,7 +5,7 @@
             <div class="collectionMenu" style="height:26px;width:auto;line-height: 26px;position: absolute;right: 5px;top:2px;display: none" @click="$event.stopPropagation()" v-if="editRole">
                 <i class="el-icon-news icon-button" style="color:#17B9E6;"  @click="copyCollection(item)" title="复制集合"></i>
                 <i class="el-icon-edit icon-button" style="color:#17B9E6;"  @click="renameCollection(item)" title="修改名称"></i>
-                <i class="el-icon-delete icon-button" style="color:red;" @click="remove(item,index)" title="删除"></i>
+                <i class="el-icon-delete icon-button" style="color:red;" @click="remove(item,index)" title="删除" v-if="sysRole"></i>
             </div>
         </el-row>
     </el-row>
@@ -34,7 +34,14 @@
             },
             editRole:function () {
                 return this.$store.getters.editRole;
-            }
+            },
+			sysRole:function () {
+				if (session.get("role")==0 || session.get("role")==2 ) {
+					return true
+				} else {
+					return false
+				}
+			},
         },
         methods: {
             mouseEnter:function (event) {
@@ -75,6 +82,8 @@
             },
             renameCollection:function (item) {
                 var _this=this;
+				console.log("collectionList.vue>renameCollection: item")
+				console.log(item)
                 $.input("请输入集合名称",function (val) {
                     if(!val.value)
                     {
@@ -99,7 +108,7 @@
                             $.notify(data.msg,0);
                         }
                     })
-                })
+                },item.name)
             },
             remove:function (item,index) {
                 var _this=this;

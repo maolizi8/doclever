@@ -68,7 +68,7 @@
 					</el-button>
 					<el-button type="text" size="mini" @click.native="renameExample" v-if="curParam.selExample.id">重命名</el-button>
 					<el-button type="text" size="mini" @click.native="saveAsExample">另存为</el-button>
-					<el-button type="text" size="mini" @click.native="renameExample" v-if="curParam.selExample.id">重命名</el-button>
+					
 					<el-button type="text" style="color: red" size="mini" @click.native="removeExample" v-if="curParam.selExample.id">删除</el-button>
 				</el-row>
 				
@@ -410,8 +410,11 @@
                     }
                 });
             },
-            renameExample:function () {
+            renameExample:function (item) {
                 var _this=this;
+				console.log("run.vue>renameExample>this.curParam.selExample.value")
+                console.log(this.curParam.selExample.value)
+				
                 $.input("请输入运行实例名称",function (val) {
                     if(!val.value)
                     {
@@ -440,7 +443,7 @@
                         }
                     })
                     return true;
-                });
+                },_this.curParam.selExample.value);
             },
             saveExample:function () {
                 this.$store.dispatch("saveExample",{

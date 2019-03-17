@@ -224,7 +224,8 @@ var interface=[
         "param": {
             id:{
                 type:String,
-            }
+            },
+			page:Number,
         },
         "data":String,
         handle:poll.runInfoTests

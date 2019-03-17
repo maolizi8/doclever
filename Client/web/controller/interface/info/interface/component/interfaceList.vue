@@ -173,8 +173,8 @@
             renameGroup:function (item) {
                 var _this=this;
 
-                // console.log("interfaceList.vue>renameGroup>item")
-                // console.log(item)
+                console.log("interfaceList.vue>renameGroup>item")
+                console.log(item)
 
                 $.input("请输入重命名的名称", (val)=> {
                     if(val.value==="")
@@ -200,7 +200,7 @@
                             $.notify(data.msg,0);
                         }
                     })
-                });
+                },item.name);
             },
             removeGroup:function (item) {
                 var _this=this;

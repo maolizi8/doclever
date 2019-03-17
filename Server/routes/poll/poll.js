@@ -442,12 +442,14 @@ function  Poll() {
             let query={
                 _id:req.clientParam.id
             }
+			let page=req.clientParam.page
             
             let tests=await (pollRunTest.findAsync({
                 pollRun:req.clientParam.id
             },null,{
                 sort:"-status",
-                limit:100
+				skip:20*page,
+				limit:20
             }));
             
             //console.log(tests)

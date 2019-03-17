@@ -58,6 +58,13 @@ var vue=new Vue({
         islist:function(){
 			return store.state.islist
         },
+		sysRole:function () {
+			if (session.get("role")==0 || session.get("role")==2 ) {
+				return true
+			} else {
+				return false
+			}
+		},
     },
     methods:{
         

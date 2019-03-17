@@ -41,7 +41,14 @@
             },
             editRole:function () {
                 return this.$store.getters.editRole;
-            }
+            },
+			sysRole:function () {
+				if (session.get("role")==0 || session.get("role")==2 ) {
+					return true
+				} else {
+					return false
+				}
+			},
         },
         methods:{
             addModule:function () {
@@ -103,18 +110,18 @@
                                         <div class="testRightMenu" style="height:26px;width;line-height: 26px;margin-right: 3px;" v-show={this.editRole}>
                                             <i class="el-icon-plus" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.addGroup.bind(this, node)} title="新建业务"></i>
                                             <i class="el-icon-edit" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.renameModule.bind(this, node)} title="修改名称"></i>
-                                            <i class="el-icon-delete" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:red;background-color: white;font-weight: 900" on-click={this.removeModule.bind(this,node)} title="删除"></i>
+                                            <i class="el-icon-delete" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:red;background-color: white;font-weight: 900" on-click={this.removeModule.bind(this,node)} title="删除" v-if="sysRole"></i>
                                         </div>
                                     : (node.level == 2 ?
                                         <div class="testRightMenu" style="height:26px;width;line-height: 26px;margin-right: 3px;" v-show={this.editRole}>
                                             <i class="el-icon-plus" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.addTest.bind(this, node)} title="新建用例"></i>
                                             <i class="el-icon-edit" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.addGroup.bind(this, node)} title="修改名称"></i>
-                                            <i class="el-icon-delete" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:red;background-color: white;font-weight: 900" on-click={this.removeGroup.bind(this, node)} title="删除"></i>
+                                            <i class="el-icon-delete" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:red;background-color: white;font-weight: 900" on-click={this.removeGroup.bind(this, node)} title="删除" v-if="sysRole"></i>
                                         </div>
                                     :
                                         <div class="testRightMenu" style="height:26px;width;line-height: 26px;margin-right: 3px;" v-show={this.editRole}>
                                             <i class="el-icon-news" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;" on-click={this.copyTest.bind(this, node)} title="复制"></i>
-                                            <i class="el-icon-delete" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:red;background-color: white;font-weight: 900" on-click={this.removeTest.bind(this, node)} title="删除"></i>
+                                            <i class="el-icon-delete" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:red;background-color: white;font-weight: 900" on-click={this.removeTest.bind(this, node)} title="删除" v-if="sysRole"></i>
                                         </div>)
 
                             }
@@ -124,6 +131,8 @@
             },
             addGroup:function (item) {
                 var _this=this;
+				console.log("testList.vue>addGroup: item")
+				console.log(item)
                 $.input("请输入业务名称",function (val) {
                     if(!val.value)
                     {
@@ -145,11 +154,13 @@
                             $.notify(data.msg,0)
                         }
                     })
-                });
+                },item.label?item.label:"");
 
             },
             renameModule:function (item) {
                 var _this=this;
+				console.log("testList.vue>renameModule: item")
+				console.log(item)
                 $.input("请输入模块名称",function (val) {
                     if(!val.value)
                     {
@@ -172,7 +183,7 @@
                             $.notify(data.msg,0)
                         }
                     })
-                });
+                },item.label);
             },
             removeModule:function (item) {
                 var _this=this;

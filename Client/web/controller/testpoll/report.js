@@ -27,6 +27,9 @@ var vue=new Vue({
     },
     created : function () {
         //window.hljs.initHighlightingOnLoad();
+		
+		console.log("report.js>created::")
+		
         this.id=getUrlParam("id");
 
         var _this=this;
