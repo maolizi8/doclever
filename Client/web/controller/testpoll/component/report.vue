@@ -59,7 +59,8 @@
                                         <span v-if="inter.errMessage">（<span style="color:red;">{{inter.errMessage}}</span>）</span>
                                     </td>
                                     <td style="width:32px;">
-                                    <span v-if="inter.result.status" :style="{color:inter.result.status=='200'?'green':'red'}">{{inter.result.status}}</span>
+                                        <!-- <span v-if="inter.result.status" :style="{color:inter.result.status=='200'?'green':'red'}">{{inter.result.status}}</span> -->
+                                        <span v-if="inter.result" :style="{color:inter.result.status=='200'?'green':'red'}">{{inter.result.status}}</span>
                                     </td>
                                     <td style="width:32px;font-size:12px;">
                                         <span @click="showDetails(inter)">详情</span>
