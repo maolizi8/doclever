@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="title"  width="80%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog :title="title"  width="80%" ref="box" :visible.sync="showDialog" :close-on-click-modal="false"  append-to-body>
         <el-form label-width="100px">
             <el-form-item label="标题" v-if="two" style="text-align: center">
                 <el-input size="small" placeholder="请输入标题" v-model="name" style="width: 95%"></el-input>

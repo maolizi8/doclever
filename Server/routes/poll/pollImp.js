@@ -101,14 +101,16 @@ var interface=[
         "method":"GET",
         "path":"/poll/list",
         "param": {
-            // id:{
-            //     type:String,
-            // }
+            simple:{
+                type:String,
+                optional:1
+            }
         },
         "data":String,
         user:1,
         handle:poll.list
     },//gql add
+    
     {
         "method":"GET",
         "path":"/poll/sendinfo",
@@ -177,7 +179,8 @@ var interface=[
         "param": {
             poll:{
                 type:String,
-            }
+            },
+            page:Number
         },
         "data":String,
         user:1,
@@ -247,6 +250,21 @@ var interface=[
         },
         "data":String,
         handle:poll.pollRunInfo
+    },//gql add
+
+    {
+        "method":"GET",
+        "path":"/poll/runstatistics",
+        "param": {
+            startdate:String,
+            enddate:String,
+			poll:{
+                type:String,
+                optional:1
+            },
+        },
+        "data":String,
+        handle:poll.runStatistics
     },//gql add
 ];
 

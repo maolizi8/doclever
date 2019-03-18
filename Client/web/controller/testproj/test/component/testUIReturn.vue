@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="编辑返回值"  width="70%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog title="编辑返回值"  width="70%" ref="box" :visible.sync="showDialog" :close-on-click-modal="false"  append-to-body>
         <el-row class="row" style="text-align: center;">
             <el-form ref="form" label-width="100px">
                 <el-form-item label="判定用例状态">

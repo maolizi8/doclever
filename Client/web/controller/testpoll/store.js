@@ -29,7 +29,8 @@ var store=new Vuex.Store({
                 context.state.islist=1;
 				
                 return net.post("/poll/runlist",{
-                    poll:context.state.pollid
+                    poll:context.state.pollid,
+                    page:0
                 }).then(function (data) {
                     
                     if(data.code==200)
@@ -59,7 +60,24 @@ var store=new Vuex.Store({
             }
 
             
-        }
+        },
+        pollRunHistoryList:function (context,query) {
+            return net.post("/poll/runlist",{
+                poll:context.state.pollid,
+                page:query.page
+            }).then(function (data) {
+                
+                if(data.code==200)
+                {
+                    context.state.pollRunList=data.data;
+                }
+                else
+                {
+                    $.notify(data.msg,0)
+                }
+                return data;
+            })
+        },
         
     },
     modules:{

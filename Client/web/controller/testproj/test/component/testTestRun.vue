@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="选择用例" width="50%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog title="选择用例" width="50%" ref="box" :visible.sync="showDialog" :close-on-click-modal="false"  append-to-body>
         <el-row class="row" style="text-align: center;height: 50px;line-height: 50px">
             <el-col class="col" :span="4">
                 测试用例

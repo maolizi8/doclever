@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="编辑接口入参"  width="50%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog title="编辑接口入参"  width="50%" ref="box" :visible.sync="showDialog" :close-on-click-modal="false"  append-to-body>
         <el-row class="row">
             <el-row class="row" style="height: 50px;line-height: 50px;text-align: center" v-for="(item,index) in arr" :key="index">
                 <el-col class="col" :span="4">

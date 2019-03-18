@@ -7,6 +7,11 @@
                             <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
                                 自动化测试-定时任务
                                 
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole">
+                                    去统计<i class="el-icon-d-arrow-right"></i>
+                                </a>
+
                                 <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="setPollSender" v-if="sysRole">
                                     设置邮件发送者
                                 </el-button>
@@ -16,7 +21,6 @@
                                 <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="pollPop()" v-if="sysRole">
                                    <i class="fa fa-plus"></i> 添加定时任务
                                 </el-button>
-                                
                             </el-row>
                             <el-row class="row" style="height: 1px;background-color: lightgray"></el-row>
                             <el-row class="row" style="border-bottom-left-radius: 5px;border-bottom-right-radius: 5px">

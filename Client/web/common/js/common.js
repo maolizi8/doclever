@@ -217,7 +217,8 @@ $.confirm=function (title,funcOk,funcCancel) {
     Vue.prototype.$confirm(title, 'DOClever', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
+        closeOnClickModal:false
     }).then(function () {
         if(funcOk)
         {
@@ -230,6 +231,31 @@ $.confirm=function (title,funcOk,funcCancel) {
         }
     })
 }
+
+$.confirmdanger=function (msgs,funcOk,funcCancel) {
+    // const newDatas = []
+    // const h = Vue.prototype.$createElement
+    // for (const i in msgs) {
+    //     newDatas.push(h('p', null, msgs[i]))
+    // }
+    Vue.prototype.$confirm(msgs,'DOClever', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error',
+        closeOnClickModal:false
+    }).then(function () {
+        if(funcOk)
+        {
+            funcOk();
+        }
+    }).catch(function () {
+        if(funcCancel)
+        {
+            funcCancel();
+        }
+    })
+}
+
 
 $.tip=function (content,bOk) {
     if(bOk==1)

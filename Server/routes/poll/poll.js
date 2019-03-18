@@ -186,28 +186,33 @@ function  Poll() {
             //console.log(req.clientParam.id);
             let arr;
             //let userId=req.userInfo._id;
-            arr=await (poll.findAsync(query,null,{
-                sort:"name",
-                populate:[{
-                    path:"testProject",
-                    select:"name"
-                },{
-                    path:"users",
-                    select:"name"
-                },{
-                    path:"owner",
-                    select:"name"
-                },{
-                    path:"testCollection",
-                    select:"name"
-                }]
-            }))
-            for (let obj of arr) {
-                let tests=await (testCollection.findOneAsync({
-                    _id:obj.testCollection._id
-                },'tests'))
-                obj._doc.testCount=tests.tests.length;
+            if (!req.clientParam.simple) {
+                arr=await (poll.findAsync(query,null,{
+                    sort:"name",
+                    populate:[{
+                        path:"testProject",
+                        select:"name"
+                    },{
+                        path:"users",
+                        select:"name"
+                    },{
+                        path:"owner",
+                        select:"name"
+                    },{
+                        path:"testCollection",
+                        select:"name"
+                    }]
+                }))
+                for (let obj of arr) {
+                    let tests=await (testCollection.findOneAsync({
+                        _id:obj.testCollection._id
+                    },'tests'))
+                    obj._doc.testCount=tests.tests.length;
+                }
+            }else{
+                arr=await (poll.findAsync(query,"name"))
             }
+            
             util.ok(res,arr,"ok");
         }
         catch (err)
@@ -355,13 +360,14 @@ function  Poll() {
             let query={
                 poll:req.clientParam.poll
             }
-            
+            let page=req.clientParam.page
             //"pollName projectName collectionName status operator testFail testSuccess testTotal testUnkown createdAt"
             let obj=await (pollRun.findAsync(query,
                null,
                 {
                     sort:"-createdAt",
-                    limit:10
+                    limit:10,
+                    skip:10*page
                 }));
             
             util.ok(res,obj,"ok");
@@ -487,7 +493,95 @@ function  Poll() {
         }
     }//gql add 
    
-    
+    this.runStatistics=async (req,res)=> {
+        try
+        {
+            console.log(req.clientParam.startdate)
+            console.log(req.clientParam.enddate)
+            
+            
+            let start=new Date(req.clientParam.startdate)
+            let end=new Date(req.clientParam.enddate)
+            end.setHours(23);
+            end.setMinutes(59);
+            end.setSeconds(59);
+            end.setMilliseconds(999);
+            console.log(start)
+            console.log(end)
+
+            let resObj=[];
+            let query={}
+            if (req.clientParam.poll) {
+                query._id=req.clientParam.poll
+            }
+            let polls=await (poll.findAsync(query,"name",{
+                populate:[{
+                    path:"testProject",
+                    select:"name"
+                },{
+                    path:"testCollection",
+                    select:"name"
+                }]
+            }))
+            //console.log(polls.length)
+            for (let p of polls) {
+                p._doc.unkown=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    status:0
+                }))
+                p._doc.success=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    status:2
+                }))
+                p._doc.fail=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    status:3
+                }))
+                p._doc.reason1=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    "failReason.reason":1
+                }))
+                p._doc.reason2=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    "failReason.reason":2
+                }))
+                p._doc.reason3=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    "failReason.reason":3
+                }))
+                p._doc.reason4=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    "failReason.reason":4
+                }))
+                p._doc.reason99=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    "failReason.reason":99
+                }))
+                p._doc.reason0=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    status:3,
+                    failReason:{ $exists : false }
+                }))
+                resObj.push(p)
+            }
+           
+            util.ok(res,resObj,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }//gql add 
 }
 
 module.exports=Poll;

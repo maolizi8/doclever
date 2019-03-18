@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="编辑变量"  width="60%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog title="编辑变量"  width="60%" ref="box" :visible.sync="showDialog" :close-on-click-modal="false"  append-to-body>
         <el-row class="row">
             <el-radio size="small" v-model="globalEdit" :label="0">
                 局部变量

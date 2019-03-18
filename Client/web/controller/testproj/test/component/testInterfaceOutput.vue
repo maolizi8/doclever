@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="接口输出"  width="80%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog title="接口输出"  width="80%" ref="box" :visible.sync="showDialog" :close-on-click-modal="false"  append-to-body>
         <el-tabs v-model="tabType">
             <el-tab-pane label="General" name="general">
                 <el-form label-width="100px" label-position="left">

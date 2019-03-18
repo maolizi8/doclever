@@ -1,32 +1,41 @@
 <template>
     <el-row class="row" id="content">
-        <h2><span style="font-size:80%;font-weight:normal;">自动化测试统计</span></h2>
-        <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
+        <h3>自动化测试统计</h3>
+        <!-- <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
 			<el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="query">
 				查询
 			</el-button>
-		</el-row>
-		
+		</el-row> -->
 		<el-form label-position="top" label-width="80px" style="padding: 10px 20px 20px 10px" id="form-info">
             <el-row class="row">
-                <el-col class="col" :span="4">
+                <el-col class="col" :span="3">
                    选择定时任务:
                 </el-col>
                 <el-col class="col" :span="8">
-                     <el-cascader size="mini" style="width: 95%" expand-trigger="hover" :options="testPollArr" v-model="selPoll" @change="changePoll" placeholder="请切换定时任务">
-                    </el-cascader>
+                     <!-- <el-cascader size="mini" style="width: 95%" expand-trigger="hover" :options="testPollArr" v-model="selPoll" @change="changePoll" placeholder="请切换定时任务">
+                    </el-cascader> -->
+                    <el-select v-model="selPoll"  style="width: 90%"  >
+                        <el-option value="" label="请选择定时任务"></el-option>
+                        <el-option v-for="(item,index) in pollList"  :value="item._id" :label="item.name" :key="index" ></el-option>
+                    </el-select>
                 </el-col>
-				<el-col class="col" :span="4">
+				<el-col class="col" :span="3">
                    选择周期:
                 </el-col>
                 <el-col class="col" :span="8">
-                     <el-date-picker size="mini" style="width: 95%" 
+                     <el-date-picker size="mini" style="width: 90%" 
 					  v-model="periodDate"
 					  type="daterange"
 					  range-separator="至"
 					  start-placeholder="开始日期"
-					  end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']">
+					  end-placeholder="结束日期" value-format="yyyy-MM-dd" 
+                      :unlink-panels="true">
 					</el-date-picker>
+                </el-col>
+                <el-col class="col" :span="2">
+                   <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="query">
+                        查询
+                    </el-button>
                 </el-col>
             </el-row>
 		</el-form>
@@ -35,87 +44,67 @@
             <thead>
                 <tr>
                     <th style="width:100px;">定时任务</th>
-                    <th style="width:200px;">周期</th>
-                    <th style="width:200px;">统计结果</th>
-                    <th style="width:55px;">操作</th>
+                    <th style="width:200px;">测试项目/集合</th>
+                    <th style="width:150px;">周期</th>
+                    <th style="width:50px;">成功</th>
+                    <th style="width:50px;">失败</th>
+                    <!-- <th style="min-width:300px;">失败原因</th> -->
+                    <th style="background-color: #F5DEB3;">接口变更</th>
+                    <th style="background-color: #F5DEB3;">应用异常有bug</th>
+                    <th style="background-color: #F5DEB3;">测试环境异常</th>
+                    <th style="background-color: #F5DEB3;">应用正在部署</th>
+                    <th style="background-color: #F5DEB3;">其他原因</th>
+                    <th style="background-color: #F5DEB3;">未标记原因</th>
+                    <th style="width:40px;">操作</th>
                 </tr>
             </thead>
             <tbody id="testinfo">
 				<tr v-for="(item,index) in arr" :key="index">
                     <td>{{item.name||"null"}}</td>
-                    <td>{{item.name||"null"}}</td>
-                    <td>{{item.name||"null"}}</td>
-                    <td>{{item.name||"null"}}</td>
+                    <td>{{item.testProject.name}}/{{item.testCollection.name}}</td>
+                    <td>{{periodDate[0]}} 至 {{periodDate[1]}}</td>
+                    <td>{{item.success+item.unkown}}</td>
+                    <td>
+                        <span :style="{color:item.fail>0?'red':''}">{{item.fail}}</span><br>
+                    </td>
+                    <td>
+                        <!-- 接口变更-{{item.reason1}}次,应用异常有bug-{{item.reason2}}次, <br>
+                        测试环境异常-{{item.reason3}}次, 应用正在部署-{{item.reason4}}次, <br>
+                        其他-{{item.reason99}}次, 未标记-{{item.reason0}}次 -->
+                        <!-- <table class="table table-light" style="">
+                            <tr style="background-color: #F0FFF0;">
+                                <td>接口变更</td>
+                                <td>应用异常有bug</td>
+                                <td>测试环境异常</td>
+                                <td>应用正在部署</td>
+                                <td>其他</td>
+                                <td>未标记</td>
+                            </tr>
+                            <tr>
+                                <td>{{item.reason1}}</td>
+                                <td>{{item.reason2}}</td>
+                                <td>{{item.reason3}}</td>
+                                <td>{{item.reason4}}</td>
+                                <td>{{item.reason99}}</td>
+                                <td>{{item.reason0}}</td>
+                            </tr>
+                        </table> -->
+                        {{item.reason1}}
+                    </td>
+                    <!-- <td>{{item.reason1}}</td> -->
+                    <td>{{item.reason2}}</td>
+                    <td>{{item.reason3}}</td>
+                    <td>{{item.reason4}}</td>
+                    <td>{{item.reason99}}</td>
+                    <td>{{item.reason0}}</td>
+                    <td>
+                        <a :href="'testpoll.html?pollid='+item._id" style="color: purple;font-size:12px;" target="_blank" rel="noopener noreferrer">明细</a>
+                    </td>
                 </tr>
 			</tbody>
         </table>
         <div class="clear"></div>
-            <!--            
-        <table class="table box-shadow">
-            <thead>
-                <tr>
-                    <th style="width:55px;">顺序</th>
-                    <th style="width:200px;">测试模块/业务</th>
-                    <th style="width:200px;">测试用例</th>
-                    <th style="width:55px;">状态</th>
-                    <th style="">接口运行详情</th>
-                </tr>
-            </thead>
-            <tbody id="testinfo">
-				
-				<tr style="text-align: center;vertical-align: middle">
-                    <td colspan="5">
-                        <page @change="changePage" ref="page" :total="totalPages" :numofpage="numOfPage"></page>
-                    </td>
-                </tr>
-				
-                <tr v-for="(item,index) in runTestLists" :key="index">
-                    <td>{{item.testOrder?item.testOrder:'-'}}</td>
-                     <td>{{item.testModule}}/{{item.testGroup}}</td>
-                    <td>
-                        <span class="testname" @click="showOutput(item)">
-                            {{item.testName}}
-                        </span>
-                    </td>
-                    <td>
-                        <span v-if="item.status==0" style="color: gray"><i class="el-icon-question"></i>未知</span> 
-                        <span v-else-if="item.status==1" style="color: green"><i class="el-icon-success"></i>成功</span> 
-                        <span v-else-if="item.status==2" style="color: red"><i class="el-icon-error"></i>失败</span> 
-                        <span v-else-if="item.status==99"><i class="el-icon-loading"></i>运行中</span> 
-                         <span v-else style="color: gray"><i class="el-icon-question"></i>未知</span> 
-                    </td>
-                    <td>
-                        <table class="table table-light">
-                            <tbody>
-                                <tr v-for="(inter,index) in item.interfaces" :key="index" style="font-size:14px;">
-                                    <td class="line-num">{{index+1}}</td>
-                                    <td style="text-align:left;word-break: break-all;">
-                                        <u>{{inter.interBaseUrl}}{{inter.interPath}}</u>
-                                        <span v-if="inter.runTime">（耗时:<span style="color:green;">{{inter.runTime}}</span>秒）</span>
-                                        <span v-if="inter.errMessage">（<span style="color:red;">{{inter.errMessage}}</span>）</span>
-                                    </td>
-                                    <td style="width:32px;">
-                                    <span v-if="inter.result.status" :style="{color:inter.result.status=='200'?'green':'red'}">{{inter.result.status}}</span>
-                                    </td>
-                                    <td style="width:32px;font-size:12px;">
-                                        <span @click="showDetails(inter)">详情</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            
-                        </table>
-                    </td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr style="text-align: center;vertical-align: middle">
-                    <td colspan="5">
-                        <page @change="changePage" ref="page" :total="totalPages" :numofpage="numOfPage"></page>
-                    </td>
-                </tr>
-            </tfoot>
-        </table> 
-		-->
+            
     </el-row>
    
 </template>
@@ -193,8 +182,8 @@
             return {
 				periodDate:"",
 				selPoll:"",
-				pollList:[{"name":"test1","_id":"111"},{"name":"test2","_id":"222"}],
-				
+				//pollList:[{"name":"test1","_id":"111"},{"name":"test2","_id":"222"}],
+				pollList:[],
                 arr:[],
 				
 				numOfPage:20
@@ -205,16 +194,20 @@
         },
         computed:{
 			testPollArr:function(){
-                var newList=this.pollList.map(function (obj) {
+                if (this.pollList) {
+                    var newList=this.pollList.map(function (obj) {
                     
-                    var projObj={
-                                    label:obj.name,
-                                    value:obj._id
-                                }
+                        var projObj={
+                                        label:obj.name,
+                                        value:obj._id
+                                    }
 
-                    return projObj
-                });
-                return newList
+                        return projObj
+                    });
+                    return newList
+                }else{
+                    return []
+                }
             }
 			/*
 			totalPages:function(){
@@ -270,26 +263,41 @@
             },
 			
 			query:function(){
-				console.log("statistics.vue>query>this.periodDate")
-				console.log(this.periodDate)
+
+                if (!this.periodDate) {
+                    $.tip("请选择统计周期",0);
+                    return;
+                }
+				// console.log("statistics.vue>query>this.periodDate")
+				// console.log(this.periodDate)
 				
-				console.log("statistics.vue>query>this.selPoll")
-				console.log(this.selPoll)
+				// console.log("statistics.vue>query>this.selPoll")
+				// console.log(this.selPoll)
 				$.startHud();
-				var _this=this;
-				/*
-				let query={
-							period:_this.runId,
-							page:page
-							}
-				net.get("/poll/runinfotests",query).then(function (data) {
-					console.log("statistics.vue>runTestLists");
+                var _this=this;
+                
+                let params={
+                            startdate:_this.periodDate[0],
+                            enddate:_this.periodDate[1]
+                            }
+				
+				// let params={
+                //             startdate:_this.periodDate[0].format("yyyy-MM-dd"),
+                //             enddate:_this.periodDate[1].format("yyyy-MM-dd")
+                //             }
+                if (_this.selPoll) {
+                    params.poll=_this.selPoll
+                }
+                console.log("statistics.vue>query>params")
+				console.log(params)
+                
+				net.get("/poll/runstatistics",params).then(function (data) {
+					console.log("statistics.vue>runstatistics");
 					if(data.code==200)
 					{
-						_this.runTestLists=data.data
-						console.log("statistics.vue>_this.runTestLists(page)")
-						console.log("page="+page)
-						console.log(_this.runTestLists)
+						_this.arr=data.data
+						console.log("statistics.vue>_this.arr")
+						console.log(_this.arr)
 					}
 					else
 					{
@@ -302,25 +310,20 @@
 					$.stopHud();
 					$.notify(err,0);
 				})
-				*/
+				/**/
 		    },
         },
         created:function () {
-		/*
-            var id=getUrlParam("id");
-
+		
             var _this=this;
-            let query={
-							id:id,
-							page:0
-							}
-            net.get("/poll/runinfotests",query).then(function (data) {
-                console.log("report.vue>runTestLists");
+            
+            net.get("/poll/list",{}).then(function (data) {
+                console.log("statistics.vue>polllist(simple)");
                 if(data.code==200)
                 {
-                    _this.runTestLists=data.data
-                    console.log("report.vue>_this.runTestLists")
-                    console.log(_this.runTestLists)
+                    _this.pollList=data.data
+                    console.log("statistics.vue>_this.pollList")
+                    console.log(_this.pollList)
                 }
                 else
                 {
@@ -331,7 +334,7 @@
                 $.stopLoading();
                 $.stopHud();
                 $.notify(err,0);
-            })*/
+            })/**/
         }
     }
 </script>

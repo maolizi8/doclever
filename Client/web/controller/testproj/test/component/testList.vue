@@ -87,9 +87,9 @@
 
                 if(node.level == 3){
                     console.log("testproj>test>component>testList.vue>renderContent>node,data,store")
-                    console.log(node)
-                    console.log(data)
-                    console.log(store)
+                    // console.log(node)
+                    // console.log(data)
+                    // console.log(store)
                 }
                 
 
@@ -186,8 +186,10 @@
                 },item.label);
             },
             removeModule:function (item) {
+                // console.log("testList.vue>removeModule>item")
+                // console.log(item)
                 var _this=this;
-                $.confirm("是否确认删除，该模块下的所有信息都会被删除!",function () {
+                $.confirmdanger("是否确认删除: "+item.label+ " ? 【注意】该模块下的所有信息都会被删除!",function () {
                     $.startHud("#body");
                     _this.$store.dispatch("removeModule",item).then(function (data) {
                         $.stopHud();
@@ -228,8 +230,10 @@
                 });
             },
             removeGroup:function (item) {
+                // console.log("testList.vue>removeGroup>item")
+                // console.log(item)
                 var _this=this;
-                $.confirm("是否确认删除，该业务下的所有信息都会被删除!",function () {
+                $.confirmdanger("是否确认删除: "+item.label+ " ? 【注意】该业务下的所有信息都会被删除!",function () {
                     $.startHud("#body");
                     _this.$store.dispatch("removeGroup",item).then(function (data) {
                         $.stopHud();
@@ -247,10 +251,10 @@
 
             copyTest:function (item) {
 
-                console.log('testList.vue>copyTest>item')
-                console.log(item)
+                // console.log('testList.vue>copyTest>item')
+                // console.log(item)
                 var _this=this;
-                $.confirm("是否确认复制该用例？",function () {
+                $.confirm("是否确认复制该用例: "+item.label+ "?",function () {
                     $.startHud("#body");
                    _this.$store.dispatch("copyTest",item).then(function (data) {
                         $.stopHud();
@@ -268,8 +272,10 @@
             },//gql add
 
             removeTest:function (item) {
+                // console.log("testList.vue>removeTest>item")
+                // console.log(item)
                 var _this=this;
-                $.confirm("是否确认删除!",function () {
+                $.confirmdanger("是否确认删除: "+item.label+ " ? 【注意】删除后该用例不可恢复!",function () {
                     $.startHud("#body");
                     _this.$store.dispatch("removeTest",item).then(function (data) {
                         $.stopHud();

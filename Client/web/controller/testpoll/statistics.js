@@ -24,7 +24,7 @@ var vue=new Vue({
         
     },
     created : function () {
-        $.stopLoading();
+        // $.stopLoading();
         
     }
 });

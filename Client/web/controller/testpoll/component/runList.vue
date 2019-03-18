@@ -4,7 +4,9 @@
             <transition name="component-fade" mode="out-in">
                 <el-row class="row box-shadow" style="">
                     <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
-                        定时任务-运行记录
+                        定时任务-运行记录 &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole">
+                            去统计<i class="el-icon-d-arrow-right"></i></a>
 
                         <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="runPoll(pollId)">
                                                 立即运行
@@ -80,11 +82,15 @@
                                     <el-button type="text" size="mini" style="margin-left:3px;" @click.native="editFailReason(item)" v-if="item.status==3 || item.status==4 ">
                                         失败原因
                                     </el-button>
-                                    <el-button type="text" size="mini" style="margin-left:3px;" @click.native="deleteRunRecord(item._id)" v-if="item.status==99 || sysRole ">
+                                    <el-button type="text" size="mini" style="margin-left:3px;color:red;" @click.native="deleteRunRecord(item._id)" v-if="item.status==99 || sysRole ">
                                         删除
                                     </el-button>
                                 </el-col>
                             </el-row>
+                        </el-row>
+
+                        <el-row class="row" >
+                            <page @change="changePage" ref="page"></page>
                         </el-row>
                     </el-row>
                 </el-row>
@@ -140,7 +146,7 @@
 </style>
 <script>
     var sessionChange=require("common/mixins/session");
-
+    var page=require("component/page.vue");
     module.exports={
         
         data:function () {
@@ -159,7 +165,7 @@
         
         mixins:[sessionChange],
         components:{
-            
+            "page":page
         },
         computed:{
             sysRole:function () {
@@ -268,7 +274,20 @@
                 //     }
                 // })
             },
-            
+            changePage:function (page) {
+                var query={
+                    page:page
+                }
+                console.log("runList.vue>page: "+page)
+                $.startHud();
+                this.$store.dispatch("pollRunHistoryList",query).then(function (data) {
+                    $.stopHud();
+                    if(data.code!=200)
+                    {
+                        $.notify(data.msg,0);
+                    }
+                });
+            },
         }
     }
 </script>

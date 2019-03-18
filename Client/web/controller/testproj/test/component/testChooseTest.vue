@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="添加用例"  width="80%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog title="添加用例"  width="80%" ref="box" :visible.sync="showDialog" :close-on-click-modal="false"  append-to-body>
         <el-row class="row" style="height: 250px;overflow-y: auto">
             <el-input size="small" placeholder="请输入关键词过滤" v-model="text"></el-input>
             <el-tree :data="arrTest" :props="defaultProps" show-checkbox node-key="_id"  ref="tree" :filter-node-method="filterNode" style="margin-top: 10px">

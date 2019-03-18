@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="运行集合-输出"  width="80%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog title="运行集合-输出"  width="80%" ref="box" :visible.sync="showDialog" :close-on-click-modal="false" append-to-body>
         <el-row class="row">
             <el-row class="row">
                 总共运行：{{info.total}}， 

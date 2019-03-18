@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="编辑接口入参"  width="70%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog title="编辑接口入参"  width="70%" ref="box" :close-on-click-modal="false"  :visible.sync="showDialog" append-to-body>
         <el-row class="row">
             <el-tabs v-model="type">
 

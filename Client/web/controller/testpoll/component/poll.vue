@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="propPoll?'编辑定时任务':'创建定时任务'"  width="80%" ref="box" :visible.sync="showDialog" append-to-body>
+    <el-dialog :title="propPoll?'编辑定时任务':'创建定时任务'" :close-on-click-modal="false"  width="80%" ref="box" :visible.sync="showDialog" append-to-body>
         <el-row class="row">
             <span style="color: red">带有input和文件上传的用例，在无人干预的情况下测试可能会失败！</span>
         </el-row>
