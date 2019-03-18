@@ -44,7 +44,7 @@ var vue=new Vue({
             {
                 $.notify(data.msg,0)
             }
-            $.stopLoading();
+            //$.stopLoading();
         }).catch(function (err) {
             $.stopLoading();
             $.stopHud();
