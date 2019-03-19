@@ -179,7 +179,7 @@
         props:["info"],
         data:function () {
             return {
-				//periodDate:"",
+				periodDate:"",
 				selPoll:"",
 				//pollList:[{"name":"test1","_id":"111"},{"name":"test2","_id":"222"}],
 				pollList:[],
@@ -192,10 +192,10 @@
             
         },
         computed:{
-            periodDate:function(){
-                var d = new Date().format("yyyy-MM-dd");
-                return [d,d]
-            },
+            // periodDate:function(){
+            //     var d = new Date().format("yyyy-MM-dd");
+            //     return [d,d]
+            // },
 			testPollArr:function(){
                 if (this.pollList) {
                     var newList=this.pollList.map(function (obj) {
