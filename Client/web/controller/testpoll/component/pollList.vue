@@ -8,30 +8,30 @@
                                 自动化测试-定时任务
                                 
                                 &nbsp;&nbsp;&nbsp;&nbsp;
-                                <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole">
+                                <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole==0 || sysRole==2 ">
                                     去统计<i class="el-icon-d-arrow-right"></i>
                                 </a>
 
-                                <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="setPollSender" v-if="sysRole">
+                                <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="setPollSender" v-if="sysRole==0">
                                     设置邮件发送者
                                 </el-button>
                                 <!-- <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="showAdd=true">
                                    <i class="fa fa-plus"></i> 添加定时任务
                                 </el-button> -->
-                                <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="pollPop()" v-if="sysRole">
+                                <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="pollPop()" v-if="sysRole==0 || sysRole==2 ">
                                    <i class="fa fa-plus"></i> 添加定时任务
                                 </el-button>
                             </el-row>
                             <el-row class="row" style="height: 1px;background-color: lightgray"></el-row>
                             <el-row class="row" style="border-bottom-left-radius: 5px;border-bottom-right-radius: 5px">
                                 <el-row class="row" style="height: 30px;line-height: 30px;text-align: center;background-color: #ebebeb" :style="{paddingRight:paddingRight+'px'}">
-                                    <el-col class="col" :span="4">
+                                    <el-col class="col" :span="3">
                                         任务主题 
                                         <el-tooltip class="item" effect="dark" placement="bottom" trigger="hover"  content="测试结果发送报告的主题">
                                             <i class="el-icon-info" style="font-size: 12px;"></i>
                                         </el-tooltip>
                                     </el-col>
-                                    <el-col class="col" :span="7">
+                                    <el-col class="col" :span="6">
                                         测试项目/集合
                                     </el-col>
                                     <el-col class="col" :span="1">
@@ -49,16 +49,19 @@
                                     <el-col class="col" :span="2">
                                         是否开启
                                     </el-col>
+                                    <el-col class="col" :span="2">
+                                        当前状态
+                                    </el-col>
                                     <el-col class="col" :span="4">
                                         操作
                                     </el-col>
                                 </el-row>
                                 <el-row class="row" style="overflow-y: auto;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px" id="">
                                     <el-row class="row" style="height: 40px;line-height: 40px;text-align: center;border-bottom: 1px solid #ccc;" v-for="(item,index) in arr" :key="index" >
-                                        <el-col class="col" :span="4" style="overflow: hidden;text-overflow:ellipsis;">
+                                        <el-col class="col" :span="3" style="overflow: hidden;text-overflow:ellipsis;">
                                             <span>{{item.name}}</span>
                                         </el-col>
-                                        <el-col class="col" :span="7" style="overflow: hidden;text-overflow:ellipsis;">
+                                        <el-col class="col" :span="6" style="overflow: hidden;text-overflow:ellipsis;">
                                             <el-tooltip class="item" effect="dark" :content="item.testProject.name+'/'+item.testCollection.name" placement="bottom">
                                                 <span>{{item.testProject.name}}/{{item.testCollection.name}}</span>
                                             </el-tooltip>
@@ -84,8 +87,15 @@
                                             <i class="el-icon-success" style="color: green" v-if="item.enabled"></i>
                                             <i class="el-icon-error" style="color: red" v-else></i>
                                         </el-col>
+                                        <el-col class="col" :span="2">
+                                            <i class="el-icon-question" style="color: gray" v-if="item.lastStatus==0"></i>
+                                            <i class="el-icon-loading" v-else-if="item.lastStatus==99"></i>
+                                            <i class="el-icon-success" style="color: green" v-else-if="item.lastStatus==2"></i>
+                                            <i class="el-icon-error" style="color: red" v-else-if="item.lastStatus==3"></i>
+                                            <i v-else  class="el-icon-question" style="color: gray" ></i>
+                                        </el-col>
                                         <el-col class="col" :span="4">
-                                            <el-button type="text" size="mini" @click.native="pollPop(item)" v-if="sysRole">
+                                            <el-button type="text" size="mini" @click.native="pollPop(item)" v-if="sysRole==0 || sysRole==2 ">
                                                 编辑
                                             </el-button>
                                             <el-button type="text" style="color: green" size="mini" @click.native="runPoll(item._id,index)" :loading="runPending[index].pending">
@@ -95,7 +105,7 @@
                                             <!-- <el-button type="text" style="color: purple" size="mini" @click.native="runList(item._id)">
                                                 历史记录
                                             </el-button> -->
-                                            <el-button type="text" style="color: red" size="mini" @click.native="remove(index)" v-if="sysRole">
+                                            <el-button type="text" style="color: red" size="mini" @click.native="remove(index)" v-if="sysRole==0">
                                                 删除
                                             </el-button>
                                         </el-col>
@@ -158,11 +168,12 @@
         },
         computed:{
             sysRole:function () {
-                if (session.get("role")==0 || session.get("role")==2 ) {
-                    return true
-                } else {
-                    return false
-                }
+                // if (session.get("role")==0 || session.get("role")==2 ) {
+                //     return true
+                // } else {
+                //     return false
+                // }
+                return session.get("role")
             },
             arr:function () {
                 return this.$store.state.pollList;

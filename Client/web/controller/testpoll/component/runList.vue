@@ -5,7 +5,7 @@
                 <el-row class="row box-shadow" style="">
                     <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
                         定时任务-运行记录 &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole">
+                        <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole==0 || sysRole==2 ">
                             去统计<i class="el-icon-d-arrow-right"></i></a>
 
                         <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="runPoll(pollId)">
@@ -13,6 +13,33 @@
                                             </el-button>
                     </el-row>
                     <el-row class="row" style="height: 1px;background-color: lightgray"></el-row>
+                    <el-form label-position="top" label-width="80px" style="padding: 10px 20px 20px 10px" id="form-info">
+                        <el-row class="row">
+                            <el-col class="col" :span="4">
+                                <span style="color:red;">*</span>选择周期:
+                            </el-col>
+                            <el-col class="col" :span="8">
+                                <el-date-picker size="mini" style="width: 90%" 
+                                v-model="periodDate"
+                                type="daterange"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期" value-format="yyyy-MM-dd" 
+                                :unlink-panels="true">
+                                </el-date-picker>
+                            </el-col>
+                            <el-col class="col" :span="8">
+                                <!-- <el-switch v-model="sortByFail" active-color="#13ce66" inactive-color="#ff4949" :active-value="1" :inactive-value="0"></el-switch> -->
+                    
+                                <el-checkbox label="失败次数高的排序靠前" v-model="sortByFail"></el-checkbox>
+                            </el-col>
+                            <el-col class="col" :span="4">
+                            <el-button type="primary" size="mini" style="margin-left: 10px;" @click.native="query">
+                                    查询
+                                </el-button>
+                            </el-col>
+                        </el-row>
+                    </el-form>
                     <el-row class="row" style="border-bottom-left-radius: 5px;border-bottom-right-radius: 5px">
                         <el-row class="row" style="height: 30px;line-height: 30px;text-align: center;background-color: #ebebeb" :style="{paddingRight:paddingRight+'px'}">
                             <el-col class="col" :span="3">
@@ -75,14 +102,29 @@
                                     <i class="el-icon-warning" style="color: orange" v-else-if="item.status==4"></i>
                                 </el-col>
                                 <el-col class="col" :span="3">
-                                    {{item.createdAt}}
+                                    <!-- {{item.createdAt}} 至 {{item.updatedAt}} -->
+                                    <el-tooltip class="item" effect="dark" :content="item.createdAt+'至'+item.updatedAt" placement="bottom">
+                                        <span style="font-size:12px;line-height: 20px;">{{item.createdAt}} 至 {{item.updatedAt}}</span>
+                                    </el-tooltip>
                                 </el-col>
                                 <el-col class="col" :span="3">
                                     <a :href="'report.html?id='+item._id" target="_blank" style="color: purple;font-size:12px;">详情</a>
-                                    <el-button type="text" size="mini" style="margin-left:3px;" @click.native="editFailReason(item)" v-if="item.status==3 || item.status==4 ">
-                                        失败原因
-                                    </el-button>
-                                    <el-button type="text" size="mini" style="margin-left:3px;color:red;" @click.native="deleteRunRecord(item._id)" v-if="item.status==99 || sysRole ">
+                                    <template  v-if="item.status==3 || item.status==4 ">
+                                        <el-button v-if="item.failReason" type="text" size="mini" style="margin-left:3px;" @click.native="editFailReason(item)">
+                                            <span v-if="item.failReason.reason==1">接口变更</span>
+                                            <span v-if="item.failReason.reason==2">应用异常有bug</span>
+                                            <span v-if="item.failReason.reason==3">测试环境异常</span>
+                                            <span v-if="item.failReason.reason==4">应用部署导致</span>
+                                            <span v-if="item.failReason.reason==5">用例问题</span>
+                                            <span v-if="item.failReason.reason==99">其他</span>
+                                        </el-button>
+                                        <el-button v-else type="text" size="mini" style="margin-left:3px;color:green;" @click.native="editFailReason(item)">
+                                            失败原因
+                                        </el-button>
+                                    </template>
+
+                                    
+                                    <el-button type="text" size="mini" style="margin-left:3px;color:red;" @click.native="deleteRunRecord(item._id)" v-if="item.status==99 || sysRole==0 ">
                                         删除
                                     </el-button>
                                 </el-col>
@@ -90,12 +132,12 @@
                         </el-row>
 
                         <el-row class="row" >
-                            <page @change="changePage" ref="page"></page>
+                            <!-- <page @change="changePage" ref="page"></page> -->
+                            <page @change="changePage" ref="page" :pages="totalPages" :numofpage="numOfPage"></page>
                         </el-row>
                     </el-row>
                 </el-row>
             </transition>
-        
         
         </el-row>
     </el-col>
@@ -146,20 +188,17 @@
 </style>
 <script>
     var sessionChange=require("common/mixins/session");
-    var page=require("component/page.vue");
+   // var page=require("component/page.vue");
+     var page=require("component/pageCompo.vue");
     module.exports={
         
         data:function () {
             return {
+                periodDate:"",
+                sortByFail:false,
 
-                // showReason:false,
-                // recordPending:false,
-
-                // showConfig:false,
-                // confPending:false,
-
-                // runPending:false,
-                // collectionId:""
+                //listTotal:0,
+				numOfPage:20
             }
         },
         
@@ -169,11 +208,12 @@
         },
         computed:{
             sysRole:function () {
-                if (session.get("role")==0 || session.get("role")==2 ) {
-                    return true
-                } else {
-                    return false
-                }
+                // if (session.get("role")==0 || session.get("role")==2 ) {
+                //     return true
+                // } else {
+                //     return false
+                // }
+                return session.get("role")
             },
             pollId:function () {
                
@@ -186,10 +226,15 @@
                 return this.$store.state.pollRunList;
                
             },
-            arrLength:function () {
-                var val=this.arr.length/5;
-                return Math.floor(val)===val?val:(Math.floor(val)+1)
-            }
+            pollRunTotal:function(){
+				return this.$store.state.pollRunTotal;
+			},
+            totalPages:function(){
+				var total=Math.ceil(this.$store.state.pollRunTotal/this.numOfPage);
+				console.log("runList.vue>computed:>total pages:")
+				console.log(total)
+				return total
+			}
         },
         methods:{
             
@@ -288,6 +333,77 @@
                     }
                 });
             },
+            query:function(){
+
+                if (!this.periodDate) {
+                    $.tip("请选择统计周期",0);
+                    return;
+                }
+				console.log("runList.vue>query>this.periodDate")
+				console.log(this.periodDate)
+				
+				console.log("runList.vue>query>this.sortByFail")
+				console.log(this.sortByFail)
+				$.startHud();
+                var _this=this;
+                
+                let params={
+                            poll:_this.$store.state.pollid,
+                            page:0,
+                            startdate:_this.periodDate[0],
+                            enddate:_this.periodDate[1],
+                            sortByFail:_this.sortByFail?1:0
+                            }
+                console.log("runList.vue>query>params")
+                console.log(params)
+
+                // return net.post("/poll/runlist",params).then(function (data) {
+                    
+                //     if(data.code==200)
+                //     {
+                //         _this.$store.state.pollRunList=data.data;
+                //     }
+                //     else
+                //     {
+                //         $.notify(data.msg,0)
+                //     }
+                //     $.stopLoading();
+				// 	$.stopHud();
+                // })
+                 Promise.all([
+                    net.get("/poll/runlistcount",{
+                            poll:_this.$store.state.pollid,
+                            startdate:_this.periodDate[0],
+                            enddate:_this.periodDate[1]
+                            }),
+                    net.post("/poll/runlist",params)
+                ]).then(function (result) {
+                    var obj1=result[0];
+                    var obj2=result[1];
+                    if(obj1.code==200)
+                    {
+                        _this.$store.state.pollRunTotal=obj1.data
+                    }
+                    else
+                    {
+                        throw obj1.msg;
+                    }
+                    if(obj2.code==200)
+                    {
+                        _this.$store.state.pollRunList=obj2.data;
+                    }
+                    else
+                    {
+                        throw obj2.msg;
+                    }
+                    $.stopHud();
+                    $.stopLoading();
+                }).catch(function (err) {
+                    $.stopLoading();
+                    $.stopHud();
+                    $.notify(err,0);
+                })
+		    },
         }
     }
 </script>

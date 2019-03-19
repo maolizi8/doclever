@@ -180,11 +180,43 @@ var interface=[
             poll:{
                 type:String,
             },
-            page:Number
+            page:Number,
+            startdate:{
+                type:String,
+                optional:1
+            },
+            enddate:{
+                type:String,
+                optional:1
+            },
+            sortByFail:{
+                type:Number,
+                optional:1
+            },
         },
         "data":String,
         user:1,
         handle:poll.runList
+    },//gql add
+    {
+        "method":"GET",
+        "path":"/poll/runlistcount",
+        "param": {
+            poll:{
+                type:String,
+            },
+            startdate:{
+                type:String,
+                optional:1
+            },
+            enddate:{
+                type:String,
+                optional:1
+            }
+        },
+        "data":String,
+        user:1,
+        handle:poll.runListCount
     },//gql add
     {
         "method":"POST",

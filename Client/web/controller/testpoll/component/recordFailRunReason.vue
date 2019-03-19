@@ -8,7 +8,8 @@
                     <el-radio :label="1">接口变更</el-radio>
                     <el-radio :label="2">应用异常有bug</el-radio>
                     <el-radio :label="3">测试环境异常</el-radio>
-                    <el-radio :label="4">应用正在部署</el-radio>
+                    <el-radio :label="4">应用部署导致</el-radio>
+                    <el-radio :label="5">用例问题</el-radio>
                     <el-radio :label="99">其他</el-radio>
                 </el-radio-group>
             </el-form-item>

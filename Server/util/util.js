@@ -2740,7 +2740,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
     return func.then(function (result) {
         // logger.debug('<runInterface2>-result');
         // logger.debug(result);
-       
+       console.log("<runInterface2>result.statusCode: "+String(result.statusCode))
        // var res={}
        var res={
             req:{

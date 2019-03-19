@@ -180,14 +180,12 @@ function  Poll() {
         try
         {
             
-            let query={
-                //_id:req.clientParam.id
-            }
+            
             //console.log(req.clientParam.id);
             let arr;
             //let userId=req.userInfo._id;
             if (!req.clientParam.simple) {
-                arr=await (poll.findAsync(query,null,{
+                arr=await (poll.findAsync({},null,{
                     sort:"name",
                     populate:[{
                         path:"testProject",
@@ -208,9 +206,19 @@ function  Poll() {
                         _id:obj.testCollection._id
                     },'tests'))
                     obj._doc.testCount=tests.tests.length;
+                    
+                    let lastRun=await (pollRun.findAsync({
+                        poll:obj._id
+                    },"status",{
+                        sort:"-createdAt",
+                        limit:1
+                    }));
+                    //console.log(lastRun)
+                    obj._doc.lastStatus=lastRun?lastRun[0].status:0
                 }
+
             }else{
-                arr=await (poll.findAsync(query,"name"))
+                arr=await (poll.findAsync({},"name"))
             }
             
             util.ok(res,arr,"ok");
@@ -360,15 +368,51 @@ function  Poll() {
             let query={
                 poll:req.clientParam.poll
             }
+            if (req.clientParam.startdate && req.clientParam.enddate) {
+                let start=new Date(req.clientParam.startdate)
+                let end=new Date(req.clientParam.enddate)
+                end.setHours(23);
+                end.setMinutes(59);
+                end.setSeconds(59);
+                end.setMilliseconds(999);
+                query.createdAt={$gte:start,$lte:end}
+            }
+            let sort=req.clientParam.sortByFail?"-testFail":"-createdAt"
             let page=req.clientParam.page
             //"pollName projectName collectionName status operator testFail testSuccess testTotal testUnkown createdAt"
             let obj=await (pollRun.findAsync(query,
                null,
                 {
-                    sort:"-createdAt",
+                    sort:sort,
                     limit:10,
                     skip:10*page
                 }));
+            
+            util.ok(res,obj,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }//gql add
+    this.runListCount=async (req,res)=> {
+        try
+        {
+            let query={
+                poll:req.clientParam.poll
+            }
+            if (req.clientParam.startdate && req.clientParam.enddate) {
+                let start=new Date(req.clientParam.startdate)
+                let end=new Date(req.clientParam.enddate)
+                end.setHours(23);
+                end.setMinutes(59);
+                end.setSeconds(59);
+                end.setMilliseconds(999);
+                query.createdAt={$gte:start,$lte:end}
+            }
+            
+            let obj=await (pollRun.countAsync(query));
             
             util.ok(res,obj,"ok");
         }
@@ -496,8 +540,8 @@ function  Poll() {
     this.runStatistics=async (req,res)=> {
         try
         {
-            console.log(req.clientParam.startdate)
-            console.log(req.clientParam.enddate)
+            // console.log(req.clientParam.startdate)
+            // console.log(req.clientParam.enddate)
             
             
             let start=new Date(req.clientParam.startdate)
@@ -506,8 +550,8 @@ function  Poll() {
             end.setMinutes(59);
             end.setSeconds(59);
             end.setMilliseconds(999);
-            console.log(start)
-            console.log(end)
+            // console.log(start)
+            // console.log(end)
 
             let resObj=[];
             let query={}
@@ -515,6 +559,7 @@ function  Poll() {
                 query._id=req.clientParam.poll
             }
             let polls=await (poll.findAsync(query,"name",{
+                sort:"name",
                 populate:[{
                     path:"testProject",
                     select:"name"

@@ -3,7 +3,10 @@
         <span v-if="projtype=='interface'">切换接口项目：&nbsp;</span>
         <span v-else-if="projtype=='test'">切换测试项目：&nbsp;</span>
         <span v-else>切换项目：&nbsp;</span>
-        <el-cascader size="mini" expand-trigger="hover" :options="arrProject" v-model="arrSetProject" @change="changeProject" placeholder="请切换项目">
+        <el-cascader size="mini" expand-trigger="hover" 
+            :options="arrProject" v-model="arrSetProject" @change="changeProject" 
+            filterable
+            placeholder="请切换项目">
         </el-cascader>
     </div>
 </template>

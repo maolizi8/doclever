@@ -75,7 +75,7 @@
             <tfoot>
                 <tr style="text-align: center;vertical-align: middle">
                     <td colspan="5">
-                        <page @change="changePage" ref="page" :total="totalPages" :numofpage="numOfPage"></page>
+                        <page @change="changePage" ref="page" :pages="totalPages" :numofpage="numOfPage"></page>
                     </td>
                 </tr>
             </tfoot>

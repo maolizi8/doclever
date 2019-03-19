@@ -14,12 +14,12 @@
 
 <script>
     module.exports={
-		props:["total","numofpage"],
+		props:["pages","numofpage"],
         data:function () {
             return {
                 page:0, //from 0, actual page+1
 				
-				//totalPage:this.total?(this.total-1):0, //actual totalPage+1
+				//totalPage:this.pages?(this.pages-1):0, //actual totalPage+1
 				everypage:this.numofpage?this.numofpage:20
             }
         },
@@ -27,9 +27,9 @@
 			
             totalPage:function () {
 				console.log("pageCompo.vue>computed:>total pages:")
-				console.log(this.total)
-				if(this.total){
-					return this.total-1
+				console.log(this.pages)
+				if(this.pages){
+					return this.pages-1
 				}else{
 					return 0
 				}

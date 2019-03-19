@@ -45,19 +45,8 @@ var model=new mongoose.Schema({
     tests:Array,
     failReason:{
         type:Object,
-        default:{}
+        default:{}  // reason:1-接口变更、2-应用异常有bug、3-测试环境异常、4-应用部署导致、5-用例问题，99-其他
     }
-
-    // failReason:{
-    //     type:{
-    //         reason:
-    //     },
-    //     default:99      //1-接口变更、2-应用异常有bug、3-测试环境异常、4-应用正在部署、99-其他
-    // },
-    // otherReasons:{
-    //     type:String,
-    //     default:""
-    // }
 },{
     timestamps:true
 });

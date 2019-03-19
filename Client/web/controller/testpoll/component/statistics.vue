@@ -20,7 +20,7 @@
                     </el-select>
                 </el-col>
 				<el-col class="col" :span="3">
-                   选择周期:
+                  <span style="color:red">*</span>选择周期:
                 </el-col>
                 <el-col class="col" :span="8">
                      <el-date-picker size="mini" style="width: 90%" 
@@ -39,62 +39,61 @@
                 </el-col>
             </el-row>
 		</el-form>
-		
-		<table class="table box-shadow">
+        <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
+			统计周期：{{periodDate?periodDate[0]:"-"}} 至 {{periodDate?periodDate[1]:"-"}}
+		</el-row> 
+		 <table class="table box-shadow">
             <thead>
                 <tr>
-                    <th style="width:100px;">定时任务</th>
-                    <th style="width:200px;">测试项目/集合</th>
-                    <th style="width:150px;">周期</th>
+                    <th rowspan="2" style="width:100px;">定时任务</th>
+                    <th rowspan="2" style="width:100px;">测试项目/集合</th>
+                    <!-- <th rowspan="2" style="width:150px;">周期</th> -->
+                    <th rowspan="1"  colspan="3" style="width:50px;">运行次数</th>
+                    <!-- <th rowspan="2" style="width:50px;">总共/次</th>
+                    <th rowspan="2" style="width:50px;">成功/次</th>
+                    <th rowspan="2" style="width:50px;">失败/次</th> -->
+                    <th rowspan="1"  colspan="7" style="width:50px;">失败原因</th>
+                    <!-- <th style="background-color: #F5DEB3;">接口变更</th>
+                    <th style="background-color: #F5DEB3;">应用异常有bug</th>
+                    <th style="background-color: #F5DEB3;">测试环境异常</th>
+                    <th style="background-color: #F5DEB3;">应用部署导致</th>
+                    <th style="background-color: #F5DEB3;">其他原因</th>
+                    <th style="background-color: #F5DEB3;">未标记原因</th> -->
+                    <th rowspan="2"  style="width:40px;">详细</th>
+                </tr>
+                <tr>
+                    <th style="width:50px;">总共</th>
                     <th style="width:50px;">成功</th>
                     <th style="width:50px;">失败</th>
-                    <!-- <th style="min-width:300px;">失败原因</th> -->
+
                     <th style="background-color: #F5DEB3;">接口变更</th>
                     <th style="background-color: #F5DEB3;">应用异常有bug</th>
                     <th style="background-color: #F5DEB3;">测试环境异常</th>
-                    <th style="background-color: #F5DEB3;">应用正在部署</th>
+                    <th style="background-color: #F5DEB3;">应用部署导致</th>
+                    <th style="background-color: #F5DEB3;">用例问题</th>
                     <th style="background-color: #F5DEB3;">其他原因</th>
                     <th style="background-color: #F5DEB3;">未标记原因</th>
-                    <th style="width:40px;">操作</th>
                 </tr>
             </thead>
             <tbody id="testinfo">
 				<tr v-for="(item,index) in arr" :key="index">
                     <td>{{item.name||"null"}}</td>
-                    <td>{{item.testProject.name}}/{{item.testCollection.name}}</td>
-                    <td>{{periodDate[0]}} 至 {{periodDate[1]}}</td>
+                    <td>
+                        <el-tooltip class="item" effect="dark" :content="item.testProject.name+'/'+item.testCollection.name" placement="bottom">
+                            <span>{{item.testCollection.name}}</span>
+                        </el-tooltip>
+                    </td>
+                    <!-- <td>{{periodDate[0]}} 至 {{periodDate[1]}}</td> -->
+                    <td>{{item.success+item.unkown+item.fail}}</td>
                     <td>{{item.success+item.unkown}}</td>
                     <td>
                         <span :style="{color:item.fail>0?'red':''}">{{item.fail}}</span><br>
                     </td>
-                    <td>
-                        <!-- 接口变更-{{item.reason1}}次,应用异常有bug-{{item.reason2}}次, <br>
-                        测试环境异常-{{item.reason3}}次, 应用正在部署-{{item.reason4}}次, <br>
-                        其他-{{item.reason99}}次, 未标记-{{item.reason0}}次 -->
-                        <!-- <table class="table table-light" style="">
-                            <tr style="background-color: #F0FFF0;">
-                                <td>接口变更</td>
-                                <td>应用异常有bug</td>
-                                <td>测试环境异常</td>
-                                <td>应用正在部署</td>
-                                <td>其他</td>
-                                <td>未标记</td>
-                            </tr>
-                            <tr>
-                                <td>{{item.reason1}}</td>
-                                <td>{{item.reason2}}</td>
-                                <td>{{item.reason3}}</td>
-                                <td>{{item.reason4}}</td>
-                                <td>{{item.reason99}}</td>
-                                <td>{{item.reason0}}</td>
-                            </tr>
-                        </table> -->
-                        {{item.reason1}}
-                    </td>
-                    <!-- <td>{{item.reason1}}</td> -->
+                    <td>{{item.reason1}}</td>
                     <td>{{item.reason2}}</td>
                     <td>{{item.reason3}}</td>
                     <td>{{item.reason4}}</td>
+                    <td>{{item.reason5}}</td>
                     <td>{{item.reason99}}</td>
                     <td>{{item.reason0}}</td>
                     <td>
@@ -113,7 +112,7 @@
     
     
     #content{
-        padding:10px 20px;
+        padding:10px;
     }
     .table{
         width: 100%;
@@ -180,7 +179,7 @@
         props:["info"],
         data:function () {
             return {
-				periodDate:"",
+				//periodDate:"",
 				selPoll:"",
 				//pollList:[{"name":"test1","_id":"111"},{"name":"test2","_id":"222"}],
 				pollList:[],
@@ -193,6 +192,10 @@
             
         },
         computed:{
+            periodDate:function(){
+                var d = new Date().format("yyyy-MM-dd");
+                return [d,d]
+            },
 			testPollArr:function(){
                 if (this.pollList) {
                     var newList=this.pollList.map(function (obj) {
