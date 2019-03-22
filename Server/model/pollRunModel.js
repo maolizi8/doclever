@@ -13,7 +13,10 @@ var model=new mongoose.Schema({
         type:String,
         default:""
     },
-    status:Number,  //0-unkown,2-success, 3-fail, 99-运行中
+    status:{
+        type:Number,  //0-unkown,2-success, 3-fail, 99-运行中
+        default:0
+    },
     testProject:{
         type:mongoose.Schema.ObjectId,
         ref:"TestProject"

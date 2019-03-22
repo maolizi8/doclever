@@ -207,14 +207,20 @@ function  Poll() {
                     },'tests'))
                     obj._doc.testCount=tests.tests.length;
                     
-                    let lastRun=await (pollRun.findAsync({
-                        poll:obj._id
-                    },"status",{
-                        sort:"-createdAt",
-                        limit:1
-                    }));
-                    //console.log(lastRun)
-                    obj._doc.lastStatus=lastRun?lastRun[0].status:0
+                    try {
+                        let lastRun=await (pollRun.findAsync({
+                            poll:obj._id
+                        },"status",{
+                            sort:"-createdAt",
+                            limit:1
+                        })); 
+                        //console.log(lastRun)
+                        obj._doc.lastStatus=lastRun?lastRun[0].status:0
+                    } catch (error) {
+                        obj._doc.lastStatus=0
+                    }
+                    
+                    
                 }
 
             }else{
