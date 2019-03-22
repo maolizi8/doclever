@@ -611,6 +611,11 @@ function  Poll() {
                     createdAt:{$gte:start,$lte:end},
                     "failReason.reason":4
                 }))
+                p._doc.reason5=await (pollRun.countAsync({
+                    poll:p._id,
+                    createdAt:{$gte:start,$lte:end},
+                    "failReason.reason":5
+                }))
                 p._doc.reason99=await (pollRun.countAsync({
                     poll:p._id,
                     createdAt:{$gte:start,$lte:end},

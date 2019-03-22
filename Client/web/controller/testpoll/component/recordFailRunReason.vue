@@ -10,7 +10,7 @@
                     <el-radio :label="3">测试环境异常</el-radio>
                     <el-radio :label="4">应用部署导致</el-radio>
                     <el-radio :label="5">用例问题</el-radio>
-                    <el-radio :label="99">其他</el-radio>
+                    <!-- <el-radio :label="99">其他</el-radio> -->
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="其他原因">

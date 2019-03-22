@@ -12,6 +12,7 @@
                         <el-dropdown-item command="goToInterface">接口项目管理</el-dropdown-item>
                         <el-dropdown-item command="goToTest">测试项目管理</el-dropdown-item>
                         <el-dropdown-item command="goToPoll">定时任务管理</el-dropdown-item>
+                        <el-dropdown-item command="goToStatistics">测试结果统计</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-col>
@@ -47,6 +48,11 @@
                 <span class="" v-if='islist=="1"'>
                     / 定时任务运行记录
                 </span>
+            </span>
+            <span v-else-if='menu=="teststatistics"'>
+               <a class="header" href="statistics.html">
+                    测试结果统计
+                </a>
             </span>
             <span v-else-if='menu=="person"'>
                个人资料编辑
@@ -103,7 +109,7 @@
             return {
                 //team:this.teamid?this.teamid:"",
                 menu:this.menu,
-                islist:this.islist
+                islist:this.islist?this.islist:0
             }
         },
         computed:{
@@ -138,6 +144,8 @@
                 }
                 else if(command=="goToPoll") {
                     window.open("testpoll.html",'_self')
+                }else if (command=="goToStatistics") {
+                    window.open("statistics.html",'_self')
                 }
             }
         },

@@ -4,9 +4,10 @@
             <transition name="component-fade" mode="out-in">
                 <el-row class="row box-shadow" style="">
                     <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
-                        定时任务-运行记录 &nbsp;&nbsp;&nbsp;&nbsp;
+                        定时任务-运行记录
+                         <!-- &nbsp;&nbsp;&nbsp;&nbsp;
                         <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole==0 || sysRole==2 ">
-                            去统计<i class="el-icon-d-arrow-right"></i></a>
+                            去统计<i class="el-icon-d-arrow-right"></i></a> -->
 
                         <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="runPoll(pollId)">
                                                 立即运行

@@ -20,8 +20,16 @@
 </head>
 <body>
     <div class="container" id="app" v-cloak>
+            <el-container>
+                <el-header>
+                    <mainheader :menu="menu" ref="mainheader"></mainheader>
+                </el-header>
+                <statistics></statistics>
+            </el-container>
+        </div>
+    <!-- <div class="container" id="app" v-cloak>
         <statistics></statistics>
-    </div>
+    </div> -->
 
 <script src="../common/js/params.js"> </script>
 <script src="../../dist/vendor.bundle.js"></script>
@@ -31,7 +39,7 @@
 <script src="../../../node_modules/markdown-it/dist/markdown-it.min.js"></script>
 <script src="../common/lib/highlight/highlight.js"></script>
 <script src="../../../node_modules/prismjs/prism.js"></script>
-<script src="../../dist/statistics.js"></script>
+<script src="../../dist/teststatistics.js"></script>
 
 </body>
 </html>

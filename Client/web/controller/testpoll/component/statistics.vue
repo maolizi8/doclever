@@ -71,7 +71,7 @@
                     <th style="background-color: #F5DEB3;">测试环境异常</th>
                     <th style="background-color: #F5DEB3;">应用部署导致</th>
                     <th style="background-color: #F5DEB3;">用例问题</th>
-                    <th style="background-color: #F5DEB3;">其他原因</th>
+                    <!-- <th style="background-color: #F5DEB3;">其他原因</th> -->
                     <th style="background-color: #F5DEB3;">未标记原因</th>
                 </tr>
             </thead>
