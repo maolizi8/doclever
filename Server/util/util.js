@@ -3771,7 +3771,8 @@ let runPollBackend=async function (pollArr,operator) {
                 testFail:root.fail,
                 testSuccess:root.success,
                 testUnkown:root.unknown,
-                tests:[]
+                tests:[],
+                testsEndAt:moment().format("YYYY-MM-DD HH:mm:ss")
             }
             let updatePoll=await (pollRun.findOneAndUpdateAsync({
                 _id:root.pollRunId

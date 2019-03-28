@@ -46,6 +46,10 @@ var model=new mongoose.Schema({
     testSuccess:Number,
     testUnkown:Number,
     tests:Array,
+    testsEndAt:{
+        type:String,
+        default:""
+    },
     failReason:{
         type:Object,
         default:{}  // reason:1-接口变更、2-应用异常有bug、3-测试环境异常、4-应用部署导致、5-用例问题，99-其他

@@ -104,9 +104,24 @@
                                 </el-col>
                                 <el-col class="col" :span="3">
                                     <!-- {{item.createdAt}} 至 {{item.updatedAt}} -->
-                                    <el-tooltip class="item" effect="dark" :content="item.createdAt+'至'+item.updatedAt" placement="bottom">
-                                        <span style="font-size:12px;line-height: 20px;">{{item.createdAt}} 至 {{item.updatedAt}}</span>
+                                    <span style="font-size:12px;line-height: 20px;" v-if="item.status==0">
+                                        {{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:item.updatedAt}}
+                                    </span>
+                                    <span style="font-size:12px;line-height: 20px;"  v-else-if="item.status==2">
+                                        {{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:item.updatedAt}}
+                                    </span>
+                                    <span style="font-size:12px;line-height: 20px;" v-else>
+                                        {{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:"--"}}
+                                    </span>
+                                   <!-- <el-tooltip class="item" effect="dark" :content="item.createdAt+'至'+item.testsEndAt?item.testsEndAt:item.updatedAt" placement="bottom" v-if="item.status==0">
+                                        <span style="font-size:12px;line-height: 20px;">{{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:item.updatedAt}}</span>
                                     </el-tooltip>
+                                   <el-tooltip class="item" effect="dark" :content="item.createdAt+'至'+item.testsEndAt?item.testsEndAt:item.updatedAt" placement="bottom" v-else-if="item.status==2">
+                                        <span style="font-size:12px;line-height: 20px;">{{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:item.updatedAt}}</span>
+                                    </el-tooltip>
+                                    <el-tooltip class="item" effect="dark" :content="item.createdAt+'至'+item.testsEndAt?item.testsEndAt:'--'" placement="bottom" v-else>
+                                        <span style="font-size:12px;line-height: 20px;">{{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:"--"}}</span>
+                                    </el-tooltip> -->
                                 </el-col>
                                 <el-col class="col" :span="3">
                                     <a :href="'report.html?id='+item._id" target="_blank" style="color: purple;font-size:12px;">详情</a>
