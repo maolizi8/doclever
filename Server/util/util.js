@@ -4015,6 +4015,66 @@ var mailContent=function(pollInfo,pollRunId){
    return html;      
 }
 
+
+let handleMysql=async function (host,user,password,port,database,sql,operator) {
+
+    var mysql = require('mysql');
+    var queryLog=require("../model/sqlQueyLogModel")
+    var mysqldb=require('./mysqldb')
+    var connectinfo={
+        host     : host,       
+        user     : user,               
+        password : password,        
+        port: port,                      
+        database: database
+    }
+
+    var obj={}
+    if (sql.indexOf("select")==0 || sql.indexOf("SELECT")==0 ) {
+        obj.sqlType=1
+        //connectinfo.sqlType=1
+    }else  if (sql.indexOf("delete")==0 || sql.indexOf("DELETE")==0 ) {
+        obj.sqlType=2
+        //connectinfo.sqlType=2
+    } else if (sql.indexOf("update")==0 || sql.indexOf("UPDATE")==0 ) {
+        obj.sqlType=3
+        //connectinfo.sqlType=3
+    } else if (sql.indexOf("insert")==0 || sql.indexOf("INSERT")==0 ) {
+        obj.sqlType=4
+        //connectinfo.sqlType=4
+    }
+
+    var n=(sql.split(';')).length-1;
+    if (n>1) {
+        throw "暂不支持多语句查询"
+    }
+    var dangerStr=["delete *","DELETE *","TRUNCATE","truncate","drop"]
+    for (let s of dangerStr) {
+        if (sql.indexOf(s)>-1) {
+            throw "含有危险操作"
+            break;
+        }
+    }
+
+    try {
+        let result=await (mysqldb(connectinfo,sql,obj));
+        console.log("result:")
+        console.log(result)
+        connectinfo.sql=sql
+        connectinfo.sqlType=obj.sqlType
+        connectinfo.data=result
+
+        connectinfo.operator=operator
+        await (queryLog.createAsync(connectinfo))
+        return result
+    } catch (err) {
+        logger.error("util.js>handleMysql>err:")
+        logger.error(err)
+        throw err
+    }
+    
+}
+
 exports.err=err;
 exports.ok=ok;
 exports.dateDiff=dateDiff;
@@ -4049,6 +4109,8 @@ exports.parseURL=parseURL
 exports.runTestCode3=runTestCode3;
 exports.runPollBackend=runPollBackend;
 exports.removeOldData=removeOldData;
+
+exports.handleMysql=handleMysql;
 
 
 exports.handleGlobalVar=handleGlobalVar;

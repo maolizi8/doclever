@@ -26,6 +26,12 @@ function yyyRsaEncrypt(data) {
         return rsadata;
     }
 }
+
+
+function queryMySql(host,user,password,port,database,sql) {
+    console.log("param.js>queryMySql: ")
+    console.log(session.get("id"))
+}
 //format the date string from webservice to UTC time;
 function toUTCtime(dateStr) {
     //Date(1381243615503+0530),1381243615503,(1381243615503+0800)

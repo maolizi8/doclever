@@ -29,7 +29,7 @@ var interface=[
             },
         },
         "data":String,
-        user:1,
+        //user:1,
         handle:tools.queryMysql
     },//gql add
    

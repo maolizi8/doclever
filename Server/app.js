@@ -86,7 +86,10 @@ if(argv.webpack)
     app.use("/test",checkFormDataUser(path.join(con.filePath,"img")),checkParam("test"),checkUser);
     app.use("/team",checkFormDataUser(path.join(con.filePath,"img")),checkParam("team"),checkUser);
     app.use("/version",checkFormDataUser(path.join(con.filePath,"img")),checkParam("version"),checkUser);
+
     app.use("/poll",checkFormDataUser(path.join(con.filePath,"img")),checkParam("poll"),checkUser);
+    app.use("/tools",checkFormDataUser(path.join(con.filePath,"img")),checkParam("tools"),checkUser);
+
     app.use("/article",checkFormDataUser(path.join(con.filePath,"img")),checkParam("article"),checkUser);
     app.use("/message",checkFormDataUser(path.join(con.filePath,"img")),checkParam("message"),checkUser);
     app.use("/template",checkFormDataUser(path.join(con.filePath,"img")),checkParam("template"),checkUser);

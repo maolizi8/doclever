@@ -16,8 +16,8 @@ var model=new mongoose.Schema({
     port:{
         type:Number,
     },
-    sql:String,
     database:String,
+    sql:String,
     operator:{
         type:String,
         default:"system"
