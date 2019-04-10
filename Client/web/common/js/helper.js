@@ -1737,9 +1737,11 @@ helper.handleTestInterface=function (inter,data,status,bRun) {
                 {
                     obj1=JSON.parse(obj.bodyInfo.rawText);
                 }
-                catch (e)
+                catch (err)
                 {
-
+                    console.log("helper.js> obj1=JSON.parse(obj.bodyInfo.rawText); ----error")
+                    console.log(err)
+                    //throw err;
                 }
                 if(obj1)
                 {
@@ -1946,6 +1948,7 @@ helper.convertToCode=function (data) {
 			console.log("help.js>convertToCode>argv")
 			console.log(argv)
             str+=`<div class='testCodeLine'>var $${obj.id}=await <a href='javascript:void(0)' style='cursor: pointer; text-decoration: none;' type='1' varid='${obj.id}' data='${obj.data.replace(/\'/g,"&apos;")}'>${obj.name}</a>(${argv});</div>`
+            //str+=`<div class='testCodeLine'>var $${obj.id}=await <a href='javascript:void(0)' style='cursor: pointer; text-decoration: none;' type='1' varid='${obj.id}' data='${obj.data}'>${obj.name}</a>(${argv});</div>`
         }
         else if(obj.type=="test")
         {
@@ -2768,7 +2771,14 @@ helper.runInterface=async function (obj,global,test,root,opt,id,testid,source) {
                         }
                     }
                     reqBody=body;
-                    body=JSON.stringify(body);
+                    try {
+                        body=JSON.stringify(body);
+                    } catch (err) {
+                        console.log("helper.js> body=JSON.stringify(body); ----error")
+                        console.log(err)
+                        throw err;
+                    }
+                    
                 }
             }
         }
@@ -2909,7 +2919,14 @@ helper.runInterface=async function (obj,global,test,root,opt,id,testid,source) {
                         }
                     }
                     reqBody=body;
-                    body=JSON.stringify(body);
+                    try {
+                        body=JSON.stringify(body);
+                    } catch (err) {
+                        console.log("helper.js> body=JSON.stringify(body); ----error")
+                        console.log(err)
+                        throw err;
+                    }
+                    
                 }
             }
         }
@@ -2947,7 +2964,14 @@ helper.runInterface=async function (obj,global,test,root,opt,id,testid,source) {
         {
             if(headerType=="object")
             {
-                header[keyHeader]=JSON.stringify(header[keyHeader]);
+                try {
+                    header[keyHeader]=JSON.stringify(header[keyHeader]);
+                } catch (err) {
+                    console.log("helper.js> header[keyHeader]=JSON.stringify(header[keyHeader]); ----error")
+                        console.log(err)
+                        throw err;
+                }
+               
             }
             else
             {
@@ -3179,15 +3203,25 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
         var type=arr[i].getAttribute("type");
         var objId=arr[i].getAttribute("varid");
         var text;
-        // console.log('helper.js>runTestCode2>obj type')
-        // console.log(obj)
+        console.log('helper.js>runTestCode2>obj')
+        console.log(obj)
+        //console.log('helper.js>runTestCode2>type')
         // console.log(type)
         if(type=="1")
         {
             var objInfo={};
-            var o=JSON.parse(obj.replace(/\r|\n/g,""));
-            console.log('helper.js>runTestCode2>o')
-            console.log(o)
+            var o
+            try {
+                o=JSON.parse(obj.replace(/\r|\n/g,""));
+                console.log('helper.js>runTestCode2>o')
+                console.log(o)
+            } catch (error) {
+                console.log('helper.js>JSON.parse(obj.replace(/\r|\n/g,"")) ---error')
+                console.log(error)
+                throw err;
+            }
+           
+            
             var query={
                 //project:o.project._id
             }
@@ -3211,7 +3245,8 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
             }
             catch (err)
             {
-                
+                console.log('helper.js>get /interface/projectgroup----error')
+                console.log(err)
             }
             
             
@@ -3290,11 +3325,20 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
                             throw data.msg;
                         }
                     })
-                    obj=JSON.stringify(o);
+                    try {
+                        obj=JSON.stringify(o);
+                    } catch (err) {
+                        console.log("helper.js> obj=JSON.stringify(o); ----error")
+                        console.log(err)
+                        throw err;
+                    }
+                    
                 }
                 catch (err)
                 {
-
+                    console.log('helper.js> await net.get "/example/item" ----error')
+                    console.log(err)
+                    throw err;
                 }
             }
             opt.baseUrls=objInfo.baseUrls;
@@ -3351,13 +3395,22 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
                 }
             }
             var code1;
+            console.log("helper.js> testMode")
+                console.log(testMode)
             if(testMode=="code")
             {
                 code1=testObj.code.replace(/\\\&quot\;/g,"\\\\&quot;").replace(/'/g,"\\'");
             }
             else
             {
-                code1=helper.convertToCode(testObj.ui).replace(/'/g,"\\'").replace(/\\\"/g,"\\\\\"");
+                console.log("helper.js> 3306 >testObj.ui----before convert")
+                console.log(testObj.ui)
+                var afterconvert=helper.convertToCode(testObj.ui)
+                console.log("helper.js> 3306 >testObj.ui-----after convert")
+                console.log(afterconvert)
+                code1=afterconvert.replace(/'/g,"\\'").replace(/\\\"/g,"\\\\\"");
+                console.log("helper.js> 3306 >testObj.ui-----after replace")
+                console.log(code1)
             }
             delete testObj.output;
             delete testObj.code;
@@ -3365,7 +3418,15 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
 
             //text="(function () {var argv=Array.prototype.slice.call(arguments);return helper.runTestCode2('"+code1+"',"+JSON.stringify(testObj)+",global,opt,root,argv,'"+testMode+"',"+(level==0?objId:undefined)+","+(level+1)+",testid)})"
             var nextLeverId=(level==0)?objId:(source=='test'?objId:undefined)
-            text="(function () {var argv=Array.prototype.slice.call(arguments);return helper.runTestCode2('"+code1+"',"+JSON.stringify(testObj)+",global,opt,root,argv,'"+testMode+"',"+nextLeverId+","+(level+1)+",testid)})"
+            var jsonObj
+            try {
+                jsonObj=JSON.stringify(testObj)
+            } catch (err) {
+                console.log("helper.js> jsonObj=JSON.stringify(testObj) ----error")
+                console.log(err)
+                throw err;
+            }
+            text="(function () {var argv=Array.prototype.slice.call(arguments);return helper.runTestCode2('"+code1+"',"+jsonObj+",global,opt,root,argv,'"+testMode+"',"+nextLeverId+","+(level+1)+",testid)})"
         }
         else
         {
@@ -3424,8 +3485,8 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
             argv:[]
         };
         var temp;
-        // console.log("client>web>common>js>helpler.js>2592-ret")
-        // console.log(ret)
+        console.log("client>web>common>js>helpler.js>2592-ret")
+        console.log(ret)
         if(typeof(ret)=="object" && (ret instanceof Array))
         {
             temp=ret[0];
@@ -3436,8 +3497,8 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
             temp=ret;
         }
 
-        // console.log('helper.js>runTestCode2>temp')
-        // console.log(temp)
+        console.log('helper.js>runTestCode2>temp')
+        console.log(temp)
         if(temp===undefined)
         {
             obj.pass=undefined;
@@ -3502,10 +3563,13 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
         }
         root.output+="</div><br>"
 
-        // console.log('helper.js>runTestCode2>obj')
-        // console.log(obj)
+        console.log('helper.js>runTestCode2>obj')
+        console.log(obj)
         return obj;
     }).catch(function (err) {
+        console.log('helper.js>runTestCode2>eval>catch> err')
+        console.log(err)
+        root.output+="用例执行异常："
         root.output+=err.message+"<br>";
         if (level==1) {
             root.output+="[用例执行结束]："+test.name+"(<span style='color:red'>未通过</span>)<br>";

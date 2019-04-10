@@ -291,6 +291,8 @@ line13:<testbaseurl style="width: 300px"></testbaseurl>
                     {
                         root.fail++;
                         root.output+=e+"<br>";
+                        console.log('collectionInfo.vue>run>catch> e')
+                        console.log(e)
                     }
                 }
                  _this.runPending=false;
