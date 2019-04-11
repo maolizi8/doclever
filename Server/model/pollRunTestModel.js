@@ -133,6 +133,10 @@ model.configOutputField(null,[
     "createdAt",
     "updatedAt"
 ]);
+model.index({
+    "status":-1,
+    "createdAt":1})
+
 var dbManage=db.model("pollRunTest",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));
 module.exports=dbManage;

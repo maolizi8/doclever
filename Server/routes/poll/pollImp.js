@@ -260,7 +260,8 @@ var interface=[
             id:{
                 type:String,
             },
-			page:Number,
+            page:Number,
+            status:Number
         },
         "data":String,
         handle:poll.runInfoTests

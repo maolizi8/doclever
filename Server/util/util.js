@@ -2141,19 +2141,27 @@ var removeFolder=function (path) {
 var removeOldData=async function() {
     try {
         let pollRun=require("../model/pollRunModel");
+        let pollRunTest=require("../model/pollRunTestModel");
         let date=new Date();
-        date.setMonth(date.getMonth()-1)
-        //date.setDate(date.getDate()-1);
+        
+        //date.setMonth(date.getMonth()-1)
+        date.setDate(date.getDate()-20);
+
         date.setHours(8);
         date.setMinutes(0);
         date.setSeconds(0);
         date.setMilliseconds(0);
-        
+        console.log("old date: ")
+        console.log(date)
         let query={
             createdAt:{$lt:date}
             //createdAt:{$lt:"2019-02-18 00:00:00"}
         }
         await (pollRun.removeAsync(query));
+
+        await (pollRunTest.removeAsync(query));
+
+        console.log("event.js>scheduleJob>>util.removeOldData <done>")
 
     } catch (error) {
         logger.error('removeOldData>>>error')

@@ -16,7 +16,18 @@
                 <td v-if="info.testUnkown">{{info.testUnkown}}</td>
             </tr>
         </table>
-        <div class="clear"></div>
+        <!-- <div class="clear"></div> -->
+        <div style="margin-top:10px;margin-bottom:10px;"> 
+            <el-button size="mini" :type="statusRep==2?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(2)">
+                失败
+            </el-button>
+            <el-button size="mini" :type="statusRep==1?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(1)">
+                成功
+            </el-button>
+            <el-button size="mini" :type="statusRep==0?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(0)">
+                未校验
+            </el-button>
+        </div>
 		           
         <table class="table box-shadow">
             <thead>
@@ -72,13 +83,13 @@
                     </td>
                 </tr>
             </tbody>
-            <tfoot>
+            <!-- <tfoot>
                 <tr style="text-align: center;vertical-align: middle">
                     <td colspan="5">
                         <page @change="changePage" ref="page" :pages="totalPages" :numofpage="numOfPage"></page>
                     </td>
                 </tr>
-            </tfoot>
+            </tfoot> -->
         </table>
     </el-row>
    
@@ -150,14 +161,15 @@
 </style>
 
 <script>
-    var page=require("component/pageCompo.vue");
+    //var page=require("component/pageCompo.vue");
     module.exports={
         props:["info"],
         data:function () {
             return {
 				
-				
-				numOfPage:20,
+                statusRep:2,
+                
+				//numOfPage:20,
                 runTestLists:[]
             }
         },
@@ -167,13 +179,29 @@
         computed:{
 			runId:function(){
 				return getUrlParam("id");
-			},
-			totalPages:function(){
-				var total=Math.ceil(this.info.testTotal/this.numOfPage);
-				console.log("report.vue>computed:>total pages:")
-				console.log(total)
-				return total
-			}
+            },
+            // statusRep:function(){
+			// 	return getUrlParam("status")?getUrlParam("status"):2;
+            // },
+			// totalPages:function(){
+            //     if (this.statusRep==2) {
+            //         var total=Math.ceil(this.info.testFail/this.numOfPage);
+            //         console.log("report.vue>computed:>total testFail pages:")
+            //         console.log(total)
+            //         return total
+            //     } else if (this.statusRep==1) {
+            //         var total=Math.ceil(this.info.testSuccess/this.numOfPage);
+            //         console.log("report.vue>computed:>total testSuccess pages:")
+            //         console.log(total)
+            //         return total
+            //     } else if (this.statusRep==0) {
+            //         var total=Math.ceil(this.info.testUnkown/this.numOfPage);
+            //         console.log("report.vue>computed:>total testUnkown pages:")
+            //         console.log(total)
+            //         return total
+            //     }
+				
+			// }
             // runTestLists:function () {
             //     console.log("report.vue>this.tests")
             //     console.log(this.tests)
@@ -181,7 +209,7 @@
             // },
         },
 		components:{
-            "page":page
+            //"page":page
         },
         methods:{
            showDetails:function(inter){
@@ -210,7 +238,8 @@
 				var _this=this;
 				let query={
 							id:_this.runId,
-							page:page
+							page:page,
+                            status:_this.statusRep
 							}
 				net.get("/poll/runinfotests",query).then(function (data) {
 					console.log("report.vue>runTestLists");
@@ -240,14 +269,49 @@
                 //     }
                 // });
             },
+
+            changeStatusList:function (status) {
+                $.startHud();
+                var _this=this;
+                _this.statusRep=status;
+                //_this.page=0
+				let query={
+							id:_this.runId,
+                            page:0,
+                            status:status
+							}
+				net.get("/poll/runinfotests",query).then(function (data) {
+					console.log("report.vue>runTestLists");
+					if(data.code==200)
+					{
+						_this.runTestLists=data.data
+						console.log("report.vue>_this.runTestLists(page)")
+						console.log("page=0")
+						console.log(_this.runTestLists)
+					}
+					else
+					{
+						$.notify(data.msg,0)
+					}
+					$.stopLoading();
+					$.stopHud();
+				}).catch(function (err) {
+					$.stopLoading();
+					$.stopHud();
+					$.notify(err,0);
+				})
+            },
+            
         },
         created:function () {
             var id=getUrlParam("id");
+             //var status=getUrlParam("status");
 
             var _this=this;
             let query={
 							id:id,
-							page:0
+							page:0,
+                            status:_this.statusRep
 							}
             net.get("/poll/runinfotests",query).then(function (data) {
                 console.log("report.vue>runTestLists");

@@ -1,6 +1,7 @@
 
 //var report1=require("./component/report0.vue");
 var report=require("./component/report.vue");
+//var store=require("./rep_store");
 
 var vue=new Vue({
     el:"#app",
@@ -16,6 +17,9 @@ var vue=new Vue({
         //"reportone":report1,
         "report":report
     },
+
+    //store:store,
+
     watch:{
         
     },

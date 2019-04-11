@@ -163,9 +163,7 @@ moment().day() (0~6, 0: Sunday, 6: Saturday)
 moment().weekday() (0~6, 0: Sunday, 6: Saturday)
 moment().isoWeekday() (1~7, 1: Monday, 7: Sunday)
  */
-
-
-// schedule.scheduleJob("0 * * * * *",(async function () {
+// schedule.scheduleJob("0 49 * * * *",(async function () {
 //     try
 //     {
 //         console.log("event.js>scheduleJob>>util.removeOldData")
@@ -178,6 +176,8 @@ moment().isoWeekday() (1~7, 1: Monday, 7: Sunday)
 //         console.log(err);
 //     }
 // }));
+
+
 // var test=schedule.scheduleJob("0 0 * * * *",(async function () {
 //     try
 //         {

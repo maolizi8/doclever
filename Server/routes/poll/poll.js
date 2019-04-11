@@ -495,17 +495,16 @@ function  Poll() {
     this.runInfoTests=async (req,res)=> {
         try
         {
-            let query={
-                _id:req.clientParam.id
-            }
-			let page=req.clientParam.page
+            
+			//let page=req.clientParam.page
             
             let tests=await (pollRunTest.findAsync({
-                pollRun:req.clientParam.id
+                pollRun:req.clientParam.id,
+                status:req.clientParam.status
             },null,{
-                sort:"-status",
-				skip:20*page,
-				limit:20
+                sort:"createdAt"
+				// skip:20*page,
+				// limit:20
             }));
             
             //console.log(tests)
