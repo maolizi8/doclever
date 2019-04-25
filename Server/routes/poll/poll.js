@@ -637,6 +637,33 @@ function  Poll() {
             util.catch(res,err);
         }
     }//gql add 
+
+
+
+    // this.interfaceRunTimeStatistic=async (req,res)=> {
+    //     try
+    //     {
+    //         let query={
+    //             failReason:{
+    //                 reason:req.clientParam.reason,
+    //                 other:req.clientParam.other,
+    //                 recorder:req.clientParam.recorder
+    //             }
+    //         }
+    //         let obj=await (pollRun.findOneAndUpdateAsync({
+    //             _id:req.clientParam.id
+    //         },query,{
+    //             new:true
+    //         }))
+            
+    //         util.ok(res,obj,"ok");
+    //     }
+    //     catch (err)
+    //     {   
+    //         //console.log(err);
+    //         util.catch(res,err);
+    //     }
+    // }//gql add 
 }
 
 module.exports=Poll;

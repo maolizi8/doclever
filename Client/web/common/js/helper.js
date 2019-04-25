@@ -3194,9 +3194,9 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
     ele.innerHTML=code;
     var arr=ele.getElementsByTagName("a");
     var arrNode=[];
-    // console.log('helper.js>runTestCode2>ele')
-    // console.log(ele)
-    // console.log("---for---")
+    console.log('helper.js>runTestCode2>ele')
+    console.log(ele)
+    console.log("---for---")
     for(var i=0;i<arr.length;i++)
     {
         var obj=arr[i].getAttribute("data");
@@ -3213,11 +3213,16 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
             var o
             try {
                 var replace_o=obj.replace(/\r|\n/g,"")
+                console.log('helper.js>runTestCode2>replace_o')
+                console.log(replace_o)
+                // var replace_o2=obj.replace(/\\"/g,"\\\"")
+                // console.log('helper.js>runTestCode2>replace_o2')
+                // console.log(replace_o2)
                 o=JSON.parse(replace_o);
                 console.log('helper.js>runTestCode2>o')
                 console.log(o)
             } catch (err) {
-                console.log('helper.js>JSON.parse(obj.replace(/\\r|\\n/g,"")) ---error')
+                console.log('helper.js>JSON.parse(replace_o) ---error')
                 console.log(err)
                 throw err;
             }
