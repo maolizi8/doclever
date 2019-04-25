@@ -570,6 +570,29 @@ var interface=[
         user:1,
         handle:project.projectGroup
     },//gql add
+
+    {
+        "method":"GET",
+        "path":"/project/projectnewinterfaces",
+        "param": {
+            
+        },
+        "data":{
+
+        },
+        handle:project.projectNewInterfaces
+    },//gql add
+    {
+        "method":"GET",
+        "path":"/project/projectnewexample",
+        "param": {
+            
+        },
+        "data":{
+
+        },
+        handle:project.projectNewInterExample
+    },//gql add
 ];
 
 module.exports=interface;

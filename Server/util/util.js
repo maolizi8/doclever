@@ -2768,8 +2768,8 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         res.second=(((new Date())-startDate)/1000).toFixed(3);
         var body=result.body;
 
-        // logger.info('<runInterface2>-after request:>result.body');
-        // logger.info(result.body);
+        logger.info('<runInterface2>-after request:>res.header');
+        logger.info(res.header);
 
         if(typeof (body)=="string")
         {

@@ -30,10 +30,10 @@
                                 <el-button size="small" type="text" style="float: right;margin-right: 10px;margin-top: 15px;color: gray">
                                     <div style="display: inline-block;height: 10px;width: 10px;border-radius: 5px;background-color: #17b9e6;"></div>&nbsp;管理员
                                 </el-button>
-                                <el-button size="small" style="margin-right: 10px;float:right;" @click="manageTeamUsers" v-if="projTeamId">
+                                <!-- <el-button size="small" style="margin-right: 10px;float:right;" @click="manageTeamUsers" v-if="projTeamId">
                                     <strong><i class="el-icon-setting" style="font-weight:900"></i>
                                     </strong>&nbsp;用户管理
-                                </el-button>
+                                </el-button> -->
                             </el-row>
 
                             <el-row class="row" style="margin: 10px 20px 10px 20px;width: calc(100% - 40px);;overflow-y: auto">

@@ -85,8 +85,8 @@
                             <div style="width: 200px;overflow: auto;text-align: center" v-if="item.value && (item.value.data.length>0 || item.value.status)">
                                 <template v-if="item.value.data.length>0">
                                     <table width="100%" class="table-hover" style="border-collapse: collapse">
-                                        <template v-for="item1 in item.value.data">
-                                            <tr style="text-align: center;vertical-align: middle;">
+                                        <template v-for="(item1,index) in item.value.data">
+                                            <tr style="text-align: center;vertical-align: middle;" :key="index">
                                                 <td style="width: 40%;border-bottom: 1px solid #e6ebf5">
                                                     {{item1.value}}
                                                 </td>

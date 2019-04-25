@@ -20,6 +20,7 @@
                 <el-dropdown-item command="person">个人中心</el-dropdown-item>
                 <el-dropdown-item command="doc">使用教程(新)</el-dropdown-item>
                 <el-dropdown-item command="help">官网教程(旧)</el-dropdown-item>
+                <el-dropdown-item command="statistic">数据统计</el-dropdown-item>
                 <el-dropdown-item command="quit">退出</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
@@ -156,6 +157,9 @@
                 else if(command=="person")
                 {
                     window.open("person.html","_blank");
+                }else if(command=="statistic")
+                {
+                    window.open("statistic/newinterfaces.html","_blank");
                 }
                 else if(command=="doc")
                 {

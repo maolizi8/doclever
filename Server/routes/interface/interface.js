@@ -564,10 +564,10 @@ function Interface() {
                 util.throw(e.systemReason, "json解析错误");
                 return;
             }
-            if (obj.flag != "SBDoc") {
-                util.throw(e.systemReason, "不是DOClever的导出格式");
-                return;
-            }
+            // if (obj.flag != "SBDoc") {
+            //     util.throw(e.systemReason, "不是DOClever的导出格式");
+            //     return;
+            // }
             let objGroup = await (req.groupModel.findOneAsync({
                 _id: req.clientParam.group
             }))
@@ -940,6 +940,37 @@ function Interface() {
             util.catch(res,err);
         }
     }//gql add
+
+    this.interfaceAddedList=async (req,res)=>{
+        try
+        {
+
+            let date=new Date();
+        
+            date.setMonth(3)
+            date.setDate(1);
+            date.setHours(8);
+            date.setMinutes(0);
+            date.setSeconds(0);  
+            date.setMilliseconds(0);
+            console.log("old date: ")
+            console.log(date)
+            let obj={}
+            obj.total=await (interface.countAsync({
+                project:req.clientParam.id,
+                createdAt:{
+                    $gt:date
+                }
+            }))
+            console.log(obj)
+            util.ok(res,obj,"ok")
+        }
+        catch (err)
+        {
+            util.catch(res,err);
+        }
+    }//gql add
+
 }
 
 

@@ -4881,6 +4881,179 @@ function Project() {
             util.catch(res,err);
         }
     }
+
+    this.projectNewInterfaces=async (req,res)=> {
+        try
+        {
+
+            
+            // let teamArr=await (team.findAsync({},"name",{
+            //     sort:"name"
+            // }));
+            // for (let teamObj of teamArr) {
+                
+            // }
+            let projectArr=await (project.findAsync({
+
+            },"name",{
+                populate:{
+                    path:"team",
+                    select:"name"
+                }
+            }));
+           // (teamObj._doc?teamObj._doc:teamObj).data=projectArr;
+
+            let date=new Date();
+    
+            date.setMonth(3)
+            date.setDate(1);
+            date.setHours(8);
+            date.setMinutes(0);
+            date.setSeconds(0);  
+            date.setMilliseconds(0);
+            console.log("old date: ")
+            console.log(date)
+
+            for (let projObj of projectArr) {
+                // let teamname=await (team.findOneAsync({},"name"));
+                // (projObj._doc?projObj._doc:projObj).team=teamname.name;
+
+                let total=await (interface.countAsync({
+                    project:projObj._id,
+                    createdAt:{
+                        $gt:date
+                    }
+                }));
+                (projObj._doc?projObj._doc:projObj).total=total;
+                let newlist=await (interface.findAsync({
+                    project:projObj._id,
+                    createdAt:{
+                        $gt:date
+                    }
+                },"name createdAt",{
+                    populate:[{
+                        path:"owner",
+                        select:"name"
+                    },{
+                        path:"editor",
+                        select:"name"
+                    }]
+                }));
+                (projObj._doc?projObj._doc:projObj).data=newlist;
+            }
+            projectArr=projectArr.filter(function(obj){
+                var t=(obj._doc?obj._doc:obj).total
+                if (t>0) {
+                    return true;
+                } else {
+                    return false;
+                }
+                
+            });
+            
+            util.ok(res,projectArr,"ok");
+        }
+        catch (err)
+        {
+            util.catch(res,err);
+        }
+    }//gql add
+
+    this.projectNewInterExample=async (req,res)=> {
+        try
+        {
+            let projectArr=await (project.findAsync({
+
+            },"name",{
+                populate:{
+                    path:"team",
+                    select:"name"
+                }
+            }));
+           
+
+            let date=new Date();
+            date.setMonth(3)
+            date.setDate(1);
+            date.setHours(8);
+            date.setMinutes(0);
+            date.setSeconds(0);  
+            date.setMilliseconds(0);
+            console.log("old date: ")
+            console.log(date)
+
+            for (let projObj of projectArr) {
+                
+                let total=await (example.countAsync({
+                    project:projObj._id,
+                    createdAt:{
+                        $gt:date
+                    }
+                }));
+                //console.log(total);
+                (projObj._doc?projObj._doc:projObj).total=total;
+
+                if (total>0) {
+                    let interList=await (interface.findAsync({
+                        project:projObj._id
+                    },"name createdAt",{
+                        populate:[{
+                            path:"owner",
+                            select:"name"
+                        },{
+                            path:"editor",
+                            select:"name"
+                        }]
+                    }));
+                    //(projObj._doc?projObj._doc:projObj).data=interList;
+                    if (interList) {
+                        for (let interObj of interList) {
+                            let total2=await (example.countAsync({
+                                interface:interObj._id,
+                                createdAt:{
+                                    $gt:date
+                                }
+                            }));
+                            //console.log(total2);
+                            (interObj._doc?interObj._doc:interObj).total=total2?total2:0;
+                        }
+                        //console.log(interList)
+                        interList=interList.filter(function(obj){
+                            var t=(obj._doc?obj._doc:obj).total
+                            if (t>0) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                        //console.log(interList);
+                        (projObj._doc?projObj._doc:projObj).data=interList;
+                    }
+                    
+                }
+                
+            }
+
+            //console.log(projectArr)
+            projectArr=projectArr.filter(function(obj){
+                var t=(obj._doc?obj._doc:obj).total
+                if (t>0) {
+                    return true;
+                } else {
+                    return false;
+                }
+                
+            });
+            //console.log(projectArr)
+            
+            
+            util.ok(res,projectArr,"ok");
+        }
+        catch (err)
+        {
+            util.catch(res,err);
+        }
+    }//gql add
 }
 
 module.exports=Project

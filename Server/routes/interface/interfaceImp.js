@@ -312,6 +312,19 @@ var interface=[
         },
         handle:inter.interfaceList
     },//gql add
+    {
+        "method":"GET",
+        "path":"/interface/interfaceaddedlist",
+        "param": {
+            project:{
+                type:String
+            }
+        },
+        "data":{
+
+        },
+        handle:inter.interfaceAddedList
+    },//gql add
 ];
 
 module.exports=interface;
