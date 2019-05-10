@@ -2743,6 +2743,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
                                                         //     body:JSON.stringify(objReq.body),
                                                         // };
 
+    objReq.rejectUnauthorized=false;    //Error: Hostname/IP doesn't match certificate's altnames错误
     func=request(objReq);
 
     return func.then(function (result) {
