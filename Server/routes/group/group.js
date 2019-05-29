@@ -342,7 +342,7 @@ function Group() {
         {
             let obj={
                 name:req.group.name,
-                flag:"SBDoc",
+                flag:"DOClever",
                 data:[]
             };
             let _map=async function(req,id,obj) {
@@ -404,7 +404,8 @@ function Group() {
                 util.throw(e.systemReason,"json解析错误");
                 return;
             }
-            if(obj.flag!="SBDoc")
+            
+            if(obj.flag != "DOClever" && obj.flag != "GatewayWiki" )
             {
                 util.throw(e.systemReason,"不是DOClever的导出格式");
                 return;

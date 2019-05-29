@@ -242,7 +242,8 @@ function Interface() {
                 url:req.clientParam.url,
 
                 baseurl:req.clientParam.baseurl,    //geqiuli add
-                
+                developer:req.clientParam.developer,    //geqiuli add
+
                 method:req.clientParam.method,
                 project:req.project._id
             }
@@ -529,7 +530,7 @@ function Interface() {
         try {
             await (this.validateUser(req));
             let obj = {
-                flag: "SBDoc",
+                flag:"DOClever",
             };
             for (let key in req.interface._doc) {
                 if (req.interface._doc.hasOwnProperty(key) && key != "__v" && key != "_id" && key != "id" && key != "project" && key != "group" && key != "owner" && key != "editor") {
@@ -564,10 +565,10 @@ function Interface() {
                 util.throw(e.systemReason, "json解析错误");
                 return;
             }
-            // if (obj.flag != "SBDoc") {
-            //     util.throw(e.systemReason, "不是DOClever的导出格式");
-            //     return;
-            // }
+            if (obj.flag != "DOClever" && obj.flag != "GatewayWiki" ) {
+                util.throw(e.systemReason, "不是DOClever或GatewayWiki导出的JSON！");
+                return;
+            }
             let objGroup = await (req.groupModel.findOneAsync({
                 _id: req.clientParam.group
             }))

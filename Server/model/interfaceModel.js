@@ -14,6 +14,10 @@ var model=new mongoose.Schema({
         type:mongoose.Schema.ObjectId,
         ref:"Group"
     },
+    developer:{
+        type:String,
+        default:""
+    },
     baseurl:String,
     url:String,
     remark:String,

@@ -526,6 +526,7 @@ module.exports={
                 state.param[index].name=objInter.name;
 
                 state.param[index].baseurl=objInter.baseurl;    //geqiui modify
+                state.param[index].developer=objInter.developer;    //geqiui modify
 
                 state.param[index].id=objInter.id;
                 state.param[index].remark=objInter.remark;
@@ -1104,6 +1105,7 @@ module.exports={
                         "_id": data.id,
                     },
                     "baseurl": "", //geqiuli add baseurl
+                    "developer":"",//geqiuli add developer
                     "url": "",
                     "remark": "",
                     "method": "GET",
@@ -1276,6 +1278,7 @@ module.exports={
                     obj.item1.method=data.data.method;
 
                     obj.item1.baseurl=data.data.baseurl;
+                    obj.item1.developer=data.data.developer;
                     // console.log("project>info>interface>store.js>info--<data.data.baseurl>");   //geqiuli add
                     // console.log(data.data);
                     // console.log(data.data.baseurl);
@@ -1471,6 +1474,7 @@ module.exports={
             var obj={
                 name:context.state.interfaceEdit.name,
                 baseurl:context.state.interfaceEdit.baseurl,//geqiuli add baseurl
+                developer:context.state.interfaceEdit.developer,//geqiuli add developer
                 url:context.state.interfaceEdit.url,
                 group:context.state.interfaceEdit.group._id,
                 remark:context.state.interfaceEdit.remark,
@@ -1675,12 +1679,14 @@ module.exports={
                 {
                     var method=data.data.method;
                     var baseurl=$.trim(data.data.baseurl);//geqiuli add baseurl
+                    var developer=$.trim(data.data.developer);//geqiuli add developer
                     var url=$.trim(data.data.url);
                     var name=$.trim(data.data.name)+"(副本)";
                     var param=data.data.param;
                     var obj={
                         method:method,
                         baseurl:baseurl,//geqiuli add baseurl
+                        developer:developer,//geqiuli add developer
                         url:url,
                         group:{
                             _id:data.data.group._id
@@ -1757,6 +1763,7 @@ module.exports={
         saveTemplate:function (context,data) {
             var obj={
                 name:data.name,
+                developer:context.state.interfaceEdit.developer,//geqiuli add developer
                 baseurl:context.state.interfaceEdit.baseurl,//geqiuli add baseurl
                 url:context.state.interfaceEdit.url,
                 remark:context.state.interfaceEdit.remark,

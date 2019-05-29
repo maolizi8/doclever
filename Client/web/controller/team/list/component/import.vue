@@ -196,9 +196,10 @@
                         $.tip("json解析错误",0);
                         return;
                     }
-                    if(obj.flag!="SBDoc")
+                    //if(obj.flag!="SBDoc")
+                    if(obj.flag != "DOClever" && obj.flag != "GatewayWiki" )
                     {
-                        $.tip("不是DOClever的导出格式",0);
+                        $.tip("不是DOClever或GatewayWiki导出的JSON！",0);
                         return;
                     }
                     var _this=this;

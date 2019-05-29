@@ -137,6 +137,14 @@
                             </el-input>
                         </el-col>
                     </el-row>
+                    <el-row class="row line-36">
+                        <el-col class="col" :span="4">
+                            &nbsp;开发负责人
+                        </el-col>
+                        <el-col class="col" :span="18">
+                            <el-input style="width: 90%" size="small" v-model.trim="interfaceEdit.developer" placeholder="请输入开发负责人"></el-input>
+                        </el-col>
+                    </el-row>
                    <!-- <el-row class="row">
                         <el-col class="col" :span="12">
                             <el-form-item label="名称">
@@ -206,7 +214,7 @@
                     -->
                 </el-form>
             </el-row>
-            <el-row class="row" style="background-color: white;margin-top: 15px;border-radius: 5px;box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);" v-if="interfaceEdit._id">
+            <!-- <el-row class="row" style="background-color: white;margin-top: 15px;border-radius: 5px;box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);" v-if="interfaceEdit._id">
                 <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
                     快照信息
                     <template v-if="objSnapshot.id">
@@ -236,7 +244,7 @@
                         </el-form>
                     </template>
                 </el-row>
-            </el-row>
+            </el-row> -->
             <el-tabs type="border-card" editable @edit="editTab" style="background-color: white;padding: 0px;margin-top: 15px;border-radius: 5px;" id="mainParam" v-model="tabIndex">
                 <template v-for="(item, index) in param">
                     <el-tab-pane :key="item.id" :name="index">

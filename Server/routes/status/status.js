@@ -129,7 +129,7 @@ function Status() {
             var obj={
                 name:ret.name,
                 data:ret.data,
-                flag:"SBDoc",
+                flag:"DOClever",
                 id:ret.id
             }
             let content=JSON.stringify(obj);
@@ -163,7 +163,8 @@ function Status() {
                 util.throw(e.systemReason,"json解析错误");
                 return;
             }
-            if(obj.flag!="SBDoc")
+
+            if(obj.flag != "DOClever" && obj.flag != "GatewayWiki" )
             {
                 util.throw(e.systemReason,"不是DOClever的导出格式");
                 return;

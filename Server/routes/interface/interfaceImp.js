@@ -20,6 +20,10 @@ var interface=[
                 optional:1
             },
             
+            developer:{
+                type:String,
+                optional:1
+            },  
             baseurl:{
                 type:String,
                 optional:1

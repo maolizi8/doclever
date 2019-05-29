@@ -672,7 +672,7 @@
                 }
             },
             importInterface:function (item) {
-                $.inputMul(this,"请输入DOClever导出接口的JSON",function (val) {
+                $.inputMul(this,"请输入DOClever、GatewayWiki导出接口的JSON",function (val) {
                     if(!val)
                     {
                         $.tip("请输入JSON",0);
