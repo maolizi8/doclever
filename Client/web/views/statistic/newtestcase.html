@@ -29,7 +29,7 @@
                 <tr>
                         <th>项目</th>
                         <th>团队</th>
-                        <th>4月新增实例数</th>
+                        <th>当月新增实例数</th>
                          <th>实例列表</th>
                     </tr>
         </thead>
@@ -45,67 +45,7 @@
     </table>
 </div>
 <script type="text/javascript">
-    $(function () {
-
-		$.ajax({
-		        type: "get",
-		        method: "GET",
-		        url: "/project/projectnewexample",
-		        data: {},
-		        contentType:"application/x-www-form-urlencoded",
-		        success: function(result){
-					console.log(result)
-					var html="";
-					if (result.code==200) {
-						var data=result.data;
-
-						for(var i=0,len=data.length;i<len;i++){
-							html+='<tr><td>'+data[i].name+'</td>'
-								if (data[i].team) {
-									html+='<td>'+data[i].team.name+'</td>'
-								} else {
-									html+='<td>无团队</td>'
-								}
-								
-									html+='<td>'+data[i].total+'</td>'
-										var interList=data[i].data
-										html+='<td>'
-
-										if (interList.length>0) {
-											html+='<table class="table">'
-											html+='<thead><tr><th>接口名</th><th>新增实例数</th><th>创建者</th><th>编辑者</th><th>创建时间</th></tr></thead>'
-											for(var j=0,len2=interList.length;j<len2;j++){
-												html+='<tr>'
-												html+='<td>'+interList[j].name+'</td>'
-
-												html+='<td>'+interList[j].total+'</td>'
-												html+='<td>'+interList[j].owner.name+'</td>'
-												html+='<td>'+interList[j].editor.name+'</td>'
-												html+='<td>'+interList[j].createdAt+'</td>'
-												html+='</tr>'
-											}
-											html+='</table>'
-										}else{
-											html+='无'
-										}
-												
-										html+='</td>'
-										html+='</tr>'
-						}
-
-						$("#body").html(html)
-					} else {
-						console.log(result.msg);
-					}
-					
-		        },
-		        error:function (error) {
-		            console.log(error);
-		            alert(error);
-		        }
-		    }); 
-	})
-
+    
 
 
 </script>

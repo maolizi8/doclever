@@ -3212,13 +3212,15 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
             var objInfo={};
             var o
             try {
-                var replace_o=obj.replace(/\r|\n/g,"")
+                var replace_o=obj.replace(/\r|\n|\t/g,"")
                 console.log('helper.js>runTestCode2>replace_o')
+                //replace_o=replace_o.replace(/'/g,"$#39;")
                 console.log(replace_o)
-                // var replace_o2=obj.replace(/\\"/g,"\\\"")
                 // console.log('helper.js>runTestCode2>replace_o2')
                 // console.log(replace_o2)
+                
                 o=JSON.parse(replace_o);
+                
                 console.log('helper.js>runTestCode2>o')
                 console.log(o)
             } catch (err) {

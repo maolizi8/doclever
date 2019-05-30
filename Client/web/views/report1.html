@@ -7,31 +7,295 @@
     <meta name="keywords" content="API管理平台,接口管理平台,mock测试,接口文档管理,接口文档平台,接口文档系统,API文档管理"/>
     <meta name="description" content="DOClever是一款开源免费的可视化接口管理工具，专业的api接口管理系统，集接口文档、接口自动化测试、Mock数据、团队协作、接口快照等于一身的移动时代首选接口管理平台！"/>
     <link rel="shortcut icon" href="../resource/pic/logo.ico">
-    <link type="text/css"  rel="stylesheet" href="../common/css/common.css">
-    <link type="text/css"  rel="stylesheet" href="../common/lib/font-awesome/css/font-awesome.min.css">
-    <link type="text/css"  rel="stylesheet" href="../../../node_modules/animate.css/animate.min.css">
+    <link href="css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../common/common.css" rel="stylesheet">
+    <!-- <link type="text/css"  rel="stylesheet" href="../common/lib/font-awesome/css/font-awesome.min.css">
     <link type="text/css"  rel="stylesheet" href="../common/lib/highlight/highlight.css">
     <link type="text/css"  rel="stylesheet" href="../common/lib/element/index.css">
     <link type="text/css"  rel="stylesheet" href="../../../node_modules/prismjs/themes/prism.css">
-    <link type="text/css"  rel="stylesheet" href="../common/css/left_tab.css">
+    <link type="text/css"  rel="stylesheet" href="../common/css/left_tab.css"> -->
+    <script src="js/jquery-1.10.2.min.js"></script>
+    <script src="../common/js/params.js"></script>
+    <script src="../common/js/layer/layer.js"></script>
     <style>
     
+        body {
+            display: block;
+            width: 100%;
+            height: 100%;
+            min-width: 1200px;
+            min-height: 600px;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            background-color: rgb(244,241,244);
+        }
+        h2 {
+            display: block;
+            /* font-size: 1.5em; */
+            margin-block-start: 0.83em;
+            margin-block-end: 0.83em;
+            margin-inline-start: 0px;
+            margin-inline-end: 0px;
+            font-weight: bold;
+        }
+        .container{
+            margin: 0;
+            padding: 10px 20px;
+            width: 100%;
+            height:100%;
+        }
+       
+        .table{
+            width: 100%;
+            padding: 10px;
+            display: table;
+            border-collapse: collapse;
+            border-spacing: 2px;
+            border:1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+            background-color: white;
+        }
+        .table th{
+            background-color: #E0EEEE;
+        }
+        .table th,.table td{
+            vertical-align: middle;
+            /* padding: 5px; */
+            text-align: center;
+            border:1px solid #cccccc;
+        }
+        .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+            padding: 5px;
+            line-height: 1.42857143;
+            vertical-align: middle;
+            border-top: 1px solid #ddd;
+        }
+        .table-light{
+            border:1px solid #eeeeee;
+            margin-bottom: 5px;
+        }
+        .table-light th,.table-light td{
+            border:1px solid #eeeeee;
+        }
+        
+        .box-shadow{
+            border-radius: 5px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.24);
+            background-color: white;
+        }
+        
+        .clear{
+            height:20px;
+            clear: both;
+        }
+        .line-num{
+            background-color: #eeeeee;
+            width: 15px;
+        }
+        .testname{
+            color:blue;
+            cursor: pointer;
+        }
+        .testname:hover{
+            text-decoration: underline;
+        }
+        
     </style>
 </head>
 <body>
-    <div class="container" id="app" v-cloak>
-        <reportone :info="infoone"></reportone>
+<div class="container">
+    <div id="reportinfo">
+            <h2 id="reportname"><span style="font-size:80%;font-weight:normal;">测试集合：</span>{{info.projectName}}/{{info.collectionName}}</h2>
+            <p id="createtime">运行时间：{{info.createdAt}}</p>
+            <table class="table" style="width:300px;">
+                <tr>
+                    <th>失败</th>
+                    <th>总共</th>
+                    <th>成功</th>
+                    <th>未校验</th>
+                </tr>
+                <tr id="total_info">
+                </tr>
+            </table>
     </div>
+        
+        <!-- <div class="clear"></div> -->
+        <div style="margin-top:10px;margin-bottom:10px;" id="togglebtns"> 
+                <button id="status_2" type="button" class="btn btn-primary" style="margin-right: 3px;" onclick="changeStatusList(2)">
+                        失败
+                </button>
+                <button id="status_1" type="button" class="btn" style="margin-right: 3px;" onclick="changeStatusList(1)">
+                        成功
+                </button>
+                <button id="status_0" type="button" class="btn" style="margin-right: 3px;" onclick="changeStatusList(0)">
+                        未校验
+                </button>
+            
+        </div>
 
-<script src="../common/js/params.js"> </script>
-<script src="../../dist/vendor.bundle.js"></script>
-<script src="../common/lib/element/index.js"></script>
-<script src="../../../node_modules/socket.io-client/dist/socket.io.js"></script>
-<script src="../../../node_modules/socket.io-stream/socket.io-stream.js"></script>
-<script src="../../../node_modules/markdown-it/dist/markdown-it.min.js"></script>
-<script src="../common/lib/highlight/highlight.js"></script>
-<script src="../../../node_modules/prismjs/prism.js"></script>
-<script src="../../dist/report.js"></script>
+        <table class="table box-shadow">
+            <thead>
+                <tr>
+                    <th style="width:55px;">顺序</th>
+                    <th style="width:200px;">测试模块/业务</th>
+                    <th style="width:200px;">测试用例</th>
+                    <th style="width:55px;">状态</th>
+                    <th style="">接口运行详情</th>
+                </tr>
+            </thead>
+            <tbody id="testinfo">
+               
+            </tbody>
+        </table>
 
+</div>
+<script type="text/javascript">
+$(function () {
+    var pollRunId=getUrlParam("id");
+    console.log(pollRunId)
+    $.ajax({
+            type: "get",
+            method: "GET",
+            url: "/poll/runinfo2",
+            data: {id:pollRunId},
+            contentType:"application/x-www-form-urlencoded",
+            success: function(result){
+                console.log(result)
+                
+                if (result.code==200) {
+                    var info=result.data
+                    var html=`<h2 id="reportname"><span style="font-size:80%;font-weight:normal;">
+                        测试集合：</span>${info.projectName}/${info.collectionName}</h2>
+                        <p id="createtime">运行时间：${info.createdAt}</p>
+                        <table class="table" style="width:300px;">
+                            <tr>
+                                <th>失败</th>
+                                <th>总共</th>
+                                <th>成功</th>
+                                <th>未校验</th>
+                            </tr>
+                            <tr id="total_info">
+                                <td style="color:red">${info.testFail}</td>
+                                <td>${info.testTotal}</td>
+                                <td>${info.testSuccess}</td>
+                                <td>${info.testUnkown}</td>
+                            </tr>
+                        </table>`
+                    
+                    $("#reportinfo").html(html)
+                } else {
+                    console.log(result.msg);
+                }
+                
+            },
+            error:function (error) {
+                console.log(error);
+                layer.alert(error)
+            }
+        }); 
+
+        changeStatusList(2)
+    
+})
+
+function changeStatusList(status){
+    var pollRunId=getUrlParam("id");
+    var index=layer.load()
+    $.ajax({
+            type: "get",
+            method: "GET",
+            url: "/poll/runinfotests",
+            data: {"id":pollRunId,"page":0,"status":status},
+            contentType:"application/x-www-form-urlencoded",
+            success: function(result){
+                console.log(result)
+                var html="";
+                if (result.code==200) {
+                    var data=result.data;
+
+                    for(var i=0,len=data.length;i<len;i++){
+
+                        html+=`<tr>
+                                    <td>${data[i].testOrder}</td>
+                                    <td>${data[i].testModule}/${data[i].testGroup}</td>
+                                    <td>
+                                        <span class="testname" onclick="showOutput('${data[i]}._id')">
+                                            ${data[i].testName}
+                                        </span>
+                                    </td>`
+                        if (data[i].status==0) {
+                            html+='<td><span style="color: gray"><i class="el-icon-question"></i>未知</span></td>'
+                        } 
+                        else if (data[i].status==1) {
+                            html+='<td><span style="color: green"><i class="el-icon-success"></i>成功</span></td> '
+                        } 
+                        else if (data[i].status==2) {
+                            html+='<td><span style="color: red"><i class="el-icon-error"></i>失败</span> </td>'
+                        } 
+                        else if (data[i].status==99) {
+                            html+='<td><span><i class="el-icon-loading"></i>运行中</span></td> '
+                        } 
+                        else {
+                            html+='<td><span style="color: gray"><i class="el-icon-question"></i>未知</span></td> '
+                        }
+
+                        html+='<td> <table class="table table-light"><tbody>'
+                        for(var j=0,lenj=data[i].interfaces.length;j<lenj;j++){
+                            var inter=data[i].interfaces[j]
+                            html+='<tr style="font-size:14px;">'
+                                    html+='<td class="line-num">'+(j+1)+'</td>'
+                                    html+= '<td style="text-align:left;word-break: break-all;">'
+                                            html+=`<u>${inter.interBaseUrl}${inter.interPath}</u>`
+                                        if (inter.runTime) {
+                                            html+=`<span>（耗时:<span style="color:green;">${inter.runTime}</span>秒）</span>`
+                                        }
+                                        if (inter.errMessage) {
+                                            html+=`<span>（<span style="color:red;">${inter.errMessage}</span>）</span>`
+                                        }
+                                        
+                                        html+= '</td> <td style="width:32px;">'
+                                        if (inter.result) {
+
+                                            html+=`<span style="color:${inter.result.status=='200'?'green':'red'}">${inter.result.status}</span>`
+                                        }  else{
+                                            html+='-'
+                                        }
+                                        
+                            html+=`</td>
+                                    <td style="width:35px;font-size:12px;">
+                                        <span onclick="showDetails('${inter._id}')">详情</span>
+                                    </td>
+                                </tr>`
+                            
+                        }
+                                
+                        html+=`</tbody>
+                            
+                            </table>
+                        </td>
+                        </tr>`
+                    }
+
+                    $("#testinfo").html(html)
+
+                } else {
+                    console.log(result.msg);
+                }
+                $('#togglebtns>button').removeClass('btn-primary')
+                $('#status_'+status).addClass('btn-primary')
+                layer.close(index);
+            },
+            error:function (error) {
+                console.log(error);
+                layer.alert(error)
+                //alert(error);
+            }
+        }); 
+}
+
+
+</script>
 </body>
 </html>
