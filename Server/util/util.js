@@ -4514,6 +4514,7 @@ var slowInterMailContent=function(data,theDay){
                         <th rowspan="2" style="width: 210px;">baseUrl</th>
                         <th rowspan="2" style="width: 400px;">Path</th>
                         <th rowspan="2" style="width: 80px;">开发负责人</th>
+                        <th rowspan="2" style="width: 80px;">执行总次数</th>
                         <th colspan="3" >响应时间统计/次数</th>
                         <th rowspan="2" style="width: 80px;">大于1秒的占比</th>
                     </tr>
@@ -4532,6 +4533,7 @@ var slowInterMailContent=function(data,theDay){
         html+='<td style="word-break: break-all;">'+data[i].interBaseUrl+'</td>'
         html+='<td style="word-break: break-all;">'+data[i].interPath+'</td>'
         html+='<td>'+(data[i]._doc.developer || '-')+'</td>'
+        html+='<td>'+(data[i]._doc.smaller1+data[i]._doc.between1to5+data[i]._doc.bigger5)+'</td>'
         html+='<td>'+data[i]._doc.smaller1+'</td>'
         html+=`<td  style="color:${data[i]._doc.between1to5==0?'green':'red'}">`+data[i]._doc.between1to5+'</td>'
         html+=`<td  style="color:${data[i]._doc.bigger5==0?'green':'red'}">`+data[i]._doc.bigger5+'</td>'
