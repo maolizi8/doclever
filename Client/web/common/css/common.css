@@ -220,3 +220,7 @@ msgBadge {
 .param-input .el-input__inner{
 	padding-left:5px;
 }
+
+.active{
+    font-weight: bold;
+}

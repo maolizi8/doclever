@@ -209,7 +209,7 @@ function changeStatusList(status){
     $.ajax({
             type: "get",
             method: "GET",
-            url: "/poll/runinfotests2",
+            url: "/poll/runinfotests",
             data: {"id":pollRunId,"page":0,"status":status},
             contentType:"application/x-www-form-urlencoded",
             success: function(result){

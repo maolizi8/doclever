@@ -1,6 +1,10 @@
 <template>
     <el-row class="row" id="reportcontent">
-        <h2><span style="font-size:80%;font-weight:normal;">测试集合：</span>{{info.projectName}}/{{info.collectionName}}</h2>
+        <h2>
+            <span style="font-size:80%;font-weight:normal;">测试集合：</span>
+            {{info.projectName}}/{{info.collectionName}}
+            <span style="font-size:80%;font-weight:normal;" v-if="info.status==99">【正在执行中】</span>
+            </h2>
         <p>运行时间：{{info.createdAt}}</p>
         <table class="table" style="width:300px;">
             <tr>
@@ -21,11 +25,14 @@
             <el-button size="mini" :type="statusRep==2?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(2)">
                 失败
             </el-button>
+            <el-button size="mini" :type="statusRep==0?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(0)">
+                未校验
+            </el-button>
             <el-button size="mini" :type="statusRep==1?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(1)">
                 成功
             </el-button>
-            <el-button size="mini" :type="statusRep==0?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(0)">
-                未校验
+            <el-button size="mini" :type="statusRep==99?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(99)" v-if="info.status==99">
+                进行中
             </el-button>
         </div>
 		           
@@ -241,7 +248,7 @@
 							page:page,
                             status:_this.statusRep
 							}
-				net.get("/poll/runinfotests",query).then(function (data) {
+				net.get("/poll/runinfotests2",query).then(function (data) {
 					console.log("report.vue>runTestLists");
 					if(data.code==200)
 					{
@@ -280,7 +287,7 @@
                             page:0,
                             status:status
 							}
-				net.get("/poll/runinfotests",query).then(function (data) {
+				net.get("/poll/runinfotests2",query).then(function (data) {
 					console.log("report.vue>runTestLists");
 					if(data.code==200)
 					{
@@ -313,7 +320,7 @@
 							page:0,
                             status:_this.statusRep
 							}
-            net.get("/poll/runinfotests",query).then(function (data) {
+            net.get("/poll/runinfotests2",query).then(function (data) {
                 console.log("report.vue>runTestLists");
                 if(data.code==200)
                 {

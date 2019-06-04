@@ -21,7 +21,7 @@
                 <table class="table-hover" style="width: 100%;table-layout: fixed">
                     <tbody>
                     <template v-for="(value,key) in reqHeader">
-                        <tr style="vertical-align: middle;height: 30px" :key="key">
+                        <tr style="vertical-align: middle;height: 30px;border-bottom: 1px solid #ccc;" :key="key">
                             <td style="width: 30%;">
                                 {{key}}
                             </td>
@@ -37,7 +37,7 @@
                 <table class="table-hover" style="width: 100%;table-layout: fixed" v-if="obj.request.bodyType==0">
                     <tbody>
                     <template v-for="(value,key) in obj.request.form">
-                        <tr style="vertical-align: middle;height: 30px;" :key="key">
+                        <tr style="vertical-align: middle;height: 30px;border-bottom: 1px solid #ccc;" :key="key">
                             <td style="width: 40%">
                                 {{key}}
                             </td>
@@ -61,7 +61,7 @@
                 <table class="table-hover" style="width: 100%;table-layout: fixed">
                     <tbody>
                     <template v-for="(value,key) in resHeader">
-                        <tr style="vertical-align: middle;height: 30px" :key="key">
+                        <tr style="vertical-align: middle;height: 30px;border-bottom: 1px solid #ccc;" :key="key">
                             <td style="width: 30%">
                                 {{key}}
                             </td>
@@ -85,8 +85,8 @@
     </el-dialog>
 </template>
 
-<style>
-
+<style scoped>
+   
 </style>
 
 <script>

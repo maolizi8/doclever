@@ -40,6 +40,7 @@ var exampleModel=null;
 var pollRunTestModel=null;
 var deasync = require('deasync');
 let pollRunTest=require("../model/pollRunTestModel");
+let pollRunInterface=require("../model/pollRunInterfaceModel");
 
 var routerMap={};
 var bProduct;
@@ -2146,20 +2147,33 @@ var removeOldData=async function() {
         
         //date.setMonth(date.getMonth()-1)
         date.setDate(date.getDate()-20);
-
         date.setHours(8);
         date.setMinutes(0);
         date.setSeconds(0);
         date.setMilliseconds(0);
-        console.log("old date: ")
+        console.log("removeOldData date1: ")
         console.log(date)
         let query={
             createdAt:{$lt:date}
             //createdAt:{$lt:"2019-02-18 00:00:00"}
         }
-        await (pollRun.removeAsync(query));
+        let r1 = await (pollRun.removeAsync(query));
+        console.log("removeOldData pollRun: ")
+        console.log(r1)
+        let r2 = await (pollRunTest.removeAsync(query));
+        console.log("removeOldData pollRunTest: ")
+        console.log(r2)
 
-        await (pollRunTest.removeAsync(query));
+        // success only 5 days
+        date.setDate(date.getDate()+14);
+        query.createdAt={$lt:date}
+        query.status=1  //success
+        console.log("removeOldData date2: ")
+        console.log(date)
+        let r3 = await (pollRunTest.removeAsync(query));
+        //let successTotal=await (pollRunTest.countAsync(query));
+        console.log("removeOldData pollRunTest<success case>: ")
+        console.log(r3)
 
         console.log("event.js>scheduleJob>>util.removeOldData <done>")
 
@@ -2173,7 +2187,7 @@ var removeOldData=async function() {
 //var resultTestId="";
 
 var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testInterfaces) {
-    
+    root.pollRunInterModId=''
 
 
     logger.debug('<runInterface2>-');
@@ -2184,6 +2198,8 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
 	// logger.debug('<runInterface2>-testInterfaces');
     // logger.debug(testInterfaces);
     logger.info('<runInterface2>-开始运行接口：'+obj.name)
+
+
 	
     testInterfaces[root.pollRunTestId].push({
 		interId:obj._id,
@@ -2744,22 +2760,64 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
                                                         // };
 
     objReq.rejectUnauthorized=false;    //Error: Hostname/IP doesn't match certificate's altnames错误
-    func=request(objReq);
 
-    return func.then(function (result) {
-        // logger.debug('<runInterface2>-result');
-        // logger.debug(result);
+    
+    // -----------------pollRunInterfaceModel     create ------------------
+    if(root.pollRunTestModId && root.pollRunTestModId!='createPollRunTestError'){
+        try {
+            let query=testInterfaces[root.pollRunTestId][testIdLength-1];
+            query.pollRunTest=root.pollRunTestModId;
+            
+            logger.info('pollRunInterface.create>query');
+            logger.info(query);
+
+            let interRun=await (pollRunInterface.createAsync(query));
+            root.pollRunInterModId=interRun._id
+    
+            logger.info('pollRunInterface.create>done>interRun');
+            logger.info(interRun._id);
+    
+        } catch (error) {
+            logger.error('pollRunInterface.create>error');
+            logger.error(error);
+            logger.error('pollRunInterface.create>interfaceid: '+obj._id);
+            logger.error('pollRunInterface.create>interfacename: '+obj.name);
+    
+            root.pollRunInterModId='createPollRunInterError'
+        }  
+    }
+    // -----------------pollRunInterfaceModel     create ------------------
+
+    func=request(objReq);     //request interface
+
+    //logger.info('pollRunInterface>>>request(0bj)>func');
+    //logger.info(func);
+
+    let requestRes={}
+    let res={};
+
+    return func.then(async function(result){
+       // logger.info('<runInterface2>-result');
+        //logger.info(result);
        console.log("<runInterface2>result.statusCode: "+String(result.statusCode))
        // var res={}
-       var res={
-            req:{
-                info:result.headers?result.headers:{},
-                param:param1,
-                query:queryDict,
-                header:objReq.headers,
-                body:interRequest.body
-            }
-        };
+    //    res={
+    //         req:{
+    //             info:result.headers?result.headers:{},
+    //             param:param1,
+    //             query:queryDict,
+    //             header:objReq.headers,
+    //             body:interRequest.body
+    //         }
+    //     };
+
+        res.req={
+            info:result.headers?result.headers:{},
+            param:param1,
+            query:queryDict,
+            header:objReq.headers,
+            body:interRequest.body
+        }
 
         // logger.info('<runInterface2>-res.req');
         // logger.info(res.req);
@@ -2798,18 +2856,21 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
             runAfter(obj.after.code,res.status,res.header,res.data)
         }
 
+
+        let interRunResult={
+            headers:JSON.stringify(res.header),
+            status:res.status,
+            bodytype:res.type,
+            data:res.data
+
+       };
         //testInterfaces[root.pollRunTestId][testIdLength-1].result={
-        testInterfaces[root.pollRunTestId][testIdLength-1].result={
-                                                            headers:JSON.stringify(res.header),
-                                                            status:res.status,
-                                                            bodytype:res.type,
-                                                            data:res.data
-         
-                                                       };
+        testInterfaces[root.pollRunTestId][testIdLength-1].result=interRunResult;
         
         //testInterfaces[root.pollRunTestId][testIdLength-1].runTime=res.second;                                    
         testInterfaces[root.pollRunTestId][testIdLength-1].runTime=res.second;
         
+         
 
         root.output+="["+moment().format("YYYY-MM-DD HH:mm:ss")+"]结束运行接口："+obj.name+"(耗时：<span style='color: green'>"+res.second+"秒</span>)<br>"
         let cookies = res.header["set-cookie"];
@@ -2853,12 +2914,52 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         }
         // logger.debug('<runInterface2>-res');
         // logger.debug(res);
+        // requestRes.result=testInterfaces[root.pollRunTestId][testIdLength-1].result
+        // requestRes.runTime=res.second
+        // requestRes.errMessage=''
 
+        logger.info('<runInterface2>-func.then>>>requestRes');
+        //logger.info(requestRes);
+        logger.info('<runInterface2>-func.then>>>res');
+        //logger.info(res);
+
+         // -----------------pollRunInterfaceModel     update ------------------
+    if(root.pollRunInterModId && root.pollRunInterModId!='createPollRunInterError'){
+        //let interResult=testInterfaces[root.pollRunTestId][testIdLength-1].result?testInterfaces[root.pollRunTestId][testIdLength-1].result:{}
+        logger.info('-----------------pollRunInterface.findOneAndUpdateAsync----------------')
+        try {
+            let query={
+                status:interRunResult.status,
+                result:interRunResult,
+                runTime:res.second,
+                errMessage:''
+            };
+            logger.info('pollRunInterface.update>normal >query')
+            logger.info(query)
+
+            let interRun=await (pollRunInterface.findOneAndUpdateAsync({
+                _id:root.pollRunInterModId
+            },query));
+
+            logger.info('pollRunInterface.update>normal done>interRun');
+            logger.info(interRun);
+    
+        } catch (error) {
+            logger.error('pollRunInterface.update>error');
+            logger.error(error);
+            logger.error('pollRunInterface.update>normal>interfaceid: '+obj._id);
+            logger.error('pollRunInterface.update>normal>interfacename: '+obj.name);
+        } 
+    }
+    
+    // -----------------pollRunInterfaceModel     update------------------
+        
         return res;
-    }).catch(function (err) {
-
+    }).catch(async function(err){
+        //let res;
         logger.error('<runInterface2>-err');
         logger.error(err);
+        logger.error(err.message);
 
         root.output+=err.message+"<br>";
         let interRunTime=(((new Date())-startDate)/1000).toFixed(3);
@@ -2869,14 +2970,96 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         testInterfaces[root.pollRunTestId][testIdLength-1].errMessage=err.message;
         testInterfaces[root.pollRunTestId][testIdLength-1].runTime=interRunTime;
         
+       
 
         root.output+="["+moment().format("YYYY-MM-DD HH:mm:ss")+"]结束运行接口："+obj.name+"(耗时：<span style='color: green'>"+interRunTime+"秒</span>)<br>"
-        return {
-            status:400,
-            header:{},
-            data:err
-        }
-    })
+        
+        // res={
+        //     status:400,
+        //     header:{},
+        //     second:interRunTime,
+        //     data:err,
+        //     err:err
+        // }
+
+        res.status=400;
+        res.header={};
+        res.second=interRunTime;
+        res.data=err;
+        res.err=err;
+        // requestRes.result={}
+        // requestRes.runTime=res.second
+        // requestRes.errMessage=res.err.message
+
+        //logger.info('<runInterface2>-func.catch>>>requestRes');
+        //logger.info(requestRes);
+        logger.info('<runInterface2>-func.catch>>>res');
+        //logger.info(res);
+
+         // -----------------pollRunInterfaceModel     update ------------------
+    if(root.pollRunInterModId && root.pollRunInterModId!='createPollRunInterError'){
+        //let interResult=testInterfaces[root.pollRunTestId][testIdLength-1].result?testInterfaces[root.pollRunTestId][testIdLength-1].result:{}
+        logger.info('-----------------pollRunInterface.findOneAndUpdateAsync----------------')
+        try {
+            let query={
+                status:400,
+                result:{},
+                runTime:res.second,
+                errMessage:res.err.errMessage
+            };
+            logger.info('pollRunInterface.update>error >query')
+            logger.info(query)
+
+            let interRun=await (pollRunInterface.findOneAndUpdateAsync({
+                _id:root.pollRunInterModId
+            },query));
+
+            logger.info('pollRunInterface.update>normal done>interRun');
+            logger.info(interRun);
+    
+        } catch (error) {
+            logger.error('pollRunInterface.update>error');
+            logger.error(error);
+            logger.error('pollRunInterface.update>normal>interfaceid: '+obj._id);
+            logger.error('pollRunInterface.update>normal>interfacename: '+obj.name);
+        } 
+    }
+    
+    // -----------------pollRunInterfaceModel     update------------------
+        return res
+    });
+
+    // -----------------pollRunInterfaceModel     update ------------------
+    if(root.pollRunInterModId && root.pollRunInterModId!='createPollRunInterError'){
+        //let interResult=testInterfaces[root.pollRunTestId][testIdLength-1].result?testInterfaces[root.pollRunTestId][testIdLength-1].result:{}
+        logger.info('-----------------pollRunInterface.findOneAndUpdateAsync----------------')
+        try {
+            let query={
+                result:requestRes.result?requestRes.result:{},
+                runTime:requestRes.second,
+                errMessage:requestRes.errMessage?requestRes.errMessage:''
+            };
+            logger.info('pollRunInterface.update>query')
+            logger.info(query)
+
+            let interRun=await (pollRunInterface.findOneAndUpdateAsync({
+                _id:root.pollRunInterModId
+            },query));
+
+            logger.info('pollRunInterface.update>normal done>interRun');
+            logger.info(interRun);
+    
+        } catch (error) {
+            logger.error('pollRunInterface.update>error');
+            logger.error(error);
+            logger.error('pollRunInterface.update>normal>interfaceid: '+obj._id);
+            logger.error('pollRunInterface.update>normal>interfacename: '+obj.name);
+        } 
+    }
+    
+    // -----------------pollRunInterfaceModel     update------------------
+   
+    return res;
 }
 
 
@@ -2974,7 +3157,7 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
             //logger.info('<runTestCode3>type=2>obj.replace(/\r|\n/g,"")')
             //logger.info(obj.replace(/\r|\n/g,""));
 
-            let o=JSON.parse(obj.replace(/\r|\n/g,""));
+            let o=JSON.parse(obj.replace(/\r|\n|\t/g,""));
             //let o;
             // try
             // {
@@ -3029,7 +3212,7 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                 opt.before=null;
                 opt.after=null;
 
-                var formatObj=obj.replace(/\r|\n/g,"")
+                var formatObj=obj.replace(/\r|\n|\t/g,"")
                 text="(function (opt1) {return runInterface2("+formatObj+",opt,test,root,opt1,"+(level==0?objId:undefined)+",pollTest,testInterfaces)})"
             }else{
 
@@ -3147,13 +3330,13 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                 // logger.debug(obj)
 
                
-                var formatObj=obj.replace(/\r|\n/g,"")
+                var formatObj=obj.replace(/\r|\n|\t/g,"")
                 
                 /* logger.debug('runTestCode3>type=1>before runInterface2>test.module')
                 logger.debug(test.module)
                 */
-                logger.info('runTestCode3>type=1>before runInterface2>formatObj')
-                logger.info(formatObj)
+                //logger.info('runTestCode3>type=1>before runInterface2>formatObj')
+                //logger.info(formatObj)
                 
                 text="(function (opt1) {return runInterface2("+formatObj+",opt,test,root,opt1,"+(level==0?objId:undefined)+",pollTest,testInterfaces)})"
 
@@ -3272,13 +3455,45 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
             root.pollRunTestId=test._id
 			testTests[root.pollRunTestId]=[]
             testInterfaces[root.pollRunTestId]=[]
+            root.order+=1
+            root.output+="<br><div style='background-color: #ececec'>["+moment().format("YYYY-MM-DD HH:mm:ss")+"]开始执行用例："
+            root.output+=test.module.name+"/"+test.group.name+"/"+test.name+"("+(mode=="code"?"代码模式":"UI模式")+")<br>";
+
             logger.info('runTestCode3>开始执行用例'+test.module.name+"/"+test.group.name+"/"+test.name+"("+(mode=="code"?"代码模式":"UI模式")+")")
-            
             logger.info('server>util.js>runTestCode3>----root.order-----')
             logger.info(root.order)
 
-            root.order+=1
-		    root.output+="<br><div style='background-color: #ececec'>["+moment().format("YYYY-MM-DD HH:mm:ss")+"]开始执行用例："+test.module.name+"/"+test.group.name+"/"+test.name+"("+(mode=="code"?"代码模式":"UI模式")+")<br>";
+            // -----------------root.pollRunTestModId     create pollTestRun------------------
+            try {
+                let createTestRun={
+                    pollRun:root.pollRunId,
+                    testId:test._id,
+                    testName:test.name,
+                    testGroup:test.group.name,
+                    testModule:test.module.name,
+                    status:99,
+                    mode:mode,
+                    testOrder:root.order,
+                    output:'',
+                    interfaces:[]
+                }
+                let testRun=await (pollRunTest.createAsync(createTestRun));
+                root.pollRunTestModId=testRun._id
+
+                logger.info('pollRunTest.create>done>testRun');
+                logger.info(testRun._id);
+
+            } catch (error) {
+                logger.error('pollRunTest.create>error');
+                logger.error(error);
+                logger.error('pollRunTest.create>testid: '+test._id);
+                logger.error('pollRunTest.create>testname: '+test.name);
+
+                root.pollRunTestModId='createPollRunTestError'
+            }
+           // -----------------root.pollRunTestModId     create pollTestRun------------------
+
+            
         }
         else if(level>1){
 			testTests[root.pollRunTestId].push({
@@ -3333,8 +3548,8 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
     pollTestIndex=pollTest.length-1;
 
 
-    logger.info('server>util.js>runTestCode3>before eval>text')
-    logger.info(text)
+    //logger.info('server>util.js>runTestCode3>before eval>text')
+    //logger.info(text)
     var ret=eval("(async function () {"+text+"})()").then(function (ret) {
         logger.debug('server>util.js>runTestCode3>in eval>start-------------')
 
@@ -3627,11 +3842,13 @@ let runPollBackend=async function (pollArr,operator) {
 
        
         root.pollRunTestId="";
+        root.pollRunTestModId="";
         // logger.info('runPollBackend>objCollection.tests')
         // logger.info(objCollection.tests)
         for (let testCase of objCollection.tests) {
             root.testId=testCase.test;
-            
+            logger.info('runPollBackend>testCase')
+            logger.info(testCase)
            
             try
             {	
@@ -3681,30 +3898,52 @@ let runPollBackend=async function (pollArr,operator) {
             logger.info('runPollBackend>after run testcase>pollTest[pollTestIndex]')
             logger.info(pollTest[pollTestIndex])
 
-            try {
-                let createTestRun={
-                    pollRun:root.pollRunId,
-                    testId:testCase.test,
-                    testName:pollTest[pollTestIndex].testName,
-                    testGroup:pollTest[pollTestIndex].testGroup,
-                    testModule:pollTest[pollTestIndex].testModule,
-                    status:pollTest[pollTestIndex].status,
-                    mode:testCase.mode,
-                    testOrder:root.order,
-                    output:root.output,
+            // try {
+            //     let createTestRun={
+            //         pollRun:root.pollRunId,
+            //         testId:testCase.test,
+            //         testName:pollTest[pollTestIndex].testName,
+            //         testGroup:pollTest[pollTestIndex].testGroup,
+            //         testModule:pollTest[pollTestIndex].testModule,
+            //         status:pollTest[pollTestIndex].status,
+            //         mode:testCase.mode,
+            //         testOrder:root.order,
+            //         output:root.output,
                     
-                    interfaces:testInterfaces[root.pollRunTestId]?testInterfaces[root.pollRunTestId]:[]
+            //         interfaces:testInterfaces[root.pollRunTestId]?testInterfaces[root.pollRunTestId]:[]
+            //     }
+            //     let testRun=await (pollRunTest.createAsync(createTestRun));
+            //     // logger.debug('pollRunTest.create>done>testRun');
+            //     // logger.debug(testRun._id);
+            // } catch (error) {
+            //     logger.error('pollRunTest.create>error');
+            //     logger.error(error);
+            //     logger.error('pollRunTest.create>testid: '+testCase.test);
+            //     root.exception++;
+            //     continue;
+            // }
+
+            if (root.pollRunTestModId && root.pollRunTestModId!='createPollRunTestError') {
+                try {
+                    let updateTestRun={
+                        
+                        status:pollTest[pollTestIndex].status,
+                        testOrder:root.order,
+                        output:root.output
+                    }
+                    let testRun=await (pollRunTest.findOneAndUpdateAsync({
+                        _id:root.pollRunTestModId
+                    },updateTestRun));
+                    logger.info('pollRunTest.update>done>testRun');
+                    logger.info(testRun._id);
+                } catch (error) {
+                    logger.error('pollRunTest.update>error');
+                    logger.error(error);
+                    logger.error('pollRunTest.update>testid: '+testCase.test);
                 }
-                let testRun=await (pollRunTest.createAsync(createTestRun));
-                // logger.debug('pollRunTest.create>done>testRun');
-                // logger.debug(testRun._id);
-            } catch (error) {
-                logger.error('pollRunTest.create>error');
-                logger.error(error);
-                logger.error('pollRunTest.create>testid: '+testCase.test);
-                root.exception++;
-                continue;
+
             }
+
         }
        
 

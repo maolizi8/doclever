@@ -266,6 +266,20 @@ var interface=[
         "data":String,
         handle:poll.runInfoTests
     },//gql add
+
+    {
+        "method":"GET",
+        "path":"/poll/runinfotests2",
+        "param": {
+            id:{
+                type:String,
+            },
+            page:Number,
+            status:Number
+        },
+        "data":String,
+        handle:poll.runInfoTests2
+    },//gql add
     
     {
         "method":"POST",
@@ -298,6 +312,16 @@ var interface=[
         },
         "data":String,
         handle:poll.runStatistics
+    },//gql add
+
+    {
+        "method":"GET",
+        "path":"/poll/runslowinterface",
+        "param": {
+            duration:Number,
+        },
+        "data":String,
+        handle:poll.runSlowInterfaces
     },//gql add
 ];
 

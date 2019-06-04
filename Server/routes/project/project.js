@@ -4941,6 +4941,19 @@ function Project() {
                     }]
                 }));
                 (projObj._doc?projObj._doc:projObj).data=newlist;
+
+                if (newlist) {
+                    for (let interObj of newlist) {
+                        let total2=await (example.countAsync({
+                            interface:interObj._id,
+                            createdAt:{
+                                $gt:date
+                            }
+                        }));
+                        //console.log(total2);
+                        (interObj._doc?interObj._doc:interObj).total=total2?total2:0;
+                    }
+                }
             }
             projectArr=projectArr.filter(function(obj){
                 var t=(obj._doc?obj._doc:obj).total

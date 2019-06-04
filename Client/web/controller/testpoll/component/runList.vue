@@ -4,7 +4,11 @@
             <transition name="component-fade" mode="out-in">
                 <el-row class="row box-shadow" style="">
                     <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
-                        定时任务-运行记录
+                        定时任务 - 
+                        <span style="font-weight:bold;color:black;" v-if="runArr.length>0">
+                            {{runArr[0].pollName}}
+                        </span>
+                         - 运行记录
                          <!-- &nbsp;&nbsp;&nbsp;&nbsp;
                         <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole==0 || sysRole==2 ">
                             去统计<i class="el-icon-d-arrow-right"></i></a> -->
@@ -43,18 +47,35 @@
                     </el-form>
                     <el-row class="row" style="border-bottom-left-radius: 5px;border-bottom-right-radius: 5px">
                         <el-row class="row" style="height: 30px;line-height: 30px;text-align: center;background-color: #ebebeb" :style="{paddingRight:paddingRight+'px'}">
-                            <el-col class="col" :span="3">
+                            <!-- <el-col class="col" :span="3">
                                 任务主题 
                                 <el-tooltip class="item" effect="dark" placement="bottom" trigger="hover"  content="测试结果发送报告的主题">
                                     <i class="el-icon-info" style="font-size: 12px;"></i>
                                 </el-tooltip>
-                            </el-col>
+                            </el-col> -->
                             <el-col class="col" :span="5">
                                 测试项目/集合
                             </el-col>
-                            <el-col class="col" :span="7">
+
+                            <!-- <el-col class="col" :span="7">
                                 测试模块/业务/用例
+                            </el-col> -->
+                            <el-col class="col" :span="2">
+                                用例数
                             </el-col>
+                            <el-col class="col" :span="2">
+                                失败
+                            </el-col>
+                            <el-col class="col" :span="2">
+                                成功
+                            </el-col>
+                            <el-col class="col" :span="2">
+                                未校验
+                            </el-col>
+                            <el-col class="col" :span="2">
+                                通过率
+                            </el-col>
+
                             <el-col class="col" :span="2">
                                 操作者
                             </el-col>
@@ -70,28 +91,35 @@
                         </el-row>
                         <el-row class="row" style="overflow-y: auto;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px" id="">
                             <el-row class="row" style="line-height: 30px;text-align: center;border-bottom: 1px solid #ccc;" v-for="(item,index) in runArr" :key="index" >
-                                <el-col class="col" :span="3" style="overflow: hidden;text-overflow:ellipsis;">
+                                <!-- <el-col class="col" :span="3" style="overflow: hidden;text-overflow:ellipsis;">
                                     <span>{{item.pollName}}</span>
-                                </el-col>
+                                </el-col> -->
                                 <el-col class="col" :span="5" style="overflow: hidden;text-overflow:ellipsis;">
                                     <el-tooltip class="item" effect="dark" :content="item.projectName+'/'+item.collectionName" placement="bottom">
                                         <span>{{item.projectName}}/{{item.collectionName}}</span>
                                     </el-tooltip>
                                 </el-col>
-                                <el-col class="col" :span="7" style="text-align:left;font-size:14px;padding: 2px 0;">
+
+                                <!-- <el-col class="col" :span="7" style="text-align:left;font-size:14px;padding: 2px 0;">
                                     共{{item.testTotal}}个测试用例（失败{{item.testFail}}个，成功{{item.testSuccess}}个，未校验{{item.testUnkown}}个）
-                                    <!-- <table class="table table-light">
-                                        <tr v-for="(test,index) in item.tests" :key="index">
-                                            <td class="line-num">{{index+1}}</td>
-                                            <td style="text-align:left;">
-                                                {{test.testModule}}/{{test.testGroup}}/{{test.testName}}（<span style="color:green">{{test.interfaces.length}}</span>个接口）<br> 
-                                            </td>
-                                            <td style="width:32px;"  :style="{color:test.status==0?'grey':(test.status==1?'green':'red')}">
-                                                {{test.status==0?"未校验":(test.status==1?"成功":"失败")}}
-                                            </td>
-                                        </tr>
-                                    </table> -->
+                                </el-col> -->
+                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
+                                    {{item.testTotal}}
                                 </el-col>
+                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
+                                    {{item.testFail}}
+                                </el-col>
+                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
+                                    {{item.testSuccess}}
+                                </el-col>
+                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
+                                   {{item.testUnkown}}
+                                </el-col>
+                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
+                                   {{Math.round((item.testSuccess/item.testTotal)* 10000)/100}}%
+                                </el-col>
+
+
                                 <el-col class="col" :span="2">
                                     {{item.operator?item.operator:"system"}}
                                 </el-col>
@@ -124,7 +152,8 @@
                                     </el-tooltip> -->
                                 </el-col>
                                 <el-col class="col" :span="3">
-                                    <a :href="'report.html?id='+item._id" target="_blank" style="color: purple;font-size:12px;">详情</a>
+                                    <a :href="'report0.html?id='+item._id" target="_blank" style="color: purple;font-size:12px;">详情1</a>
+                                    <a :href="'report.html?id='+item._id" target="_blank" style="color: purple;font-size:12px;">详情2</a>
                                     <template  v-if="item.status==3 || item.status==4 ">
                                         <el-button v-if="item.failReason" type="text" size="mini" style="margin-left:3px;" @click.native="editFailReason(item)">
                                             <span v-if="item.failReason.reason==1">接口变更</span>

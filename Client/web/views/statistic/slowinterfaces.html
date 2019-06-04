@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>慢接口统计</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="API管理平台,接口管理平台,mock测试,接口文档管理,接口文档平台,接口文档系统,API文档管理"/>
+    <meta name="description" content="DOClever是一款开源免费的可视化接口管理工具，专业的api接口管理系统，集接口文档、接口自动化测试、Mock数据、团队协作、接口快照等于一身的移动时代首选接口管理平台！"/>
+    <link href="../../common/css/common.css" rel="stylesheet">
+    <script src="../js/jquery-1.10.2.min.js"></script>
+    <link href="../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+	<script src="../../common/js/layer/layer.js"></script>
+	<style>
+	th{
+		
+		vertical-align: middle;
+	}
+	</style>
+
+</head>
+<body>
+
+		<ol class="breadcrumb bread-margin">
+				<li class="" target="_blank">
+						<a href="newinterfaces.html" target="_blank" rel="noopener noreferrer">新增接口统计</a>
+			   </li>
+			   <li class="" target="_blank">
+					<a href="newinterexample.html" target="_blank" rel="noopener noreferrer">新增实例统计</a>
+			   </li>
+			   <li class="active" target="_blank">
+					<a href="slowinterfaces.html" target="_blank" rel="noopener noreferrer">慢接口统计</a>
+				</li>
+			</ol>
+<div class="" style="margin: 10px;">
+
+		<div style="margin-top:10px;margin-bottom:10px;" id="togglebtns"> 
+			<span style="margin-right: 3px;" >统计周期：</span>
+			<button id="days_1" type="button" class="btn btn-primary" style="margin-right: 3px;" onclick="queryInterfaceRunList(1)">
+					当天
+			</button>
+			<button id="days_3" type="button" class="btn" style="margin-right: 3px;" onclick="queryInterfaceRunList(3)">
+					三天
+			</button>
+            
+        </div>
+	
+    <table class="table table-bordered" id="team">
+        <thead>
+			<tr style="background-color: skyblue">
+				<th rowspan="2" >项目/分组</th>
+				<th rowspan="2" >接口名</th>
+				<th rowspan="2" >baseUrl</th>
+				<th rowspan="2" >Path</th>
+				<th rowspan="2" >开发负责人</th>
+				<th rowspan="2" >运行次数</th>
+				<th colspan="3" >响应时间统计/次数</th>
+			</tr>
+			<tr style="background-color: tan">
+				<th>&lt;1秒</th>
+				<th>1秒~5秒之间</th>
+				<th>&gt;5秒</th>
+			</tr>
+        </thead>
+        <tbody id="tbody">
+			<!-- <tr>
+				<td>接口名</td>
+				<td>http://www.baidu.com</td>
+				<td>/search?k=1</td>
+				<td>kaifa</td>
+				<td>5</td>
+				<td>1</td>
+				<td>2</td>
+				<td>2</td>
+			</tr> -->
+        </tbody>
+        
+    </table>
+</div>
+<script type="text/javascript">
+    $(function () {
+		queryInterfaceRunList(1)
+	})
+
+	function queryInterfaceRunList(days){
+		
+		var index=layer.load()
+		$.ajax({
+		        type: "get",
+		        method: "GET",
+		        url: "/poll/runslowinterface",
+		        data: {"duration":days},
+		        contentType:"application/x-www-form-urlencoded",
+		        success: function(result){
+					console.log(result)
+					if (result.code==200)  {
+						var html="";
+						var data=result.data;
+
+						for(var i=0,len=data.length;i<len;i++){
+							html+='<tr>'
+							html+='<td>'+(data[i].project || '-')+'/'+(data[i].group || '-')+'</td>'
+							html+='<td>'+(data[i].name || data[i].interName)+'</td>'
+							html+='<td>'+data[i].interBaseUrl+'</td>'
+							html+='<td>'+data[i].interPath+'</td>'
+							html+='<td>'+(data[i].developer || '-')+'</td>'
+							html+='<td>'+0+'</td>'
+							html+='<td>'+data[i].smaller1+'</td>'
+							html+=`<td  style="color:${data[i].between1to5==0?'green':'red'}">`+data[i].between1to5+'</td>'
+							html+=`<td  style="color:${data[i].bigger5==0?'green':'red'}">`+data[i].bigger5+'</td>'
+							html+='</tr>'
+						}
+
+						$("#tbody").html(html)
+						$('#togglebtns>button').removeClass('btn-primary')
+                		$('#days_'+days).addClass('btn-primary')
+					} else {
+						console.log(result.msg);
+					}
+					layer.close(index);
+		        },
+		        error:function (error) {
+		            console.log(error);
+		            alert(error);
+		        }
+		    }); 
+	}
+
+</script>
+</body>
+</html>

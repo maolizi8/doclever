@@ -16,12 +16,13 @@ var testCollection=require("../../model/testCollectionModel")
 var pollSet=require("../../model/pollSetModel") //gql add
 var pollRun=require("../../model/pollRunModel") //gql add
 var pollRunTest=require("../../model/pollRunTestModel") //gql add
+let pollRunInterface=require("../../model/pollRunInterfaceModel");
 
 var moment=require("moment");//gql add
 
-
 var fs=require("fs");
 var uuid=require("uuid/v1");
+
 function  Poll() {
     this.save=async (req,res)=> {
         try
@@ -377,7 +378,7 @@ function  Poll() {
             if (req.clientParam.startdate && req.clientParam.enddate) {
                 let start=new Date(req.clientParam.startdate)
                 let end=new Date(req.clientParam.enddate)
-                end.setHours(23);
+                end.setHours(7);
                 end.setMinutes(59);
                 end.setSeconds(59);
                 end.setMilliseconds(999);
@@ -411,7 +412,7 @@ function  Poll() {
             if (req.clientParam.startdate && req.clientParam.enddate) {
                 let start=new Date(req.clientParam.startdate)
                 let end=new Date(req.clientParam.enddate)
-                end.setHours(23);
+                end.setHours(7);
                 end.setMinutes(59);
                 end.setSeconds(59);
                 end.setMilliseconds(999);
@@ -506,7 +507,39 @@ function  Poll() {
 				// skip:20*page,
 				// limit:20
             }));
+            //console.log(tests)
+            util.ok(res,tests,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }//gql add
+    this.runInfoTests2=async (req,res)=> {
+        try
+        {
             
+			//let page=req.clientParam.page
+            
+            let tests=await (pollRunTest.findAsync({
+                pollRun:req.clientParam.id,
+                status:req.clientParam.status
+            },"pollRun testId testName testGroup testModule status mode testOrder output",{
+                sort:"createdAt"
+				// skip:20*page,
+				// limit:20
+            }));
+            if (tests) {
+                for (let test of tests) {
+                    //"interName interBaseUrl interPath status runTime"
+                    test.interfaces=await (pollRunInterface.findAsync({
+                        pollRunTest:test._id
+                    },null,{
+                        sort:"createdAt"
+                    }))
+                }
+            }
             //console.log(tests)
             util.ok(res,tests,"ok");
         }
@@ -551,7 +584,7 @@ function  Poll() {
             
             let start=new Date(req.clientParam.startdate)
             let end=new Date(req.clientParam.enddate)
-            end.setHours(23);
+            end.setHours(7);
             end.setMinutes(59);
             end.setSeconds(59);
             end.setMilliseconds(999);
@@ -638,7 +671,102 @@ function  Poll() {
         }
     }//gql add 
 
+    this.runSlowInterfaces=async (req,res)=> {
+        try
+        {
+            // console.log(req.clientParam.startdate)
+            // console.log(req.clientParam.enddate)
+            let duration=req.clientParam.duration;
+            let startDate=new Date();
+            if (duration==3) {
+                startDate.setDate(startDate.getDate()-3);
+            } 
+            
+            startDate.setHours(7);
+            startDate.setMinutes(59);
+            startDate.setSeconds(59);
+            startDate.setMilliseconds(999);
+            console.log("runSlowInterfaces>>startDate")
+            console.log(startDate)
 
+            
+            let query={
+                createdAt:{$gt:startDate}
+            }
+            let inters=await (pollRunInterface.findAsync(query,
+                "interId interName interBaseUrl interPath status runTime"))
+            let resObj=[];
+            let noDup=[];
+            if (inters) {
+                //console.log("runSlowInterfaces>inters.length: ")
+                //console.log(inters.length)
+                for (let p of inters) {
+                    //console.log("runSlowInterfaces>p.interId: ")
+                    //console.log(p.interId)
+                    let interId=p.interId.toString()
+                    if (noDup.indexOf(interId)==-1) {
+                        let runTime=parseFloat(p.runTime)
+                        p._doc.smaller1=0
+                        p._doc.between1to5=0
+                        p._doc.bigger5=0
+                        if (runTime<1) {
+                            p._doc.smaller1+=1
+                        } else if (runTime>=1 && runTime<=5) {
+                            p._doc.between1to5+=1
+                        } else if (runTime>5) {
+                            p._doc.bigger5+=1
+                        } 
+                        
+                        let interProjInfo=await (interface.findOneAsync({
+                            _id:p.interId
+                        },"name developer project group",{
+                            populate:[{
+                                path:"project",
+                                select:"name"
+                            },{
+                                path:"group",
+                                select:"name"
+                            }]
+                        }))
+                        //console.log("runSlowInterfaces>interProjInfo: ")
+                        //console.log(interProjInfo)
+                        if (interProjInfo) {
+                            p._doc.name=interProjInfo.name;
+                            p._doc.project=interProjInfo.project.name;
+                            p._doc.group=interProjInfo.group.name;
+                            p._doc.developer=interProjInfo.developer;
+                        } else {
+                            p._doc.name=""
+                            p._doc.project="";
+                            p._doc.group="";
+                            p._doc.developer="";
+                        }
+                        
+                        resObj.push(p)
+                        noDup.push(interId)
+                    }else{
+                        let indexP=noDup.indexOf(interId)
+                        let runTime=parseFloat(p.runTime)
+                        if (runTime<1) {
+                            resObj[indexP]._doc.smaller1+=1
+                        } else if (runTime>=1 && runTime<=5) {
+                            resObj[indexP]._doc.between1to5+=1
+                        } else if (runTime>5) {
+                            resObj[indexP]._doc.bigger5+=1
+                        } 
+                    }
+                } 
+            }
+            
+           
+            util.ok(res,resObj,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }//gql add 
 
     // this.interfaceRunTimeStatistic=async (req,res)=> {
     //     try

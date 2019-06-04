@@ -1735,7 +1735,9 @@ helper.handleTestInterface=function (inter,data,status,bRun) {
                 var obj1;
                 try
                 {
-                    obj1=JSON.parse(obj.bodyInfo.rawText);
+                    //var obj_replace=obj.bodyInfo.rawText.replace(/\r|\n|\t/g,"") // gql added
+                    var obj_replace=obj.bodyInfo.rawText
+                    obj1=JSON.parse(obj_replace);
                 }
                 catch (err)
                 {
