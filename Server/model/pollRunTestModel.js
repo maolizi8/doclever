@@ -36,10 +36,7 @@ var model=new mongoose.Schema({
         type:String,
         default:""
     },
-    interfaces:{
-        type:Array,
-        default:[]
-    },
+    interfaces:Array,
     // interfaces:{
     //     type:[
     //         {

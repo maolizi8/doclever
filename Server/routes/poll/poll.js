@@ -759,30 +759,21 @@ function  Poll() {
             }
             
             if (resObj) {
+                for (let inter of resObj) {
+                    inter._doc.bigger1per=Math.round((inter._doc.between1to5+inter._doc.bigger5)/(inter._doc.smaller1+inter._doc.between1to5+inter._doc.bigger5)*10000)/100
+                }
                 resObj.sort(function (obj1,obj2) {
-                    if(obj1._doc.bigger5>obj2._doc.bigger5)
+                    if(obj1._doc.bigger1per>obj2._doc.bigger1per)
                     {
                         return -1;
                     }
-                    else if(obj1._doc.bigger5<obj2._doc.bigger5)
+                    else if(obj1._doc.bigger1per<obj2._doc.bigger1per)
                     {
                         return 1;
                     }
                     else
                     {
-                        //return 0;
-                        if(obj1._doc.between1to5>obj2._doc.between1to5)
-                        {
-                            return -1;
-                        }
-                        else if(obj1._doc.between1to5<obj2._doc.between1to5)
-                        {
-                            return 1;
-                        }
-                        else
-                        {
-                            return 0;
-                        }
+                        return 0;
                     }
                 })
             }

@@ -4139,7 +4139,7 @@ var pollRunMailContent=function(pollInfo,pollRunId){
     var html=`<!DOCTYPE html>
     <html lang="en">
     <head>
-        <title>用例编写-DOClever 移动时代首选接口管理平台！</title>
+        <title>定时任务 - 执行情况测试报告</title>
         <meta charset="UTF-8">
         <style>
             h2{
@@ -4411,20 +4411,47 @@ let sendSlowInterfacesReport=async function () {
 
     var filterList=resObj.filter(function(obj){
         var bigger1=obj._doc.between1to5+obj._doc.bigger5
-        //console.log("bigger1: "+bigger1)
+        obj._doc.bigger1per=Math.round((obj._doc.between1to5+obj._doc.bigger5)/(obj._doc.smaller1+obj._doc.between1to5+obj._doc.bigger5)*10000)/100
         return bigger1>0
-        // if(bigger1>0){
-        //     return true
-        // }else{
-        //     return false
-        // }
+    })
+    console.log('util.js>sendSlowInterfacesReport>filterList[0]:')
+    console.log(filterList[0])
+    filterList.sort(function (obj1,obj2) {
+        if(obj1._doc.bigger1per>obj2._doc.bigger1per)
+        {
+            return -1;
+        }
+        else if(obj1._doc.bigger1per<obj2._doc.bigger1per)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     })
     console.log('util.js>sendSlowInterfacesReport>filterList.length:')
     console.log(filterList.length)
+
+    if (filterList.length>0) {
+        
+        let pollSet=require("../model/pollSetModel");
+        var pollSetInfo=await (pollSet.findOneAsync({}));
+
+        var myDate = new Date();
+        var theDay=myDate.getFullYear()+"-"+myDate.getMonth()+"-"+myDate.getDate();
+
+        var recievUsers=['qm_dept@111.com.cn']
+        let content=slowInterMailContent(filterList,theDay)
+        let subject='[API自动化]-接口响应时间统计 - '+theDay
+        exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,recievUsers,subject,content);
+    }
+        
 }
 
 
-var slowInterMailContent=function(interList){
+var slowInterMailContent=function(data,theDay){
+    
     var html=`<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -4471,82 +4498,47 @@ var slowInterMailContent=function(interList){
     </head>
     <body>
         <div class="container" id="main">
-            <h2>
-                <span style="font-size:80%;font-weight:normal;">测试集合：</span>
-                ${pollInfo.projectName}/${pollInfo.collectionName}`
+            <h2>接口的响应时间统计 <span style="font-size:80%;font-weight:normal;">统计日期：</span>${theDay}
+            `
     
-    if (pollRunId) {
-        html+=` <a style="font-size:80%;font-weight:normal;" href="http://yyw-0656:9000/html/web/views/report.html?id=${pollRunId}">查看详细报告</a>`
-    }
+    html+=` <a style="font-size:80%;font-weight:normal;" href="http://yyw-0656:9000/html/web/views/statistic/slowinterfaces.html">查看详细报告</a>`
+    
     html+=` </h2>
 
             <div class="clear"></div>
-            <table class="table" style="width:300px;">
-                <tr>
-                    <th>失败</th>
-                    <th>总共</th>
-                    <th>成功</th>
-                    <th style="${pollInfo.testUnkown?"":"display:none"}">未校验</th>
-                </tr>
-                <tr>
-                    <td style="color:${pollInfo.testFail?"red":"black"}">${pollInfo.testFail||"0"}</td>
-                    <td>${pollInfo.testTotal||"0"}</td>
-                    <td>${pollInfo.testSuccess||"0"}</td>
-                    <td style="${pollInfo.testUnkown?"":"display:none"}">${pollInfo.testUnkown||"0"}</td>
-                </tr>
-            </table>
-            <div class="clear"></div>
-            
-            <table class="table">
+            <table class="table table-bordered" id="team">
                 <thead>
-                    <tr>
-                    <th style="">id</th>
-                        <th style="min-width:100px">测试模块</th>
-                        <th style="min-width:100px">测试用例</th>
-                        <th style="width:55px;">状态</th>
-                        <th style="min-width:300px">接口运行信息</th>
+                    <tr style="background-color: skyblue">
+                        <th rowspan="2" style="width: 250px;">项目/分组</th>
+                        <th rowspan="2" style="width: 190px;">接口名</th>
+                        <th rowspan="2" style="width: 210px;">baseUrl</th>
+                        <th rowspan="2" style="width: 400px;">Path</th>
+                        <th rowspan="2" style="width: 80px;">开发负责人</th>
+                        <th colspan="3" >响应时间统计/次数</th>
+                        <th rowspan="2" style="width: 80px;">大于1秒的占比</th>
+                    </tr>
+                    <tr style="background-color: tan">
+                        <th>&lt;1秒</th>
+                        <th>1~5秒间</th>
+                        <th>&gt;5秒</th>
                     </tr>
                 </thead>
-                <tbody id="testinfo">`
-
-    var tests=pollInfo.tests;
-
-    for (let i = 0; i < tests.length; i++) {
-        html+=`         <tr>
-                            <td>${tests[i].testOrder}</td>
-                            <td>${tests[i].testModule}/${tests[i].testGroup}</td>
-                            <td>${tests[i].testName}</td>
-                            <td style="color:${tests[i].status==0?"grey":(tests[i].status==1?"green":"red")}">${tests[i].status==0?"未校验":(tests[i].status==1?"成功":"失败")}</td>
-                            <td>
-                                <table class="table">`
-        
-        var interfaces=tests[i].interfaces?tests[i].interfaces:[];
-        for (let j = 0; j < interfaces.length; j++) {
-            html+=`                 <tr>
-                                        <td>${j+1}</td>
-                                        <td style="text-align:left;">
-                                            ${interfaces[j].interBaseUrl}${interfaces[j].interPath} `
-            if (interfaces[j].result) {
-                if (interfaces[j].result.status=="200") {
-                    html+=`（状态：<span style="color:green;">${interfaces[j].result.status}</span>）`
-                }else{
-                    html+=`（状态：<span style="color:red;">${interfaces[j].result.status}</span>）`
-                }
-                
-            } 
-            if (interfaces[j].runTime) {
-                html+=`（耗时<span style="color:green;">${interfaces[j].runTime}</span>秒）`
-            } 
-            if (interfaces[j].errMessage) {
-                html+=`（<span style="color:red;">${interfaces[j].errMessage}</span>）`
-            }
-            html+=`                    </td>
-                                    </tr>`
-        }
-        html+=`                 </table>
-                            </td>
-                        </tr>`
+                <tbody id="tbody">
+                `
+    for(var i=0,len=data.length;i<len;i++){
+        html+='<tr>'
+        html+='<td>'+(data[i]._doc.project || '-')+'/'+(data[i]._doc.group || '-')+'</td>'
+        html+='<td>'+(data[i]._doc.name || data[i].interName)+'</td>'
+        html+='<td style="word-break: break-all;">'+data[i].interBaseUrl+'</td>'
+        html+='<td style="word-break: break-all;">'+data[i].interPath+'</td>'
+        html+='<td>'+(data[i]._doc.developer || '-')+'</td>'
+        html+='<td>'+data[i]._doc.smaller1+'</td>'
+        html+=`<td  style="color:${data[i]._doc.between1to5==0?'green':'red'}">`+data[i]._doc.between1to5+'</td>'
+        html+=`<td  style="color:${data[i]._doc.bigger5==0?'green':'red'}">`+data[i]._doc.bigger5+'</td>'
+        html+=`<td  style="color:${data[i]._doc.bigger1per==0?'green':'red'}">`+data[i]._doc.bigger1per+'%</td>'
+        html+='</tr>'
     }
+    
     html+=`         </tbody>
                 </table>
             </body>
