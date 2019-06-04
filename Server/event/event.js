@@ -156,6 +156,29 @@ if (switchSchedule) {
                 console.log(err);
             }
     }));
+
+    // var slowInterfaces=schedule.scheduleJob("0 0 18 * * *",(async function () {
+    //     try
+    //         {
+    //             console.log('event.js>scheduleJob>>slowInterfaces')
+
+    //             let date=moment();
+    //             let weekDay=date.isoWeekday()-1;
+    //             //let hour=date.hour();
+    
+    //             console.log('event.js>scheduleJob>>slowInterfaces weekDay: '+weekDay)
+    
+    //             if(weekDay<6)
+    //             {
+    //                 await (util.sendSlowInterfacesReport())
+    //             }
+    //         }
+    //         catch (err)
+    //         {
+    //             console.log("event.js>scheduleJob>>runPollJob2>>err")
+    //             console.log(err);
+    //         }
+    // }));
 }
 
 /**
@@ -175,6 +198,31 @@ moment().isoWeekday() (1~7, 1: Monday, 7: Sunday)
 //         console.log("event.js>scheduleJob>>removeOldData>>err")
 //         console.log(err);
 //     }
+// }));
+
+
+
+// var slowInterfaces=schedule.scheduleJob("0 56 13 * * 3-5",(async function () {
+//     try
+//         {
+//             console.log('event.js>scheduleJob>>slowInterfaces')
+
+//             let date=moment();
+//             let weekDay=date.isoWeekday();    //(1~7, 1: Monday, 7: Sunday)
+//             //let hour=date.hour();
+
+//             console.log('event.js>scheduleJob>>slowInterfaces weekDay: '+weekDay)
+
+//             if(weekDay<6)
+//             {
+//                 await (util.sendSlowInterfacesReport())
+//             }
+//         }
+//         catch (err)
+//         {
+//             console.log("event.js>scheduleJob>>slowInterfaces>>err")
+//             console.log(err);
+//         }
 // }));
 
 

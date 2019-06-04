@@ -5,6 +5,10 @@ var mongoose = require('mongoose');
 var mongoomise=require("mongoomise")
 var db=require("../util/db.js");
 var model=new mongoose.Schema({
+    poll:{
+        type:mongoose.Schema.ObjectId,
+        ref:"Poll"
+    },
     pollRunTest:{
         type:mongoose.Schema.ObjectId,
         ref:"pollRunTest"

@@ -2767,6 +2767,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         try {
             let query=testInterfaces[root.pollRunTestId][testIdLength-1];
             query.pollRunTest=root.pollRunTestModId;
+            query.poll=root.pollId;
             
             logger.info('pollRunInterface.create>query');
             logger.info(query);
@@ -3777,6 +3778,7 @@ let runPollBackend=async function (pollArr,operator) {
             projectInfo:[],
             order:0,    //gql add
             testId:"",   //gql add
+            pollId:pollObj._id,
             pollRunId:"",   //gql add
             pollRunTestId:""    //gql add
         };
@@ -4102,7 +4104,7 @@ let runPollBackend=async function (pollArr,operator) {
                 logger.info('pollRun>sendMailReport')
 
                 //let content=`<h3>测试共(${root.count}), &nbsp;&nbsp;成功(${root.success}), &nbsp;&nbsp;失败(${root.fail}),&nbsp;&nbsp;未判定(${root.unknown})</h3>`+root.output;
-                let content=mailContent(query,pollRunId)
+                let content=pollRunMailContent(query,pollRunId)
                 exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,recievUsers,subject,content);
                 query.sendmail=true;
             }
@@ -4110,7 +4112,7 @@ let runPollBackend=async function (pollArr,operator) {
                 subject="[API自动化]-"+pollObj.name+"-测试报告（未校验"+root.unknown+"个) "+moment().format("YYYY-MM-DD HH:mm:ss");
                 
                 //let content=`<h3>测试共(${root.count}), &nbsp;&nbsp;成功(${root.success}), &nbsp;&nbsp;失败(${root.fail}),&nbsp;&nbsp;未判定(${root.unknown})</h3>`+root.output;
-                let content=mailContent(query,pollRunId)
+                let content=pollRunMailContent(query,pollRunId)
                 exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,['qm_dept@111.com.cn'],subject,content);
                 query.sendmail=true;
             }
@@ -4118,7 +4120,7 @@ let runPollBackend=async function (pollArr,operator) {
                 subject="[API自动化]-"+pollObj.name+"-测试报告（全通过） "+moment().format("YYYY-MM-DD HH:mm:ss");
                 
                 //let content=`<h3>测试共(${root.count}), &nbsp;&nbsp;成功(${root.success}), &nbsp;&nbsp;失败(${root.fail}),&nbsp;&nbsp;未判定(${root.unknown})</h3>`+root.output;
-                let content=mailContent(query,pollRunId)
+                let content=pollRunMailContent(query,pollRunId)
                 exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,recievUsers,subject,content);
                 query.sendmail=true;
             }
@@ -4133,7 +4135,7 @@ let runPollBackend=async function (pollArr,operator) {
     }
 }
 
-var mailContent=function(pollInfo,pollRunId){
+var pollRunMailContent=function(pollInfo,pollRunId){
     var html=`<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -4324,6 +4326,234 @@ let handleMysql=async function (host,user,password,port,database,sql,operator) {
     
 }
 
+
+let sendSlowInterfacesReport=async function () {
+
+    var interfaceModel=require("../model/interfaceModel");
+    var startDate=new Date();
+   
+    startDate.setHours(8);
+    startDate.setMinutes(0);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
+    console.log("util.js>sendSlowInterfacesReport>>>startDate")
+    console.log(startDate)
+
+    var query={
+        createdAt:{$gt:startDate}
+    }
+    var inters=await (pollRunInterface.findAsync(query,
+        "interId interName interBaseUrl interPath status runTime"))
+    var resObj=[];
+    var noDup=[];
+    if (inters) {
+        //console.log("util.js>sendSlowInterfacesReport>inters.length: ")
+        //console.log(inters.length)
+        for (let p of inters) {
+            //console.log("util.js>sendSlowInterfacesReport>p.interId: ")
+            //console.log(p.interId)
+            var interId=p.interId.toString()
+            if (noDup.indexOf(interId)==-1) {
+                var runTime=parseFloat(p.runTime)
+                p._doc.smaller1=0
+                p._doc.between1to5=0
+                p._doc.bigger5=0
+                if (runTime<1) {
+                    p._doc.smaller1+=1
+                }  else if (runTime>=1 && runTime<=5) {
+                    resObj[indexP]._doc.between1to5+=1
+                } else if (runTime>5) {
+                    resObj[indexP]._doc.bigger5+=1
+                } 
+                
+                var interProjInfo=await (interfaceModel.findOneAsync({
+                    _id:p.interId
+                },"name developer project group",{
+                    populate:[{
+                        path:"project",
+                        select:"name"
+                    },{
+                        path:"group",
+                        select:"name"
+                    }]
+                }))
+                //console.log("util.js>sendSlowInterfacesReport>interProjInfo: ")
+                //console.log(interProjInfo)
+                if (interProjInfo) {
+                    p._doc.name=interProjInfo.name;
+                    p._doc.project=interProjInfo.project.name;
+                    p._doc.group=interProjInfo.group.name;
+                    p._doc.developer=interProjInfo.developer;
+                } else {
+                    p._doc.name=""
+                    p._doc.project="";
+                    p._doc.group="";
+                    p._doc.developer="";
+                }
+                
+                resObj.push(p)
+                noDup.push(interId)
+            }else{
+                var indexP=noDup.indexOf(interId)
+                var runTime=parseFloat(p.runTime)
+                if (runTime<1) {
+                    resObj[indexP]._doc.smaller1+=1
+                }  else if (runTime>=1 && runTime<=5) {
+                    resObj[indexP]._doc.between1to5+=1
+                } else if (runTime>5) {
+                    resObj[indexP]._doc.bigger5+=1
+                } 
+            }
+        } 
+    }
+    console.log('util.js>sendSlowInterfacesReport>resObj.length:')
+    console.log(resObj.length)
+
+    var filterList=resObj.filter(function(obj){
+        var bigger1=obj._doc.between1to5+obj._doc.bigger5
+        //console.log("bigger1: "+bigger1)
+        return bigger1>0
+        // if(bigger1>0){
+        //     return true
+        // }else{
+        //     return false
+        // }
+    })
+    console.log('util.js>sendSlowInterfacesReport>filterList.length:')
+    console.log(filterList.length)
+}
+
+
+var slowInterMailContent=function(interList){
+    var html=`<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>慢接口统计</title>
+        <meta charset="UTF-8">
+        <style>
+            h2{
+                font-size:18px;
+                line-height:25px;
+            }
+            .container{
+                padding:10px 20px;
+            }
+            .table{
+                width: 100%;
+                padding: 10px;
+                display: table;
+                border-collapse: collapse;
+                border-spacing: 2px;
+                border:1px solid #cccccc;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+                background-color: white;
+            }
+            .box-shadow{
+                border-radius: 5px;
+                box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.24);
+                background-color: white;
+            }
+            .table th{
+                background-color: #E0EEEE;
+            }
+            .table th,.table td{
+                vertical-align: middle;
+                padding: 5px;
+                text-align: center;
+                border:1px solid #cccccc;
+            }
+            .clear{
+                height:20px;
+                clear: both;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container" id="main">
+            <h2>
+                <span style="font-size:80%;font-weight:normal;">测试集合：</span>
+                ${pollInfo.projectName}/${pollInfo.collectionName}`
+    
+    if (pollRunId) {
+        html+=` <a style="font-size:80%;font-weight:normal;" href="http://yyw-0656:9000/html/web/views/report.html?id=${pollRunId}">查看详细报告</a>`
+    }
+    html+=` </h2>
+
+            <div class="clear"></div>
+            <table class="table" style="width:300px;">
+                <tr>
+                    <th>失败</th>
+                    <th>总共</th>
+                    <th>成功</th>
+                    <th style="${pollInfo.testUnkown?"":"display:none"}">未校验</th>
+                </tr>
+                <tr>
+                    <td style="color:${pollInfo.testFail?"red":"black"}">${pollInfo.testFail||"0"}</td>
+                    <td>${pollInfo.testTotal||"0"}</td>
+                    <td>${pollInfo.testSuccess||"0"}</td>
+                    <td style="${pollInfo.testUnkown?"":"display:none"}">${pollInfo.testUnkown||"0"}</td>
+                </tr>
+            </table>
+            <div class="clear"></div>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th style="">id</th>
+                        <th style="min-width:100px">测试模块</th>
+                        <th style="min-width:100px">测试用例</th>
+                        <th style="width:55px;">状态</th>
+                        <th style="min-width:300px">接口运行信息</th>
+                    </tr>
+                </thead>
+                <tbody id="testinfo">`
+
+    var tests=pollInfo.tests;
+
+    for (let i = 0; i < tests.length; i++) {
+        html+=`         <tr>
+                            <td>${tests[i].testOrder}</td>
+                            <td>${tests[i].testModule}/${tests[i].testGroup}</td>
+                            <td>${tests[i].testName}</td>
+                            <td style="color:${tests[i].status==0?"grey":(tests[i].status==1?"green":"red")}">${tests[i].status==0?"未校验":(tests[i].status==1?"成功":"失败")}</td>
+                            <td>
+                                <table class="table">`
+        
+        var interfaces=tests[i].interfaces?tests[i].interfaces:[];
+        for (let j = 0; j < interfaces.length; j++) {
+            html+=`                 <tr>
+                                        <td>${j+1}</td>
+                                        <td style="text-align:left;">
+                                            ${interfaces[j].interBaseUrl}${interfaces[j].interPath} `
+            if (interfaces[j].result) {
+                if (interfaces[j].result.status=="200") {
+                    html+=`（状态：<span style="color:green;">${interfaces[j].result.status}</span>）`
+                }else{
+                    html+=`（状态：<span style="color:red;">${interfaces[j].result.status}</span>）`
+                }
+                
+            } 
+            if (interfaces[j].runTime) {
+                html+=`（耗时<span style="color:green;">${interfaces[j].runTime}</span>秒）`
+            } 
+            if (interfaces[j].errMessage) {
+                html+=`（<span style="color:red;">${interfaces[j].errMessage}</span>）`
+            }
+            html+=`                    </td>
+                                    </tr>`
+        }
+        html+=`                 </table>
+                            </td>
+                        </tr>`
+    }
+    html+=`         </tbody>
+                </table>
+            </body>
+        </html>`   
+   return html;      
+}
+
 exports.err=err;
 exports.ok=ok;
 exports.dateDiff=dateDiff;
@@ -4360,7 +4590,7 @@ exports.runPollBackend=runPollBackend;
 exports.removeOldData=removeOldData;
 
 exports.handleMysql=handleMysql;
-
+exports.sendSlowInterfacesReport=sendSlowInterfacesReport
 
 exports.handleGlobalVar=handleGlobalVar;
 exports.getPostmanGlobalVar=getPostmanGlobalVar

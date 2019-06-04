@@ -37,94 +37,98 @@ var model=new mongoose.Schema({
         default:""
     },
     interfaces:{
-        type:[
-            {
-                // interId: {
-                //     type:mongoose.Schema.ObjectId,
-                //     ref:"Interface"
-                // },
-                interId: {
-                    type:String,
-                    default:""
-                },
-                interName :{
-                    type:String,
-                    default:""
-                },
-                interBaseUrl:{
-                    type:String,
-                    default:""
-                },
-                interPath:{
-                    type:String,
-                    default:""
-                },
-                runTime:{
-                    type:String,
-                    default:""
-                },
-                errMessage:{
-                    type:String,
-                    default:""
-                },
-                request:{
-                    type:{
-                        url:{
-                            type:String,
-                            default:""
-                        },
-                        method:{
-                            type:String,
-                            default:""
-                        },
-                        headers:{
-                            type:String,
-                            default:""
-                        },
-                        bodyType:{
-                            type:Number,
-                            default:0
-                        },
-                        rawType:{
-                            type:String,
-                            default:0
-                        },
-                        form:{
-                            type:String,
-                            default:""
-                        },
-                        body:{
-                            type:String,
-                            default:""
-                        }
-                    },
-                    default:{}
-                },
-                result:{
-                    type:{
-                        headers:{
-                            type:String,
-                            default:""
-                        },
-                        status:{
-                            type:String,
-                            default:""
-                        },
-                        bodytype:{
-                            type:String,
-                            default:""
-                        },
-                        data:{
-                            type:String,
-                            default:""
-                        }
-                    },
-                    default:{}
-                }
-            }
-        ],
+        type:Array,
         default:[]
-    }
+    },
+    // interfaces:{
+    //     type:[
+    //         {
+    //             // interId: {
+    //             //     type:mongoose.Schema.ObjectId,
+    //             //     ref:"Interface"
+    //             // },
+    //             interId: {
+    //                 type:String,
+    //                 default:""
+    //             },
+    //             interName :{
+    //                 type:String,
+    //                 default:""
+    //             },
+    //             interBaseUrl:{
+    //                 type:String,
+    //                 default:""
+    //             },
+    //             interPath:{
+    //                 type:String,
+    //                 default:""
+    //             },
+    //             runTime:{
+    //                 type:String,
+    //                 default:""
+    //             },
+    //             errMessage:{
+    //                 type:String,
+    //                 default:""
+    //             },
+    //             request:{
+    //                 type:{
+    //                     url:{
+    //                         type:String,
+    //                         default:""
+    //                     },
+    //                     method:{
+    //                         type:String,
+    //                         default:""
+    //                     },
+    //                     headers:{
+    //                         type:String,
+    //                         default:""
+    //                     },
+    //                     bodyType:{
+    //                         type:Number,
+    //                         default:0
+    //                     },
+    //                     rawType:{
+    //                         type:String,
+    //                         default:0
+    //                     },
+    //                     form:{
+    //                         type:String,
+    //                         default:""
+    //                     },
+    //                     body:{
+    //                         type:String,
+    //                         default:""
+    //                     }
+    //                 },
+    //                 default:{}
+    //             },
+    //             result:{
+    //                 type:{
+    //                     headers:{
+    //                         type:String,
+    //                         default:""
+    //                     },
+    //                     status:{
+    //                         type:String,
+    //                         default:""
+    //                     },
+    //                     bodytype:{
+    //                         type:String,
+    //                         default:""
+    //                     },
+    //                     data:{
+    //                         type:String,
+    //                         default:""
+    //                     }
+    //                 },
+    //                 default:{}
+    //             }
+    //         }
+    //     ],
+    //     default:[]
+    // }
     
 },{
     timestamps:true

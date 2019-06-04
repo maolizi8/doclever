@@ -758,7 +758,35 @@ function  Poll() {
                 } 
             }
             
-           
+            if (resObj) {
+                resObj.sort(function (obj1,obj2) {
+                    if(obj1._doc.bigger5>obj2._doc.bigger5)
+                    {
+                        return -1;
+                    }
+                    else if(obj1._doc.bigger5<obj2._doc.bigger5)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //return 0;
+                        if(obj1._doc.between1to5>obj2._doc.between1to5)
+                        {
+                            return -1;
+                        }
+                        else if(obj1._doc.between1to5<obj2._doc.between1to5)
+                        {
+                            return 1;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+                })
+            }
+
             util.ok(res,resObj,"ok");
         }
         catch (err)
