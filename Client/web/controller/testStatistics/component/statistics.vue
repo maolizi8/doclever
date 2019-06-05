@@ -5,7 +5,7 @@
                 <el-col class="col" :span="3">
                    选择定时任务:
                 </el-col>
-                <el-col class="col" :span="8">
+                <el-col class="col" :span="7">
                      <!-- <el-cascader size="mini" style="width: 95%" expand-trigger="hover" :options="testPollArr" v-model="selPoll" @change="changePoll" placeholder="请切换定时任务">
                     </el-cascader> -->
                     <el-select v-model="selPoll"  style="width: 90%"  >
@@ -16,7 +16,7 @@
 				<el-col class="col" :span="3">
                   <span style="color:red">*</span>选择周期:
                 </el-col>
-                <el-col class="col" :span="8">
+                <el-col class="col" :span="7">
                      <el-date-picker size="mini" style="width: 90%" 
 					  v-model="periodDate"
 					  type="daterange"
@@ -31,12 +31,18 @@
                         查询
                     </el-button>
                 </el-col>
+                <el-col class="col" :span="2">
+                    <a id="downloadlink"  style="display:none;"></a>
+                   <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="exportexcel">
+                        导出
+                    </el-button>
+                </el-col>
             </el-row>
 		</el-form>
         <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
 			统计周期：{{periodDate?periodDate[0]:"-"}} 至 {{periodDate?periodDate[1]:"-"}}
 		</el-row> 
-		 <table class="table box-shadow">
+		 <table class="table box-shadow" id="resulttable">
             <thead>
                 <tr>
                     <th rowspan="2" style="width:100px;">定时任务</th>
@@ -231,10 +237,12 @@
             changePoll:function(){
 				console.log("statistics.vue>changePoll>this.selPoll")
 				console.log(this.selPoll)
-		    },
+            },
+            
            changePage:function (page) {
                 $.startHud();
-				var _this=this;
+                var _this=this;
+                
 				/*
 				let query={
 							id:_this.runId,
@@ -313,7 +321,37 @@
 					$.notify(err,0);
 				})
 				/**/
-		    },
+            },
+            
+            exportexcel:function(){
+
+                if(getExplorer()=='ie')  
+                {  
+                    $.tip("暂不支持IE！",0);
+                    return;
+                }  
+                else  
+                {  
+                    var tableToExcel = (function() {  
+                        var uri = 'data:application/vnd.ms-excel;base64,',  
+                                template = '<html><head><meta charset="UTF-8"></head><body><table>{table}</table></body></html>',  
+                                base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) },  
+                                format = function(s, c) {  
+                                    return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) 
+                                }  
+                        return function(table,name,filename) {  
+                            if (!table.nodeType) table = document.getElementById(table)  
+                            var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}  
+                            document.getElementById("downloadlink").href = uri + base64(format(template, ctx));
+                            document.getElementById("downloadlink").download = filename;
+                            document.getElementById("downloadlink").click();
+                        }  
+                    })()
+
+                    tableToExcel('resulttable','namename','测试结果统计 ' + new Date().getTime() + ".xls")  
+                }  
+            },
+
         },
         created:function () {
 		

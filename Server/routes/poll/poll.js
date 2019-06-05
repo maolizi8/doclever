@@ -17,6 +17,7 @@ var pollSet=require("../../model/pollSetModel") //gql add
 var pollRun=require("../../model/pollRunModel") //gql add
 var pollRunTest=require("../../model/pollRunTestModel") //gql add
 let pollRunInterface=require("../../model/pollRunInterfaceModel");
+let pollFigureInterRun=require("../../model/pollFigureInterRunModel");
 
 var moment=require("moment");//gql add
 
@@ -786,6 +787,61 @@ function  Poll() {
             util.catch(res,err);
         }
     }//gql add 
+
+    this.pollInterSetting=async (req,res)=> {
+        
+        
+        try
+        {
+            let obj=await (pollFigureInterRun.findOneAsync({}))
+            
+            util.ok(res,obj,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }
+
+    this.pollInterSetSave=async (req,res)=> {
+        
+        try
+        {
+            
+            let update={
+                recievUsers:JSON.parse(req.clientParam.recievUsers),
+                weekday:JSON.parse(req.clientParam.weekday),
+                hour:JSON.parse(req.clientParam.hour),
+                hour2:JSON.parse(req.clientParam.hour2)
+            }
+            
+            if(req.clientParam.id)
+            {
+                obj=await (pollFigureInterRun.findOneAndUpdateAsync({
+                    _id:req.clientParam.id
+                },update,{
+                    new:true
+                }));
+            }
+            else
+            {
+                obj=await (pollFigureInterRun.createAsync(update));
+            }
+
+            if (req.clientParam.immediate) {
+                console.log('<req.clientParam.immediate,reciever>')
+                console.log(req.clientParam.reciever)
+            }
+            
+            util.ok(res,obj,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }
 
     // this.interfaceRunTimeStatistic=async (req,res)=> {
     //     try

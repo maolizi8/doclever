@@ -224,3 +224,7 @@ msgBadge {
 .active{
     font-weight: bold;
 }
+
+.bread-margin{
+    margin-bottom: 0px;
+}

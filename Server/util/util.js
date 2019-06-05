@@ -4434,6 +4434,28 @@ let sendSlowInterfacesReport=async function () {
     console.log(filterList.length)
 
     if (filterList.length>0) {
+
+        // let recievUsers=[];
+        // let arrPollUser=pollObj.users.map(function (obj) {
+        //     return obj.toString();
+        // });
+        
+        // for(let u of arrPollUser)
+        // {
+        //     let obj=await (user.findOneAsync({
+        //         _id:u
+        //     }));
+        //     //recievUsers.push(obj);
+        //     if(obj && obj.email)
+        //     {
+        //         recievUsers.push(obj.email);
+        //     }
+        // }
+        // logger.debug('util.js>userinfo>recievUsers')
+        // logger.debug(recievUsers)
+
+        // if(recievUsers.length>0)
+        // {}
         
         let pollSet=require("../model/pollSetModel");
         var pollSetInfo=await (pollSet.findOneAsync({}));
@@ -4441,7 +4463,7 @@ let sendSlowInterfacesReport=async function () {
         var myDate = new Date();
         var theDay=myDate.getFullYear()+"-"+myDate.getMonth()+"-"+myDate.getDate();
 
-        var recievUsers=['qm_dept@111.com.cn']
+        var recievUsers=['qm_dept@111.com.cn']  // for test ['']
         let content=slowInterMailContent(filterList,theDay)
         let subject='[API自动化]-接口响应时间统计 - '+theDay
         exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,recievUsers,subject,content);
@@ -4501,7 +4523,7 @@ var slowInterMailContent=function(data,theDay){
             <h2>接口的响应时间统计 <span style="font-size:80%;font-weight:normal;">统计日期：</span>${theDay}
             `
     
-    html+=` <a style="font-size:80%;font-weight:normal;" href="http://yyw-0656:9000/html/web/views/statistic/slowinterfaces.html">查看详细报告</a>`
+    html+=` <a style="font-size:80%;font-weight:normal;" href="http://yyw-0656:9000/html/web/views/statistic/interfacesrun.html">查看详细报告</a>`
     
     html+=` </h2>
 

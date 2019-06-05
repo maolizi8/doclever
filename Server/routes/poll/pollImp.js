@@ -323,6 +323,43 @@ var interface=[
         "data":String,
         handle:poll.runSlowInterfaces
     },//gql add
+    
+    {
+        "method":"GET",
+        "path":"/poll/pollintersetting",
+        "param": {
+            
+        },
+        "data":String,
+        user:1,
+        handle:poll.pollInterSetting
+    },//gql add
+    {
+        "method":"POST",
+        "path":"/poll/pollintersetting",
+        "param": {
+            id:{
+                type:String,
+                optional:1
+            },
+            recievUsers:{
+                type:String,
+                optional:1
+            },
+            weekday:{
+                type:String,
+            },
+            hour:{
+                type:String,
+            },  
+            hour2:{
+                type:String,
+            },  
+        },
+        "data":String,
+        user:1,
+        handle:poll.pollInterSetSave
+    },//gql add
 ];
 
 module.exports=interface;
