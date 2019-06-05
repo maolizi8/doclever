@@ -793,13 +793,16 @@ function  Poll() {
         
         try
         {
-            let obj=await (pollFigureInterRun.findOneAsync({}))
-            
+            let obj;
+            obj=await (pollFigureInterRun.findOneAsync({
+                // enabled:1
+            }))
+            //console.log(obj);
             util.ok(res,obj,"ok");
         }
         catch (err)
         {   
-            //console.log(err);
+            console.log(err);
             util.catch(res,err);
         }
     }
@@ -810,10 +813,12 @@ function  Poll() {
         {
             
             let update={
-                recievUsers:JSON.parse(req.clientParam.recievUsers),
+                enabled:req.clientParam.enabled,
+                reciveUsers:req.clientParam.reciveUsers,
                 weekday:JSON.parse(req.clientParam.weekday),
-                hour:JSON.parse(req.clientParam.hour),
-                hour2:JSON.parse(req.clientParam.hour2)
+                hour:req.clientParam.hour,
+                minute:req.clientParam.minute,
+                updator:req.userInfo.name
             }
             
             if(req.clientParam.id)
@@ -828,11 +833,6 @@ function  Poll() {
             {
                 obj=await (pollFigureInterRun.createAsync(update));
             }
-
-            if (req.clientParam.immediate) {
-                console.log('<req.clientParam.immediate,reciever>')
-                console.log(req.clientParam.reciever)
-            }
             
             util.ok(res,obj,"ok");
         }
@@ -843,30 +843,6 @@ function  Poll() {
         }
     }
 
-    // this.interfaceRunTimeStatistic=async (req,res)=> {
-    //     try
-    //     {
-    //         let query={
-    //             failReason:{
-    //                 reason:req.clientParam.reason,
-    //                 other:req.clientParam.other,
-    //                 recorder:req.clientParam.recorder
-    //             }
-    //         }
-    //         let obj=await (pollRun.findOneAndUpdateAsync({
-    //             _id:req.clientParam.id
-    //         },query,{
-    //             new:true
-    //         }))
-            
-    //         util.ok(res,obj,"ok");
-    //     }
-    //     catch (err)
-    //     {   
-    //         //console.log(err);
-    //         util.catch(res,err);
-    //     }
-    // }//gql add 
 }
 
 module.exports=Poll;

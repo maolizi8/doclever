@@ -2,22 +2,27 @@ var mongoose = require('mongoose');
 var mongoomise=require("mongoomise")
 var db=require("../util/db.js");
 var model=new mongoose.Schema({
-    recievUsers:{
-        type:[String],
-        default:[]
+    enabled:{
+        type:Number,
+        default:1   //0-关闭，1-开启
+    },
+    reciveUsers:{
+        type:String,
+        default:''
     },
     weekday:{
         type:[Number],
         default:[]
     },
-    hour:{
-        type:[Number],
-        default:[]
-    },  
-    hour2:{
-        type:[Number],
-        default:[]
-    },  // for half of hour
+    hour:Number,  
+    minute:{
+        type:Number,
+        default:0
+    }, 
+    updator:{
+        type:String,
+        default:''
+    }
 },{
     timestamps:true
 });

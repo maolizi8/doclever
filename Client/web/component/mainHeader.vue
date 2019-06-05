@@ -13,7 +13,7 @@
                         <el-dropdown-item command="goToTest">测试项目管理</el-dropdown-item>
                         <el-dropdown-item command="goToPoll">定时任务管理</el-dropdown-item>
                         <el-dropdown-item command="goToStatistics">测试结果统计</el-dropdown-item>
-                        <el-dropdown-item command="goToFigureInterfaces">接口统计配置</el-dropdown-item>
+                        <el-dropdown-item command="goToFigureInterfaces" v-if="sysRole">接口统计配置</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-col>
@@ -56,8 +56,8 @@
                 </a>
             </span>
             <span v-else-if='menu=="pollinter"'>
-               <a class="header" href="statistics.html">
-                    测试结果统计
+               <a class="header" href="pollinter.html">
+                    接口统计配置
                 </a>
             </span>
             <span v-else-if='menu=="person"'>

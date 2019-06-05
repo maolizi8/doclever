@@ -4327,7 +4327,7 @@ let handleMysql=async function (host,user,password,port,database,sql,operator) {
 }
 
 
-let sendSlowInterfacesReport=async function () {
+let sendSlowInterfacesReport=async function (recievUserList) {
 
     var interfaceModel=require("../model/interfaceModel");
     var startDate=new Date();
@@ -4414,8 +4414,8 @@ let sendSlowInterfacesReport=async function () {
         obj._doc.bigger1per=Math.round((obj._doc.between1to5+obj._doc.bigger5)/(obj._doc.smaller1+obj._doc.between1to5+obj._doc.bigger5)*10000)/100
         return bigger1>0
     })
-    console.log('util.js>sendSlowInterfacesReport>filterList[0]:')
-    console.log(filterList[0])
+    // console.log('util.js>sendSlowInterfacesReport>filterList[0]:')
+    // console.log(filterList[0])
     filterList.sort(function (obj1,obj2) {
         if(obj1._doc.bigger1per>obj2._doc.bigger1per)
         {
@@ -4435,38 +4435,19 @@ let sendSlowInterfacesReport=async function () {
 
     if (filterList.length>0) {
 
-        // let recievUsers=[];
-        // let arrPollUser=pollObj.users.map(function (obj) {
-        //     return obj.toString();
-        // });
-        
-        // for(let u of arrPollUser)
-        // {
-        //     let obj=await (user.findOneAsync({
-        //         _id:u
-        //     }));
-        //     //recievUsers.push(obj);
-        //     if(obj && obj.email)
-        //     {
-        //         recievUsers.push(obj.email);
-        //     }
-        // }
-        // logger.debug('util.js>userinfo>recievUsers')
-        // logger.debug(recievUsers)
-
-        // if(recievUsers.length>0)
-        // {}
-        
         let pollSet=require("../model/pollSetModel");
         var pollSetInfo=await (pollSet.findOneAsync({}));
 
         var myDate = new Date();
-        var theDay=myDate.getFullYear()+"-"+myDate.getMonth()+"-"+myDate.getDate();
+        var theDay=myDate.getFullYear()+"-"+(myDate.getMonth()+1)+"-"+myDate.getDate();
 
-        var recievUsers=['qm_dept@111.com.cn']  // for test ['']
+        //recievUserList=['geqiuli@111.com.cn']  // for test
         let content=slowInterMailContent(filterList,theDay)
         let subject='[API自动化]-接口响应时间统计 - '+theDay
-        exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,recievUsers,subject,content);
+        exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,recievUserList,subject,content);
+        
+        
+        
     }
         
 }

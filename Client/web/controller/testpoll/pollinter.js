@@ -8,8 +8,7 @@ var mainheader=require("component/mainHeader.vue");
 var vue=new Vue({
     el:"#app",
     data:{
-        menu:"pollinter",
-        info:{}
+        menu:"pollinter"
     },
     mixins:[sessionChange],
     directives:{
@@ -19,7 +18,6 @@ var vue=new Vue({
         "mainheader":mainheader,
         "pollinter":pollinter
     },
-
     //store:store,
 
     watch:{
@@ -32,56 +30,6 @@ var vue=new Vue({
         
     },
     created : function () {
-        //window.hljs.initHighlightingOnLoad();
-		
-        net.get("/poll/runinfo2",query).then(function (data) {
-            console.log("runInfo");
-            if(data.code==200)
-            {
-               _this.info=data.data
-            }
-            else
-            {
-                $.notify(data.msg,0)
-            }
-            //$.stopLoading();
-        }).catch(function (err) {
-            $.stopLoading();
-            $.stopHud();
-            $.notify(err,0);
-        })
-        
-        // Promise.all([
-        //     net.get("/poll/runinfo2",query),
-        //     net.get("/poll/runinfotests",query)
-        // ]).then(function (result) {
-        //     var obj1=result[0];
-        //     var obj2=result[1];
-        //     if(obj1.code==200)
-        //     {
-        //         _this.info=obj1.data
-        //     }
-        //     else
-        //     {
-        //         throw obj1.msg;
-        //     }
-        //     if(obj2.code==200)
-        //     {
-        //         _this.tests=obj2.data
-        //         console.log("report.js>_this.tests")
-        //         console.log(_this.tests)
-        //     }
-        //     else
-        //     {
-        //         throw obj2.msg;
-        //     }
-        //     $.stopLoading();
-        // }).catch(function (err) {
-        //     $.stopLoading();
-        //     $.stopHud();
-        //     $.notify(err,0);
-        // })
-
         
     }
 });

@@ -336,24 +336,24 @@ var interface=[
     },//gql add
     {
         "method":"POST",
-        "path":"/poll/pollintersetting",
+        "path":"/poll/pollintersettingsave",
         "param": {
             id:{
                 type:String,
                 optional:1
             },
-            recievUsers:{
-                type:String,
-                optional:1
+            enabled:Number,
+            reciveUsers:{
+                type:String
             },
             weekday:{
                 type:String,
             },
             hour:{
-                type:String,
+                type:Number,
             },  
-            hour2:{
-                type:String,
+            minute:{
+                type:Number,
             },  
         },
         "data":String,

@@ -19,7 +19,7 @@
                    任务主题:
                 </el-col>
                 <el-col class="col" :span="20">
-                    <el-input style="width: 90%" size="small" v-model="poll.name" placeholder="请输入输入任务主题"></el-input>
+                    <el-input style="width: 90%" size="small" v-model="poll.name" placeholder="请输入任务主题"></el-input>
                     <el-tooltip class="item" effect="dark" placement="bottom" trigger="hover"  content="测试结果发送报告的主题">
                         <i class="el-icon-info" style="font-size: 12px;"></i>
                     </el-tooltip>
@@ -119,7 +119,7 @@
                 </el-cascader>
             </el-form-item>
             <el-form-item label="任务主题:">
-                <el-input style="width: 90%" size="small" v-model="poll.name" placeholder="请输入输入任务主题"></el-input>
+                <el-input style="width: 90%" size="small" v-model="poll.name" placeholder="请输入任务主题"></el-input>
                  <el-tooltip class="item" effect="dark" placement="bottom" trigger="hover"  content="测试结果发送报告的主题">
                     <i class="el-icon-info" style="font-size: 12px;"></i>
                 </el-tooltip>

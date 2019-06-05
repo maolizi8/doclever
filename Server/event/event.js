@@ -157,25 +157,33 @@ if (switchSchedule) {
             }
     }));
 
-    var slowInterfaces=schedule.scheduleJob("0 00 18 * * 1-5",(async function () {
+    var figureInterfaces=schedule.scheduleJob("0 0 * * * *",(async function () {
         try
             {
-                console.log('event.js>scheduleJob>>slowInterfaces')
-    
+                console.log('event.js>scheduleJob>>figureInterfaces')
                 let date=moment();
                 let weekDay=date.isoWeekday();    //(1~7, 1: Monday, 7: Sunday)
-                //let hour=date.hour();
-    
-                console.log('event.js>scheduleJob>>slowInterfaces weekDay: '+weekDay)
-    
-                if(weekDay<6)
-                {
-                    await (util.sendSlowInterfacesReport())
+                let hour=date.hour();
+                let pollFigureInterRun=require("../model/pollFigureInterRunModel");
+                let setting=await (pollFigureInterRun.findOneAsync({
+                    enabled:1,
+                    weekday:weekDay,
+                    hour:hour
+                }));
+                if (setting) {
+                    let recievUserList=setting.reciveUsers.split(';');
+                    console.log('event.js>scheduleJob>>figureInterfaces recievUserList: ')
+                    console.log(recievUserList)
+                    if (recievUserList.length>0) {
+                        await (util.sendSlowInterfacesReport(recievUserList))
+                    }
+                    
                 }
+                
             }
             catch (err)
             {
-                console.log("event.js>scheduleJob>>slowInterfaces>>err")
+                console.log("event.js>scheduleJob>>figureInterfaces>>err")
                 console.log(err);
             }
     }));
@@ -200,30 +208,37 @@ moment().isoWeekday() (1~7, 1: Monday, 7: Sunday)
 //     }
 // }));
 
-
-
-// var slowInterfaces=schedule.scheduleJob("0 00 18 * * 1-5",(async function () {
+// var figureInterfaces=schedule.scheduleJob("0 54 * * * *",(async function () {
 //     try
 //         {
-//             console.log('event.js>scheduleJob>>slowInterfaces')
-
+//             console.log('event.js>scheduleJob>>figureInterfaces')
 //             let date=moment();
 //             let weekDay=date.isoWeekday();    //(1~7, 1: Monday, 7: Sunday)
-//             //let hour=date.hour();
-
-//             console.log('event.js>scheduleJob>>slowInterfaces weekDay: '+weekDay)
-
-//             if(weekDay<6)
-//             {
-//                 await (util.sendSlowInterfacesReport())
+//             let hour=date.hour();
+//             let pollFigureInterRun=require("../model/pollFigureInterRunModel");
+//             let setting=await (pollFigureInterRun.findOneAsync({
+//                 enabled:1,
+//                 weekday:weekDay,
+//                 hour:hour
+//             }));
+//             if (setting) {
+//                 let recievUserList=setting.reciveUsers.split(';');
+//                 console.log('event.js>scheduleJob>>figureInterfaces recievUserList: ')
+//                 console.log(recievUserList)
+//                 if (recievUserList.length>0) {
+//                     await (util.sendSlowInterfacesReport(recievUserList))
+//                 }
+                
 //             }
+            
 //         }
 //         catch (err)
 //         {
-//             console.log("event.js>scheduleJob>>slowInterfaces>>err")
+//             console.log("event.js>scheduleJob>>figureInterfaces>>err")
 //             console.log(err);
 //         }
 // }));
+
 
 
 // var test=schedule.scheduleJob("0 0 * * * *",(async function () {
