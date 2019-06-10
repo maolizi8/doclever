@@ -107,3 +107,28 @@ function  getExplorer() {
         return 'Safari';  
     }  
 }  
+
+function getLocalDate(shijianchuo){
+    var instance =new Date(shijianchuo); //创建一个Date对象
+    var localTime = instance.getTime();
+    var localOffset=instance.getTimezoneOffset()*60000; //获得当地时间偏移的毫秒数
+    var utc = localTime + localOffset; //utc即GMT时间
+    var offset =8; //东8区
+    var beijing = utc + (3600000*offset);
+    return new Date(beijing);
+}
+
+//格式化utc时间
+function convertUtcTimeToLocalTime(utc_time, utc_offset){
+    if(utc_time == ''){
+           return '';
+    }
+    //e.g. Param: utc_time = "2011-09-22T09:13:07.0"; lag = +8;
+    //return 2011年9月22日 17:13:07
+    var utcdate= new Date(Date.parse(utc_time.substr(0,utc_time.indexOf(".")).replace("T", " ").replace(/-/g, "/")));
+    if(utcdate == "NaN" || utcdate == "Invalid Date"){
+       return utc_time;
+    }
+    var localdate = new Date(utcdate.getTime() + utc_offset*3600000);
+    return localdate.getFullYear()+"年"+(localdate.getMonth()+1)+"月"+localdate.getDate()+"日 "+(localdate.getHours()<10?"0"+localdate.getHours():localdate.getHours())+":"+(localdate.getMinutes()<10 ? "0"+localdate.getMinutes():localdate.getMinutes())+":"+(localdate.getSeconds()<10 ? "0"+localdate.getSeconds():localdate.getSeconds());
+   }
