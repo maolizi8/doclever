@@ -236,7 +236,7 @@
             // },
         },
 		components:{
-            //"page":page
+            "page":page
         },
         methods:{
            showDetails:function(inter){
