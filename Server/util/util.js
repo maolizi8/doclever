@@ -2207,8 +2207,8 @@ var removeOldData=async function() {
         console.log(r3)
 
         // pollRunInterface keep 10 days
-        date.setDate(date.getDate()-5);
-        query.createdAt={$lt:date}
+        //date.setDate(date.getDate()-5);
+        //query.createdAt={$lt:date}
         let r4 = await (pollRunInterface.removeAsync(query));
         console.log("removeOldData pollRunInterface: ")
         console.log(r4)
@@ -2828,7 +2828,8 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
     // -----------------pollRunInterfaceModel     create ------------------
 
     console.log("<runInterface2>start run>>interface name: "+obj.name)
-    func=request(objReq);     //request interface
+
+    func=request(objReq);     //request interface!!!!!!
 
     //logger.info('pollRunInterface>>>request(0bj)>func');
     //logger.info(func);
@@ -2836,7 +2837,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
     let requestRes={}
     let res={};
 
-    console.log("<runInterface2>interface name: "+obj.name)
+    //console.log("<runInterface2>interface name: "+obj.name)
 
     return func.then(async function(result){
        // logger.info('<runInterface2>-result');
@@ -3484,6 +3485,8 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
             logger.info('runTestCode3>开始执行用例'+test.module.name+"/"+test.group.name+"/"+test.name+"("+(mode=="code"?"代码模式":"UI模式")+")")
             logger.info('server>util.js>runTestCode3>----root.order-----')
             logger.info(root.order)
+
+            console.log('testcase run order>>:'+root.order)
 
             // -----------------root.pollRunTestModId     create pollTestRun------------------
             try {
@@ -4369,12 +4372,12 @@ let handleMysql=async function (host,user,password,port,database,sql,operator) {
             break;
         }
     }
-    console.log("SQL:")
-    console.log(sql)
+    ///console.log("SQL:")
+    //console.log(sql)
     try {
         let result=await (mysqldb(connectinfo,sql,obj));
-        console.log("result:")
-        console.log(result)
+        //console.log("result:")
+       // console.log(result)
         connectinfo.sql=sql
         connectinfo.sqlType=obj.sqlType
         connectinfo.data=result
