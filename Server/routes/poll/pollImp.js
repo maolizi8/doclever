@@ -282,6 +282,32 @@ var interface=[
     },//gql add
     
     {
+        "method":"GET",
+        "path":"/poll/runinfotests3",
+        "param": {
+            id:{
+                type:String,
+            },
+            page:Number,
+            status:Number
+        },
+        "data":String,
+        handle:poll.runInfoTests3
+    },//gql add
+
+    {
+        "method":"GET",
+        "path":"/poll/runinfointerlist",
+        "param": {
+            testrunid:{
+                type:String,
+            }
+        },
+        "data":String,
+        handle:poll.runInfoTestsInterfaces
+    },//gql add
+    
+    {
         "method":"POST",
         "path":"/poll/saveruninfo",
         "param": {

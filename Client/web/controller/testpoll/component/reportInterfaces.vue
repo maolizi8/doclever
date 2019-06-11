@@ -37,10 +37,6 @@
             <el-button size="mini" :type="statusRep==99?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(99)" v-if="info.status==99">
                 进行中
             </el-button>
-
-            <!-- <el-button size="mini" style="margin-right:3px;float:right;" type="primary" @click.native="showInterfacesList(-1)" :loading="runPending">
-                 显示全部-运行的接口详情信息
-            </el-button> -->
         </div>
 		           
         <table class="table box-shadow">
@@ -50,11 +46,7 @@
                     <th style="width:200px;">测试模块/业务</th>
                     <th style="width:200px;">测试用例</th>
                     <th style="width:55px;">状态</th>
-                    <th style="">接口运行详情 
-                        <el-button size="mini" style="margin-right:3px;float:right;" type="primary" @click.native="showInterfacesList(-1)" :loading="runPending">
-                            查看全部详情
-                        </el-button>
-                    </th>
+                    <th style="">接口运行详情</th>
                 </tr>
             </thead>
             <tbody id="testinfo">
@@ -77,16 +69,11 @@
                          <span v-else style="color: gray"><i class="el-icon-question"></i>未知</span> 
                     </td>
                     <!-- <td :style="{color:item.status==0?'grey':(item.status==1?'green':'red')}">{{item.status==0?"未校验":(item.status==1?"成功":"失败")}}</td> -->
-                    <td :id="item._id">
-                        
-                        <el-button v-if="item.interfaces.length==0" size="mini" style="" @click.native="showInterfacesList(index)">
-                            <i class="el-icon-question" style="color: gray" v-if="item.interShow==0"></i>
-                            <i class="el-icon-loading" v-else-if="item.interShow==1"></i>
-                            <i class="el-icon-success" style="color: green" v-else-if="item.interShow==2"></i>
-                            <i class="el-icon-error" style="color: red" v-else-if="item.interShow==3"></i>
-                            查看运行的接口详细信息
+                    <td>
+                        <el-button size="mini" :type="statusRep==2?'primary':''" style="margin-right:3px;" @click.native="changeStatusList(2)">
+                            查看运行的接口信息
                         </el-button>
-                        <table class="table table-light" v-else>
+                        <!-- <table class="table table-light">
                             <tbody>
                                 <tr v-for="(inter,index) in item.interfaces" :key="index" style="font-size:14px;">
                                     <td class="line-num">{{index+1}}</td>
@@ -105,17 +92,17 @@
                                 </tr>
                             </tbody>
                             
-                        </table>
+                        </table> -->
                     </td>
                 </tr>
             </tbody>
-            <tfoot>
+            <!-- <tfoot>
                 <tr style="text-align: center;vertical-align: middle">
                     <td colspan="5">
                         <page @change="changePage" ref="page" :pages="totalPages" :numofpage="numOfPage"></page>
                     </td>
                 </tr>
-            </tfoot>
+            </tfoot> -->
         </table>
     </el-row>
    
@@ -187,7 +174,7 @@
 </style>
 
 <script>
-    var page=require("component/pageCompo.vue");
+    //var page=require("component/pageCompo.vue");
     module.exports={
         props:["info"],
         data:function () {
@@ -195,8 +182,7 @@
 				
                 statusRep:2,
                 
-                runPending:false,
-				numOfPage:20,
+				//numOfPage:20,
                 runTestLists:[]
             }
         },
@@ -210,25 +196,25 @@
             // statusRep:function(){
 			// 	return getUrlParam("status")?getUrlParam("status"):2;
             // },
-			totalPages:function(){
-                if (this.statusRep==2) {
-                    var total=Math.ceil(this.info.testFail/this.numOfPage);
-                    console.log("report.vue>computed:>total testFail pages:")
-                    console.log(total)
-                    return total
-                } else if (this.statusRep==1) {
-                    var total=Math.ceil(this.info.testSuccess/this.numOfPage);
-                    console.log("report.vue>computed:>total testSuccess pages:")
-                    console.log(total)
-                    return total
-                } else if (this.statusRep==0) {
-                    var total=Math.ceil(this.info.testUnkown/this.numOfPage);
-                    console.log("report.vue>computed:>total testUnkown pages:")
-                    console.log(total)
-                    return total
-                }
+			// totalPages:function(){
+            //     if (this.statusRep==2) {
+            //         var total=Math.ceil(this.info.testFail/this.numOfPage);
+            //         console.log("report.vue>computed:>total testFail pages:")
+            //         console.log(total)
+            //         return total
+            //     } else if (this.statusRep==1) {
+            //         var total=Math.ceil(this.info.testSuccess/this.numOfPage);
+            //         console.log("report.vue>computed:>total testSuccess pages:")
+            //         console.log(total)
+            //         return total
+            //     } else if (this.statusRep==0) {
+            //         var total=Math.ceil(this.info.testUnkown/this.numOfPage);
+            //         console.log("report.vue>computed:>total testUnkown pages:")
+            //         console.log(total)
+            //         return total
+            //     }
 				
-			}
+			// }
             // runTestLists:function () {
             //     console.log("report.vue>this.tests")
             //     console.log(this.tests)
@@ -248,108 +234,6 @@
                     "interfaceRunInfo":inter
                 });
            },
-           showInterfacesList:async function(index){
-               //$.startHud();
-               console.log("report.vue>showInterfacesList>index:")
-               console.log(index)
-               var _this=this;
-               _this.runPending=true;
-
-               if (index!=-1) {
-                   var query={
-                            //testrunid:polltestid
-                            testrunid:_this.runTestLists[index]._id
-                        }
-                        _this.runTestLists[index].interShow=1
-                    await net.get("/poll/runinfointerlist",query).then(function (data) {
-                                    console.log("report.vue>showInterfacesList");
-                                    if(data.code==200)
-                                    {
-                                        console.log("report.vue>showInterfacesList>data.data");
-                                        console.log(data.data)
-
-                                    _this.runTestLists[index].interfaces=data.data;
-
-                                        // for(var i=0;i<_this.runTestLists.length;i++)
-                                        // {
-                                        //     var obj=_this.runTestLists[i];
-                                        //     if(obj._id==polltestid)
-                                        //     {
-                                        //         obj.interfaces=data.data;
-                                        //         break
-                                        //     }
-                                        // }
-                                    }
-                                    else
-                                    {
-                                        $.notify(data.msg,0)
-                                    }
-
-                                    _this.runTestLists[index].interShow=2
-                                    //$.stopLoading();
-                                    //$.stopHud();
-                                }).catch(function (err) {
-                                    //$.stopLoading();
-                                    //$.stopHud();
-                                    $.notify(err,0);
-                                    _this.runTestLists[index].interShow=3
-                                })
-               } else {
-                   for(var i=0;i<_this.runTestLists.length;i++)
-                    {
-                        var query={
-                                //testrunid:polltestid
-                                testrunid:_this.runTestLists[i]._id
-                            }
-                        _this.runTestLists[i].interShow=1
-                        await net.get("/poll/runinfointerlist",query).then(function (data) {
-                                console.log("report.vue>showInterfacesList");
-                                if(data.code==200)
-                                {
-                                    console.log("report.vue>showInterfacesList>data.data");
-                                    console.log(data.data)
-
-                                _this.runTestLists[i].interfaces=data.data;
-
-                                    // for(var i=0;i<_this.runTestLists.length;i++)
-                                    // {
-                                    //     var obj=_this.runTestLists[i];
-                                    //     if(obj._id==polltestid)
-                                    //     {
-                                    //         obj.interfaces=data.data;
-                                    //         break
-                                    //     }
-                                    // }
-                                }
-                                else
-                                {
-                                    $.notify(data.msg,0)
-                                }
-
-                                _this.runTestLists[i].interShow=2
-                                if (i<_this.runTestLists.length) {
-                                     _this.runTestLists[i+1].interShow=1
-                                }
-                               
-                                //$.stopLoading();
-                                //$.stopHud();
-                            }).catch(function (err) {
-                                //$.stopLoading();
-                                //$.stopHud();
-                                $.notify(err,0);
-                                _this.runTestLists[i].interShow=3
-                                if (i<_this.runTestLists.length) {
-                                     _this.runTestLists[i+1].interShow=1
-                                }
-                            })
-                    }
-
-               }
-                _this.runPending=false;
-               
-              
-           },
-          
            showOutput:function (item) {
                 if(item.output)
                 {
@@ -370,7 +254,7 @@
 							page:page,
                             status:_this.statusRep
 							}
-				net.get("/poll/runinfotests3",query).then(function (data) {
+				net.get("/poll/runinfotests2",query).then(function (data) {
 					console.log("report.vue>runTestLists");
 					if(data.code==200)
 					{
@@ -409,7 +293,7 @@
                             page:0,
                             status:status
 							}
-				net.get("/poll/runinfotests3",query).then(function (data) {
+				net.get("/poll/runinfotests2",query).then(function (data) {
 					console.log("report.vue>runTestLists");
 					if(data.code==200)
 					{
@@ -430,40 +314,7 @@
 					$.notify(err,0);
 				})
             },
-            setStatus:function (type,id) {
-
-                console.log('report.vue>setStatus')
-
-                var item=null;
-                for(var i=0;i<this.runTestLists.length;i++)
-                {
-                    var obj=this.runTestLists[i];
-                    if(obj.id==id)
-                    {
-                        item=obj;
-                        break;
-                    }
-                }
-                if(item)
-                {
-                    if(type=="testStart")
-                    {
-                        item.status=1;
-                    }
-                    else if(type=="testSuccess")
-                    {
-                        item.status=2;
-                    }
-                    else if(type=="testFail")
-                    {
-                        item.status=3;
-                    }
-                    else if(type=="testUnknown")
-                    {
-                        item.status=4;
-                    }
-                }
-            },
+            
         },
         created:function () {
             var id=getUrlParam("id");
@@ -477,7 +328,7 @@
                             }
             
             //$.stopLoading();
-            net.get("/poll/runinfotests3",query).then(function (data) {
+            net.get("/poll/runinfotests2",query).then(function (data) {
                 console.log("report.vue>runTestLists");
                 if(data.code==200)
                 {

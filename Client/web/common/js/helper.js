@@ -3596,6 +3596,38 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
     return ret;
 }
 
+
+// helper.showInterfacesList=async function(index,runTestLists){
+//     var query={
+//         //testrunid:polltestid
+//         testrunid:runTestLists[index]._id
+//     }
+//     runTestLists[index].interShow=1
+//    await net.get("/poll/runinfointerlist",query).then(function (data) {
+//         console.log("helper.js>>showInterfacesList");
+//         if(data.code==200)
+//         {
+//             console.log("helper.js>showInterfacesList>data.data");
+//             console.log(data.data)
+
+//             runTestLists[index].interfaces=data.data;
+//         }
+//         else
+//         {
+//             $.notify(data.msg,0)
+//         }
+
+//             runTestLists[index].interShow=2
+//         //$.stopLoading();
+//         //$.stopHud();
+//     }).catch(function (err) {
+//         //$.stopLoading();
+//         //$.stopHud();
+//         $.notify(err,0);
+//         runTestLists[index].interShow=3
+//     })
+//     return runTestLists
+// }
 module.exports=helper;
 
 

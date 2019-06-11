@@ -521,15 +521,13 @@ function  Poll() {
         try
         {
             
-			//let page=req.clientParam.page
-            
             let tests=await (pollRunTest.findAsync({
                 pollRun:req.clientParam.id,
                 status:req.clientParam.status
-            },"pollRun testId testName testGroup testModule status mode testOrder output",{
+            },"pollRun testId testName testGroup testModule status mode testOrder output interfaces",{
+                skip:20*req.clientParam.page,
+                limit:20,
                 sort:"createdAt"
-				// skip:20*page,
-				// limit:20
             }));
             if (tests) {
                 for (let test of tests) {
@@ -543,6 +541,58 @@ function  Poll() {
             }
             //console.log(tests)
             util.ok(res,tests,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }//gql add
+    this.runInfoTests3=async (req,res)=> {
+        try
+        {
+            
+            let tests=await (pollRunTest.findAsync({
+                pollRun:req.clientParam.id,
+                status:req.clientParam.status
+            },"pollRun testId testName testGroup testModule status mode testOrder output interfaces",{
+                skip:20*req.clientParam.page,
+                limit:20,
+                //sort:"createdAt"
+            }));
+            if (tests) {
+                for (let test of tests) {
+                    test.interShow=0
+                    //"interName interBaseUrl interPath status runTime"
+                    // test.interfaces=await (pollRunInterface.findAsync({
+                    //     pollRunTest:test._id
+                    // },null,{
+                    //     sort:"createdAt"
+                    // }))
+                }
+            }
+            //console.log(tests)
+            util.ok(res,tests,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }//gql add
+
+    this.runInfoTestsInterfaces=async (req,res)=> {
+        try
+        {
+            
+            let interList = await (pollRunInterface.findAsync({
+                pollRunTest:req.clientParam.testrunid
+            },null,{
+                sort:"createdAt"
+            }))
+
+            //console.log(tests)
+            util.ok(res,interList,"ok");
         }
         catch (err)
         {   
