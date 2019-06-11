@@ -1137,8 +1137,15 @@ var runBefore2=function (code,requestObj,query,header,body,param) {
     }
     catch (err)
     {
-        console.log("Before Error:"+err);
+        console.log("Before Error: "+err);
         logger.error("Before Error:"+err);
+        logger.error("Before Error:interface info>>code:");
+        logger.error(code?code:'?');
+        logger.error("Before Error:interface info>>requestObj.baseurl:");
+        logger.error(requestObj.baseurl?requestObj.baseurl:'?');
+        logger.error("Before Error:interface info>>requestObj.path:");
+        logger.error(requestObj.path?requestObj.path:'?');
+
     }
 }
 
@@ -1150,7 +1157,6 @@ var runAfter=function (code,status,header,data) {
         logger.info(code);
         if(code)
         {
-            
             eval(code);
         }
         logger.info("run after:  header: ");
@@ -1163,8 +1169,10 @@ var runAfter=function (code,status,header,data) {
     }
     catch (err)
     {
-        console.log("After Error:"+err);
+        console.log("After Error: "+err);
         logger.error("After Error:"+err);
+        logger.error("Before Error:interface info>>code:");
+        logger.error(code?code:'?');
     }
 }
 
@@ -2819,6 +2827,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
     }
     // -----------------pollRunInterfaceModel     create ------------------
 
+    console.log("<runInterface2>start run>>interface name: "+obj.name)
     func=request(objReq);     //request interface
 
     //logger.info('pollRunInterface>>>request(0bj)>func');
@@ -2827,10 +2836,12 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
     let requestRes={}
     let res={};
 
+    console.log("<runInterface2>interface name: "+obj.name)
+
     return func.then(async function(result){
        // logger.info('<runInterface2>-result');
         //logger.info(result);
-       console.log("<runInterface2>result.statusCode: "+String(result.statusCode))
+       console.log("<runInterface2>after run>>result.statusCode: "+String(result.statusCode))
        // var res={}
     //    res={
     //         req:{
@@ -2980,6 +2991,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
             logger.error(error);
             logger.error('pollRunInterface.update>normal>interfaceid: '+obj._id);
             logger.error('pollRunInterface.update>normal>interfacename: '+obj.name);
+            console.log('pollRunInterface.update>normal>interfacename: '+obj.name);
         } 
     }
     
@@ -2988,6 +3000,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         return res;
     }).catch(async function(err){
         //let res;
+        console.log("<runInterface2>after run>>err.message: "+err.message)
         logger.error('<runInterface2>-err');
         logger.error(err);
         logger.error(err.message);
@@ -3060,37 +3073,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         return res
     });
 
-    // -----------------pollRunInterfaceModel     update ------------------
-    if(root.pollRunInterModId && root.pollRunInterModId!='createPollRunInterError'){
-        //let interResult=testInterfaces[root.pollRunTestId][testIdLength-1].result?testInterfaces[root.pollRunTestId][testIdLength-1].result:{}
-        logger.info('-----------------pollRunInterface.findOneAndUpdateAsync----------------')
-        try {
-            let query={
-                result:requestRes.result?requestRes.result:{},
-                runTime:requestRes.second,
-                errMessage:requestRes.errMessage?requestRes.errMessage:''
-            };
-            logger.info('pollRunInterface.update>query')
-            logger.info(query)
-
-            let interRun=await (pollRunInterface.findOneAndUpdateAsync({
-                _id:root.pollRunInterModId
-            },query));
-
-            logger.info('pollRunInterface.update>normal done>interRun');
-            logger.info(interRun);
     
-        } catch (error) {
-            logger.error('pollRunInterface.update>error');
-            logger.error(error);
-            logger.error('pollRunInterface.update>normal>interfaceid: '+obj._id);
-            logger.error('pollRunInterface.update>normal>interfacename: '+obj.name);
-        } 
-    }
-    
-    // -----------------pollRunInterfaceModel     update------------------
-   
-    return res;
 }
 
 
@@ -3340,12 +3323,20 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                     }
                     catch (err)
                     {
-                        logger.error('runTestCode3>type=1>example')
+                        logger.error('runTestCode3>type=1>example>err')
                         logger.error(err)
+                        logger.error('runTestCode3>type=1>example>interinfo.name')
+                        logger.error(interinfo.name)
+                        logger.error('runTestCode3>type=1>example>objExample.name')
+                        logger.error(objExample.name?objExample.name:'<objExample.name>')
+
+                        console.log('runTestCode3>type=1>example>err');
+                        console.log(err);
+                        console.log('runTestCode3>type=1>example>interinfo.name'+interinfo.name);
                     }
                 }else{
-                    logger.info('runTestCode3>type=1>interinfo.param[0].before')
-                        logger.info(interinfo.param[0].before);
+                    logger.info('runTestCode3>type=1>interinfo.param[0].before');
+                    logger.info(interinfo.param[0].before);
 
                     o.before=interinfo.param[0].before?interinfo.param[0].before:o.before;
                     obj=JSON.stringify(o);//gql add
@@ -3515,10 +3506,18 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                 logger.info(testRun._id);
 
             } catch (error) {
-                logger.error('pollRunTest.create>error');
+                logger.error('pollRunTest.create>catch>>error');
                 logger.error(error);
-                logger.error('pollRunTest.create>testid: '+test._id);
-                logger.error('pollRunTest.create>testname: '+test.name);
+                logger.error('pollRunTest.create>catch>>testid: '+test._id);
+                logger.error('pollRunTest.create>catch>>testname: '+test.name);
+                logger.error('pollRunTest.create>catch>>test.module.name: '+test.module.name);
+                logger.error('pollRunTest.create>catch>>test.group.name: '+test.group.name);
+
+                console.log('pollRunTest.create>catch>>error');
+                console.log(error);
+                console.log('pollRunTest.create>catch>>testname: '+test.name);
+                console.log('pollRunTest.create>catch>>test.module.name: '+test.module.name);
+                console.log('pollRunTest.create>catch>>test.group.name: '+test.group.name);
 
                 root.pollRunTestModId='createPollRunTestError'
             }
@@ -3705,11 +3704,28 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
             argv:[]
         };
 
-        logger.error('<runTestCode3>-err');
+        logger.error('<runTestCode3>catch>err');
         logger.error(err);
-        logger.info('<runTestCode3>-err》__id');
+        logger.error('<runTestCode3>catch>test.name');
+        logger.error(test.name);
+        logger.error('<runTestCode3>catch>test.group.name');
+        logger.error(test.group.name);
+        logger.error('<runTestCode3>catch>test.module.name');
+        logger.error(test.module.name);
+
+        console.log('<runTestCode3>catch>err');
+        console.log(err);
+        console.log('<runTestCode3>catch>test.name');
+        console.log(test.name);
+        console.log('<runTestCode3>catch>test.group.name');
+        console.log(test.group.name);
+        console.log('<runTestCode3>catch>test.module.name');
+        console.log(test.module.name);
+
+
+        logger.info('<runTestCode3>catch>err>__id');
         logger.info(__id);
-        logger.info('<runTestCode3>-err》level');
+        logger.info('<runTestCode3>catch>err>level');
         logger.info(level);
 
         root.output+=err.message+"<br>";
@@ -3785,6 +3801,7 @@ let runPollBackend=async function (pollArr,operator) {
     {   
         logger.info('runPollBackend>>for>----------------'+pollObj.name)
         // logger.info(pollObj)
+        console.log('runPollBackend>>for>----------------'+pollObj.name)
 
         let objCollection=await (testCollection.findOneAsync({
             poll:pollObj._id
@@ -3840,8 +3857,12 @@ let runPollBackend=async function (pollArr,operator) {
         }
         catch(e)
         {
-            logger.error('pollRun.create>err')
+            logger.error('pollRun.create>catch>>err')
             logger.error(e)
+            logger.error('pollRun.create>catch>>pollObj.name')
+            logger.error(pollObj.name)
+            console.log('pollRun.create>catch>>pollObj.name')
+            console.log(pollObj.name)
             
             continue;
         } 
@@ -3914,6 +3935,11 @@ let runPollBackend=async function (pollArr,operator) {
             {
                 logger.error('runPollBackend>for arrTest>>>runTestCode3>>e')
                 logger.error(e)
+                logger.error('runPollBackend>for arrTest>>>runTestCode3>>testCase.test')
+                logger.error(testCase.test)
+                logger.error('runPollBackend>for arrTest>>>runTestCode3>>testCase.id')
+                logger.error(testCase.id)
+                
 
                 var pollTestIndex=pollTest.length-1;
                 pollTest[pollTestIndex].message=e.toString();
@@ -4067,8 +4093,16 @@ let runPollBackend=async function (pollArr,operator) {
         {
             logger.error('pollRun.updatepoll>err')
             logger.error(e)
+            logger.error('pollRun.updatepoll>pollObj.name')
+            logger.error(pollObj.name)
+            logger.error('pollRun.updatepoll>root.pollRunTime')
+            logger.error(root.pollRunTime)
+
+            
             console.log('pollRun.updatepoll>err')
             console.log(e)
+            console.log('pollRun.updatepoll>pollObj.name')
+            console.log(pollObj.name)
         } 
         // try
         // {
