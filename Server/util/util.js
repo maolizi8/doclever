@@ -2163,6 +2163,7 @@ var removeOldData=async function() {
     try {
         let pollRun=require("../model/pollRunModel");
         let pollRunTest=require("../model/pollRunTestModel");
+        
         let date=new Date();
         
         //date.setMonth(date.getMonth()-1)
@@ -2183,9 +2184,11 @@ var removeOldData=async function() {
         let r2 = await (pollRunTest.removeAsync(query));
         console.log("removeOldData pollRunTest: ")
         console.log(r2)
+        
+        
 
         // success only 5 days
-        date.setDate(date.getDate()+14);
+        date.setDate(date.getDate()+15);
         query.createdAt={$lt:date}
         query.status=1  //success
         console.log("removeOldData date2: ")
@@ -2194,6 +2197,13 @@ var removeOldData=async function() {
         //let successTotal=await (pollRunTest.countAsync(query));
         console.log("removeOldData pollRunTest<success case>: ")
         console.log(r3)
+
+        // pollRunInterface keep 10 days
+        date.setDate(date.getDate()-5);
+        query.createdAt={$lt:date}
+        let r4 = await (pollRunInterface.removeAsync(query));
+        console.log("removeOldData pollRunInterface: ")
+        console.log(r4)
 
         console.log("event.js>scheduleJob>>util.removeOldData <done>")
 
