@@ -3327,8 +3327,8 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                         logger.error(err)
                         logger.error('runTestCode3>type=1>example>interinfo.name')
                         logger.error(interinfo.name)
-                        logger.error('runTestCode3>type=1>example>objExample.name')
-                        logger.error(objExample.name?objExample.name:'<objExample.name>')
+                        logger.error('runTestCode3>type=1>example>o.example')
+                        logger.error(o.example)
 
                         console.log('runTestCode3>type=1>example>err');
                         console.log(err);
