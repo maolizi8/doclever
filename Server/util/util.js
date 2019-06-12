@@ -3511,6 +3511,8 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
             } catch (error) {
                 logger.error('pollRunTest.create>catch>>error');
                 logger.error(error);
+                logger.error('pollRunTest.create>catch>>root.order')
+                logger.error(root.order)
                 logger.error('pollRunTest.create>catch>>testid: '+test._id);
                 logger.error('pollRunTest.create>catch>>testname: '+test.name);
                 logger.error('pollRunTest.create>catch>>test.module.name: '+test.module.name);
@@ -3709,6 +3711,8 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
 
         logger.error('<runTestCode3>catch>err');
         logger.error(err);
+        logger.error('<runTestCode3>catch>>root.order')
+        logger.error(root.order)
         logger.error('<runTestCode3>catch>test.name');
         logger.error(test.name);
         logger.error('<runTestCode3>catch>test.group.name');
@@ -3938,6 +3942,8 @@ let runPollBackend=async function (pollArr,operator) {
             {
                 logger.error('runPollBackend>for arrTest>>>runTestCode3>>e')
                 logger.error(e)
+                logger.error('runPollBackend>for arrTest>>>runTestCode3>>root.order')
+                logger.error(root.order)
                 logger.error('runPollBackend>for arrTest>>>runTestCode3>>testCase.test')
                 logger.error(testCase.test)
                 logger.error('runPollBackend>for arrTest>>>runTestCode3>>testCase.id')

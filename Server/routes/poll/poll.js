@@ -558,7 +558,7 @@ function  Poll() {
             },"pollRun testId testName testGroup testModule status mode testOrder output interfaces",{
                 skip:20*req.clientParam.page,
                 limit:20,
-                //sort:"createdAt"
+                sort:"createdAt"
             }));
             if (tests) {
                 for (let test of tests) {
