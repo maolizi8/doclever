@@ -3831,6 +3831,28 @@ let runPollBackend=async function (pollArr,operator) {
         {
             continue;
         }
+        try {
+            let lastRun=await (pollRun.findAsync({
+                poll:pollObj._id
+            },"status",{
+                sort:"-createdAt",
+                limit:1
+            })); 
+            if (lastRun) {
+                if (lastRun[0].status==99) {
+                    logger.info('runPollBackend>>poll last run> is running')
+                    continue;
+                }
+            }
+            
+        } catch (error) {
+            logger.error('runPollBackend>>poll last run>unkown??')
+            logger.error(error)
+            logger.error('runPollBackend>>poll last run>pollObj.name')
+            logger.error(pollObj.name?pollObj.name:pollObj._id)
+        }
+
+
         let root={
             output:"",
             count:objCollection.tests.length,
