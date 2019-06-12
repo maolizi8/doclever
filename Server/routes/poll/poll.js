@@ -893,6 +893,69 @@ function  Poll() {
         }
     }
 
+    this.clearOldPollRunData=async (req,res)=> {
+        
+        try
+        {
+            let obj={}
+            let date=new Date();
+            
+            //date.setMonth(date.getMonth()-1)
+            date.setDate(date.getDate()-19);
+            date.setHours(8);
+            date.setMinutes(0);
+            date.setSeconds(0);
+            date.setMilliseconds(0);
+            console.log("clearOldPollRunData start>pollRun> date: ")
+            console.log(date)
+
+            let r2 = await (pollRunTest.removeAsync({
+                createdAt:{$lt:date}
+            }));
+            //console.log("clearOldPollRunData pollRunTest: ")
+            //console.log(r2)
+            obj.pollRunTest={
+                date:(date.getMonth()+1)+'-'+date.getDate(),
+                result:r2}
+
+            // success only 5 days
+            date.setDate(date.getDate()+15);
+            console.log("clearOldPollRunData start>pollRunTest> date: ")
+            console.log(date)
+            let r3 = await (pollRunTest.removeAsync({
+                createdAt:{$lt:date},
+                status:1
+            }));
+            //let successTotal=await (pollRunTest.countAsync(query));
+            //console.log("clearOldPollRunData pollRunTest<success case>: ")
+            //console.log(r3)
+            obj.pollRunTestSuccess={
+                date:(date.getMonth()+1)+'-'+date.getDate(),
+                result:r3}
+
+            // pollRunInterface keep 10 days
+            //date.setDate(date.getDate()-5);
+            //query.createdAt={$lt:date}
+            
+            let r4 = await (pollRunInterface.removeAsync({
+                createdAt:{$lt:date}
+            }));
+            //console.log("clearOldPollRunData pollRunInterface: ")
+            //console.log(r4)
+            obj.pollRunInterface={
+                date:(date.getMonth()+1)+'-'+date.getDate(),
+                result:r4}
+
+            console.log("clearOldPollRunData <done>")
+
+            util.ok(res,obj,"ok");
+        }
+        catch (err)
+        {   
+            //console.log(err);
+            util.catch(res,err);
+        }
+    }
 }
 
 module.exports=Poll;

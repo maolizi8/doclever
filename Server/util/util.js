@@ -2182,14 +2182,17 @@ var removeOldData=async function() {
         date.setMilliseconds(0);
         console.log("removeOldData date1: ")
         console.log(date)
-        let query={
+        // let query={
+        //     //createdAt:{$lt:"2019-02-18 00:00:00"}
+        // }
+        let r1 = await (pollRun.removeAsync({
             createdAt:{$lt:date}
-            //createdAt:{$lt:"2019-02-18 00:00:00"}
-        }
-        let r1 = await (pollRun.removeAsync(query));
+        }));
         console.log("removeOldData pollRun: ")
         console.log(r1)
-        let r2 = await (pollRunTest.removeAsync(query));
+        let r2 = await (pollRunTest.removeAsync({
+            createdAt:{$lt:date}
+        }));
         console.log("removeOldData pollRunTest: ")
         console.log(r2)
         
@@ -2197,19 +2200,21 @@ var removeOldData=async function() {
 
         // success only 5 days
         date.setDate(date.getDate()+15);
-        query.createdAt={$lt:date}
-        query.status=1  //success
         console.log("removeOldData date2: ")
         console.log(date)
-        let r3 = await (pollRunTest.removeAsync(query));
-        //let successTotal=await (pollRunTest.countAsync(query));
+        let r3 = await (pollRunTest.removeAsync({
+            createdAt:{$lt:date},
+            status:1
+        }));
         console.log("removeOldData pollRunTest<success case>: ")
         console.log(r3)
 
         // pollRunInterface keep 10 days
         //date.setDate(date.getDate()-5);
         //query.createdAt={$lt:date}
-        let r4 = await (pollRunInterface.removeAsync(query));
+        let r4 = await (pollRunInterface.removeAsync({
+            createdAt:{$lt:date}
+        }));
         console.log("removeOldData pollRunInterface: ")
         console.log(r4)
 
@@ -3615,8 +3620,13 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
             {
                 root.unknown++;
                 root.runTotal++;
+
+                
+                logger.error("runTestCode3>用例执行结束："+test.module.name+"/"+test.group.name+"/"+test.name+"(未判定)")
+                logger.error('未判定 root.order: '+root.order)
             }
             
+
             if(test.module)
             {
                 logger.info("runTestCode3>用例执行结束："+test.module.name+"/"+test.group.name+"/"+test.name+"(未判定)")

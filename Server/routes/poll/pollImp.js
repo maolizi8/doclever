@@ -386,6 +386,18 @@ var interface=[
         user:1,
         handle:poll.pollInterSetSave
     },//gql add
+
+
+    {
+        "method":"GET",
+        "path":"/poll/clearoldpollrundata",
+        "param": {
+            
+        },
+        "data":String,
+        user:1,
+        handle:poll.clearOldPollRunData
+    },//gql add
 ];
 
 module.exports=interface;
