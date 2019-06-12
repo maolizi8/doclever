@@ -3396,8 +3396,18 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                     name:"",
                     status:0
                 }
-                logger.error('runTestCode3>type=2>test not found??')
+
+                logger.error('runTestCode3>type=2>test not found?? testid:')
                 logger.error(obj);
+                logger.error('runTestCode3>type=2>test not found?? objId:')
+                logger.error(objId);
+                logger.error('runTestCode3>type=2>test not found?? leverl')
+                logger.error(level);
+                logger.error('runTestCode3>type=2>test not found?? root.order')
+                logger.error(root.order);
+                // if(level==1){
+                //     continue;
+                // }
             }
 			
 			// logger.debug('runTestCode3>type=2>testObj')
@@ -3592,6 +3602,8 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
     //logger.info(text)
     var ret=eval("(async function () {"+text+"})()").then(function (ret) {
         logger.debug('server>util.js>runTestCode3>in eval>start-------------')
+        logger.info('server>util.js>runTestCode3>in eval>then>ret')
+        logger.info(ret)
 
         var obj={
             argv:[]
@@ -3616,14 +3628,21 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
         {
             obj.pass=undefined;
             test.status=0;
+
+           
+
             if(__id!=undefined)
             {
                 root.unknown++;
                 root.runTotal++;
 
-                
+                console.log("runTestCode3>用例执行结束："+test.module.name+"/"+test.group.name+"/"+test.name+"(未判定)")
                 logger.error("runTestCode3>用例执行结束："+test.module.name+"/"+test.group.name+"/"+test.name+"(未判定)")
                 logger.error('未判定 root.order: '+root.order)
+                logger.error('temp===undefined>__id: ')
+                logger.error(__id)
+                logger.error('temp===undefined>level: ')
+                logger.error(level)
             }
             
 
