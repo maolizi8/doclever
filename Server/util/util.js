@@ -2185,11 +2185,11 @@ var removeOldData=async function() {
         // let query={
         //     //createdAt:{$lt:"2019-02-18 00:00:00"}
         // }
-        let r1 = await (pollRun.removeAsync({
-            createdAt:{$lt:date}
-        }));
-        console.log("removeOldData pollRun: ")
-        console.log(r1)
+        // let r1 = await (pollRun.removeAsync({
+        //     createdAt:{$lt:date}
+        // }));
+        // console.log("removeOldData pollRun: ")
+        // console.log(r1)
         let r2 = await (pollRunTest.removeAsync({
             createdAt:{$lt:date}
         }));

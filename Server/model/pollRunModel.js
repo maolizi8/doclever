@@ -61,7 +61,12 @@ model.configOutputField(null,[
     "createdAt",
     "updatedAt"
 ]);
-model.index({"createdAt":-1})
+
+model.index({"createdAt":-1});
+model.index({
+    "poll":-1
+});
+
 var dbManage=db.model("PollRun",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));
 module.exports=dbManage;

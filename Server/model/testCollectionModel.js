@@ -74,6 +74,8 @@ model.configOutputField(null,[
     "createdAt",
     "updatedAt"
 ]);
+
+
 var dbManage=db.model("TestCollection",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));
 module.exports=dbManage;

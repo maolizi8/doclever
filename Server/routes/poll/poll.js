@@ -901,7 +901,7 @@ function  Poll() {
             let date=new Date();
             
             //date.setMonth(date.getMonth()-1)
-            date.setDate(date.getDate()-19);
+            date.setDate(date.getDate()-20);
             date.setHours(8);
             date.setMinutes(0);
             date.setSeconds(0);

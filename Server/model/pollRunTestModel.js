@@ -36,96 +36,7 @@ var model=new mongoose.Schema({
         type:String,
         default:""
     },
-    interfaces:Array,
-    // interfaces:{
-    //     type:[
-    //         {
-    //             // interId: {
-    //             //     type:mongoose.Schema.ObjectId,
-    //             //     ref:"Interface"
-    //             // },
-    //             interId: {
-    //                 type:String,
-    //                 default:""
-    //             },
-    //             interName :{
-    //                 type:String,
-    //                 default:""
-    //             },
-    //             interBaseUrl:{
-    //                 type:String,
-    //                 default:""
-    //             },
-    //             interPath:{
-    //                 type:String,
-    //                 default:""
-    //             },
-    //             runTime:{
-    //                 type:String,
-    //                 default:""
-    //             },
-    //             errMessage:{
-    //                 type:String,
-    //                 default:""
-    //             },
-    //             request:{
-    //                 type:{
-    //                     url:{
-    //                         type:String,
-    //                         default:""
-    //                     },
-    //                     method:{
-    //                         type:String,
-    //                         default:""
-    //                     },
-    //                     headers:{
-    //                         type:String,
-    //                         default:""
-    //                     },
-    //                     bodyType:{
-    //                         type:Number,
-    //                         default:0
-    //                     },
-    //                     rawType:{
-    //                         type:String,
-    //                         default:0
-    //                     },
-    //                     form:{
-    //                         type:String,
-    //                         default:""
-    //                     },
-    //                     body:{
-    //                         type:String,
-    //                         default:""
-    //                     }
-    //                 },
-    //                 default:{}
-    //             },
-    //             result:{
-    //                 type:{
-    //                     headers:{
-    //                         type:String,
-    //                         default:""
-    //                     },
-    //                     status:{
-    //                         type:String,
-    //                         default:""
-    //                     },
-    //                     bodytype:{
-    //                         type:String,
-    //                         default:""
-    //                     },
-    //                     data:{
-    //                         type:String,
-    //                         default:""
-    //                     }
-    //                 },
-    //                 default:{}
-    //             }
-    //         }
-    //     ],
-    //     default:[]
-    // }
+    interfaces:Array
     
 },{
     timestamps:true
@@ -134,9 +45,19 @@ model.configOutputField(null,[
     "createdAt",
     "updatedAt"
 ]);
+
 model.index({
+    "pollRun":-1
+});
+model.index({
+    "createdAt":1
+});
+
+model.index({
+    "pollRun":-1,
     "status":-1,
-    "createdAt":1})
+    "createdAt":1
+});
 
 var dbManage=db.model("pollRunTest",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));

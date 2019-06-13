@@ -256,92 +256,73 @@
                _this.runPending=true;
 
                if (index!=-1) {
-                   var query={
-                            //testrunid:polltestid
-                            testrunid:_this.runTestLists[index]._id
-                        }
-                        _this.runTestLists[index].interShow=1
+                    var query={
+                        //testrunid:polltestid
+                        testrunid:_this.runTestLists[index]._id
+                    }
+                    _this.runTestLists[index].interShow=1
                     await net.get("/poll/runinfointerlist",query).then(function (data) {
-                                    console.log("report.vue>showInterfacesList");
-                                    if(data.code==200)
-                                    {
-                                        console.log("report.vue>showInterfacesList>data.data");
-                                        console.log(data.data)
+                        console.log("report.vue>showInterfacesList");
+                        if(data.code==200)
+                        {
+                            console.log("report.vue>showInterfacesList>data.data");
+                            console.log(data.data)
 
-                                    _this.runTestLists[index].interfaces=data.data;
-
-                                        // for(var i=0;i<_this.runTestLists.length;i++)
-                                        // {
-                                        //     var obj=_this.runTestLists[i];
-                                        //     if(obj._id==polltestid)
-                                        //     {
-                                        //         obj.interfaces=data.data;
-                                        //         break
-                                        //     }
-                                        // }
-                                    }
-                                    else
-                                    {
-                                        $.notify(data.msg,0)
-                                    }
-
-                                    _this.runTestLists[index].interShow=2
-                                    //$.stopLoading();
-                                    //$.stopHud();
-                                }).catch(function (err) {
-                                    //$.stopLoading();
-                                    //$.stopHud();
-                                    $.notify(err,0);
-                                    _this.runTestLists[index].interShow=3
-                                })
+                            _this.runTestLists[index].interfaces=data.data;
+                            _this.runTestLists[index].interShow=2
+                        }
+                        else
+                        {
+                            $.notify(data.msg,0)
+                            _this.runTestLists[index].interShow=3
+                            console.log('showInterfacesList>error,  testrunid: '+_this.runTestLists[index]._id)
+                        }
+                        //$.stopLoading();
+                        //$.stopHud();
+                    })
                } else {
                    for(var i=0;i<_this.runTestLists.length;i++)
                     {
                         var query={
-                                //testrunid:polltestid
-                                testrunid:_this.runTestLists[i]._id
-                            }
-                        _this.runTestLists[i].interShow=1
-                        await net.get("/poll/runinfointerlist",query).then(function (data) {
+                            //testrunid:polltestid
+                            testrunid:_this.runTestLists[i]._id
+                        }
+                        if (_this.runTestLists[i].interShow!=1 && _this.runTestLists[i].interShow!=2 ) {
+                            _this.runTestLists[i].interShow=1
+                            await net.get("/poll/runinfointerlist",query).then(function (data) {
                                 console.log("report.vue>showInterfacesList");
                                 if(data.code==200)
                                 {
                                     console.log("report.vue>showInterfacesList>data.data");
                                     console.log(data.data)
 
-                                _this.runTestLists[i].interfaces=data.data;
-
-                                    // for(var i=0;i<_this.runTestLists.length;i++)
-                                    // {
-                                    //     var obj=_this.runTestLists[i];
-                                    //     if(obj._id==polltestid)
-                                    //     {
-                                    //         obj.interfaces=data.data;
-                                    //         break
-                                    //     }
-                                    // }
+                                    _this.runTestLists[i].interfaces=data.data;
+                                    _this.runTestLists[i].interShow=2
+                                
                                 }
                                 else
                                 {
                                     $.notify(data.msg,0)
+                                    _this.runTestLists[i].interShow=3
+                                    console.log('showInterfacesList>error,  testrunid: '+_this.runTestLists[i]._id)
                                 }
-
-                                _this.runTestLists[i].interShow=2
-                                if (i<_this.runTestLists.length) {
-                                     _this.runTestLists[i+1].interShow=1
-                                }
-                               
+                                // if (i<(_this.runTestLists.length-1)) {
+                                //     _this.runTestLists[i+1].interShow=1
+                                // }
                                 //$.stopLoading();
                                 //$.stopHud();
-                            }).catch(function (err) {
-                                //$.stopLoading();
-                                //$.stopHud();
-                                $.notify(err,0);
-                                _this.runTestLists[i].interShow=3
-                                if (i<_this.runTestLists.length) {
-                                     _this.runTestLists[i+1].interShow=1
-                                }
                             })
+                            // }).catch(function (err) {
+                            //     //$.stopLoading();
+                            //     //$.stopHud();
+                            //     $.notify(err,0);
+                            //     _this.runTestLists[i].interShow=3
+                            //     if (i<_this.runTestLists.length) {
+                            //         _this.runTestLists[i+1].interShow=1
+                            //     }
+                            // });
+                        }
+                        
                     }
 
                }
