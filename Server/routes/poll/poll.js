@@ -59,6 +59,7 @@ function  Poll() {
                 testProject:req.clientParam.testproject,
                 testCollection:req.clientParam.collection,//gql add
 
+                runEnvironment:req.clientParam.runEnvironment,
                 //phoneInfo:JSON.parse(req.clientParam.phoneinfo),
                 enabled:req.clientParam.enabled,
                 sendMail:req.clientParam.sendMail,

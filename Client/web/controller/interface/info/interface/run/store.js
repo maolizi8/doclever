@@ -430,12 +430,19 @@ module.exports={
         },
     },
     actions:{
-        run:function (context) {
+        run:function (context,query) {
             var method=context.state.interface.method;
 
-            //var baseUrl=$.trim(context.state.baseUrl);
             console.log("interface>info>interface>run>store.js>run-interface")
             console.log(context.state.interface)
+            //var baseUrl=$.trim(context.state.baseUrl);
+
+            
+            var runEnvironment=query.runEnvironment;
+
+            console.log("interface>info>interface>run>store.js>runEnvironment")
+            console.log(runEnvironment)
+
             if("baseurl" in context.state.interface){
                 var baseurl=$.trim(context.state.interface.baseurl); //geqiuli modify
                 console.log("interface>info>interface>run>store.js>run-baseurl")
@@ -553,6 +560,8 @@ module.exports={
 
 
             var header={},objHeaders={};
+
+            
             var arrHeaders=["host","connection","origin","referer","user-agent","cookie","content-type"];
 
             //objHeaders["Content-Type"]="application/x-www-form-urlencoded; charset=UTF-8"; //add for test
@@ -586,10 +595,13 @@ module.exports={
                 }
             })
 
-            // console.log("interface>info>interface>run>store.js>run-header")
-            // console.log(header)
-            // console.log("interface>info>interface>run>store.js>run-objHeaders")
-            // console.log(objHeaders)
+            if (runEnvironment==0) {
+                console.log("interface>info>interface>run>store.js>runEnvironment should add Host")
+            }
+            console.log("interface>info>interface>run>store.js>run-header")
+            console.log(header)
+            console.log("interface>info>interface>run>store.js>run-objHeaders")
+            console.log(objHeaders)
 
             var body={},bUpload=false;
             if(method=="POST" || method=="PUT" || method=="PATCH")

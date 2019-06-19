@@ -72,61 +72,13 @@ var model=new mongoose.Schema({
     failSend:{
         type:Number,
         default:0
-    }
-
-    /*, 
-    sendInfo:{
-        user:{
-            type:String,
-            default:""
-        },
-        password:{
-            type:String,
-            default:""
-        },
-        smtp:{
-            type:String,
-            default:""
-        },
-        port:{
-            type:Number,
-            default:465
-        }
     },
-    
-    phoneInfo:{
-        method:{
-            type:String,
-            default:"GET"
-        },
-        sign:{
-            type:String,
-            default:""
-        },
-        baseUrl:{
-            type:String,
-            default:""
-        },
-        param:{
-            type:Array,
-            default:[{
-                key:"",
-                value:""
-            }]
-        },
-        bindParam:{
-            type:String,
-            default:""
-        },
-        split:{
-            type:String,
-            default:","
-        },
-        contentParam:{
-            type:String,
-            default:""
-        }
-    } */
+    runEnvironment:{
+        type:Number,
+        default:0
+    },//gql add,0-测试环境，1-生产环境
+
+
 },{
     timestamps:true
 });

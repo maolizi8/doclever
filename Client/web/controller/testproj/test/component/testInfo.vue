@@ -5,7 +5,7 @@
                 立即运行
             </el-button>
             <span style="color:red;font-size:12px;">
-                点击“立即运行”按钮前，请先确定自己电脑所配置的环境是测试环境还是线上环境！！！
+                点击“立即运行”按钮前，请先确定选择的环境！！！
             </span>
             
             <el-button type="primary" size="mini" style="float: right;margin-top: 4px;margin-right: 10px;margin-left: 0px" @click="save"   :loading="savePending" v-if="editRole">

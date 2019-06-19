@@ -41,26 +41,9 @@ var interface=[
             time2:{
                 type:String,
             },
-            // user:{
-            //     type:String,
-            //     optional:1
-            // },
-            // password:{
-            //     type:String,
-            //     optional:1
-            // },
-            // smtp:{
-            //     type:String,
-            //     optional:1
-            // },
-            // port:{
-            //     type:Number,
-            //     optional:1
-            // },
-            // url:{
-            //     type:String,
-            //     optional:1
-            // },
+            
+            runEnvironment:Number,
+            
             enabled:Number,
             immediate:Number,
             //phoneinfo:String,

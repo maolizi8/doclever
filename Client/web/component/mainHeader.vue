@@ -14,6 +14,7 @@
                         <el-dropdown-item command="goToPoll">定时任务管理</el-dropdown-item>
                         <el-dropdown-item command="goToStatistics">测试结果统计</el-dropdown-item>
                         <el-dropdown-item command="goToFigureInterfaces" v-if="sysRole">接口统计配置</el-dropdown-item>
+                        <el-dropdown-item command="goToDomainHost">测试环境HOST</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-col>
@@ -58,6 +59,11 @@
             <span v-else-if='menu=="pollinter"'>
                <a class="header" href="pollinter.html">
                     接口统计配置
+                </a>
+            </span>
+            <span v-else-if='menu=="domainhost"'>
+               <a class="header" href="domainhost.html">
+                    测试环境HOST
                 </a>
             </span>
             <span v-else-if='menu=="person"'>
@@ -154,7 +160,10 @@
                     window.open("statistics.html",'_self')
                 }else if (command=="goToFigureInterfaces") {
                     window.open("pollinter.html",'_self')
+                }else if (command=="goToDomainHost") {
+                    window.open("domainhost.html",'_self')
                 }
+                
             }
         },
         components:{

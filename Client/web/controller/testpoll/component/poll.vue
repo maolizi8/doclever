@@ -6,6 +6,19 @@
 
         <el-form label-position="top" label-width="80px" style="padding: 10px 20px 20px 10px" id="form-info">
             <el-row class="row line-36">
+                <el-col class="col" :span="4" style="color:red;" >
+                   运行环境:
+                </el-col>
+                <el-col class="col" :span="20">
+                    <el-select size="small" v-model="poll.runEnvironment" style="width: 90%" :style="{'color':poll.runEnvironment?'red':'black'}" >
+                        <!-- <el-option  value="0" label="测试环境"></el-option>
+                        <el-option  value="1" label="生产环境" style="color:red;" ></el-option> -->
+                        <el-option v-for="op in options" :key="op.value" :label="op.label" :value="op.value">
+                        </el-option>
+                    </el-select>
+                </el-col>
+            </el-row>
+            <el-row class="row line-36">
                 <el-col class="col" :span="4">
                    选择测试集合:
                 </el-col>
@@ -259,7 +272,7 @@
 </style>
 
 <script>
-    
+     var sessionChange=require("common/mixins/session");
     module.exports={
         props:["propPoll","propUser","collectionOfTest","collectionId","testProjectId","collectionEditable"],
         data:function () {
@@ -282,6 +295,9 @@
                             date:[],
                             time:[],
                             time2:[],
+                            
+                            runEnvironment:0,
+
                             failSend:0,
                             enabled:1,
                             sendMail:1
@@ -293,9 +309,15 @@
                 savePending:false,
                 removePending:false,
                 showDialog:false,
-                immediate:false
+                immediate:false,
+                options:[
+                    {value: 0,
+                    label: '测试环境'},
+                    {value: 1,
+                    label: '生产环境'}]
             }
         },
+        mixins:[sessionChange],
         directives:{
             
         },
@@ -338,101 +360,119 @@
                 // console.log("collectionid:"+collectionid)
             },
             save:function () {
-               var collectionSel=this.selConllectionProject;
-                if(collectionSel.length==0)
-                {
-                    $.tip("请选择测试集合",0);
-                    return;
-                }
-                if(!this.poll.name)
-                {
-                   
-                    $.tip("请输入任务主题",0);
-                    return;
-                }
-
-                if(this.poll.enabled)
-                {
-                    if(this.poll.time.length==0 && this.poll.time2.length==0)
-                    {
-                        $.tip("请选择时刻",0);
-                        return;
-                    }
-                    if(this.poll.date.length==0)
-                    {
-                        $.tip("请选择星期",0);
-                        return;
-                    }
-                }
-
-                var arrUser=this.multipleSelection;
-                if(this.poll.sendMail)
-                {
-                    if(arrUser.length==0)
-                    {
-                        $.tip("请选择邮件接收用户",0);
-                        return;
-                    }
-                }
-                
-                
-                console.log("collectionSel:")
-                console.log(collectionSel)
-                console.log("this.collectionId:")
-                console.log(this.collectionId)
-
-                this.savePending=true;
                 var _this=this;
-                var query={
-                    name:_this.poll.name,
-                    testproject:collectionSel[0],
-                    collection:collectionSel[1],
-                    interproject:this.poll.interProject?this.poll.interProject:"",
+                
+               var collectionSel=_this.selConllectionProject;
 
-                    users:JSON.stringify(arrUser),
-                    date:JSON.stringify(this.poll.date),
-                    time:JSON.stringify(this.poll.time),
-                    time2:JSON.stringify(this.poll.time2),
-                    
-                    immediate:this.immediate?1:0,
-                    // phoneinfo:JSON.stringify(this.poll.phoneInfo),
-                    failsend:Number(this.poll.failSend),
-                    enabled:Number(this.poll.enabled),
-                    sendMail:Number(this.poll.sendMail),
-                    operator:session.get("name"),
-                    owner:this.poll.owner?this.poll.owner:""
-                };
-                if(this.poll._id)
+               if(_this.poll.runEnvironment==1)
                 {
-                    query.id=this.poll._id;
-                    query.originCollection=_this.collectionId
+                    $.confirm("请注意，你选择的是【线上环境】运行，请确认？",function () {
+                        console.log("确定选择的环境，go on")
+                        savefunc()
+                    })
+                }else{
+                    savefunc()
                 }
-                else
-                {
-                    query.owner=session.get("id");
-                }
-                net.post("/poll/save",query).then(function (data) {
-                    _this.savePending=false;
-                    if(data.code==200)
+
+                function savefunc(){
+                    if(collectionSel.length==0)
                     {
-                        $.notify("保存成功",1);
-                        _this.showDialog=false;
-                        _this.$emit("save",data.data._id);
-                        //  if(_this.poll._id)
-                        // {
-                        //     _this.$emit("save",{data:data.data,isnew:0});
-                        // }
-                        // else
-                        // {
-                        //     _this.$emit("save",{data:data.data,isnew:1});
-                        // }
+                        $.tip("请选择测试集合",0);
+                        return;
+                    }
+                    if(!_this.poll.name)
+                    {
+                    
+                        $.tip("请输入任务主题",0);
+                        return;
+                    }
+
+                    if(_this.poll.enabled)
+                    {
+                        if(_this.poll.time.length==0 && _this.poll.time2.length==0)
+                        {
+                            $.tip("请选择时刻",0);
+                            return;
+                        }
+                        if(_this.poll.date.length==0)
+                        {
+                            $.tip("请选择星期",0);
+                            return;
+                        }
+                    }
+
+                    var arrUser=_this.multipleSelection;
+                    if(_this.poll.sendMail)
+                    {
+                        if(arrUser.length==0)
+                        {
+                            $.tip("请选择邮件接收用户",0);
+                            return;
+                        }
+                    }
+                    
+                    
+                    console.log("collectionSel:")
+                    console.log(collectionSel)
+                    console.log("_this.collectionId:")
+                    console.log(_this.collectionId)
+
+                    _this.savePending=true;
+                    var query={
+                        name:_this.poll.name,
+                        testproject:collectionSel[0],
+                        collection:collectionSel[1],
+                        interproject:_this.poll.interProject?_this.poll.interProject:"",
+
+                        users:JSON.stringify(arrUser),
+                        date:JSON.stringify(_this.poll.date),
+                        time:JSON.stringify(_this.poll.time),
+                        time2:JSON.stringify(_this.poll.time2),
                         
+                        runEnvironment:_this.poll.runEnvironment,
+
+                        immediate:_this.immediate?1:0,
+                        // phoneinfo:JSON.stringify(_this.poll.phoneInfo),
+                        failsend:Number(_this.poll.failSend),
+                        enabled:Number(_this.poll.enabled),
+                        sendMail:Number(_this.poll.sendMail),
+                        operator:session.get("name"),
+                        owner:_this.poll.owner?_this.poll.owner:""
+                    };
+                    if(_this.poll._id)
+                    {
+                        query.id=_this.poll._id;
+                        query.originCollection=_this.collectionId
                     }
                     else
                     {
-                        $.notify(data.msg,0)
+                        query.owner=session.get("id");
                     }
-                })
+                    net.post("/poll/save",query).then(function (data) {
+                        _this.savePending=false;
+                        if(data.code==200)
+                        {
+                            $.notify("保存成功",1);
+                            _this.showDialog=false;
+                            _this.$emit("save",data.data._id);
+                            //  if(_this.poll._id)
+                            // {
+                            //     _this.$emit("save",{data:data.data,isnew:0});
+                            // }
+                            // else
+                            // {
+                            //     _this.$emit("save",{data:data.data,isnew:1});
+                            // }
+                            
+                        }
+                        else
+                        {
+                            $.notify(data.msg,0)
+                        }
+                    })
+                }
+
+                
             },
             remove:function () {
                 var _this=this;

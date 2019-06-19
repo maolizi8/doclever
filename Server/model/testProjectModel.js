@@ -24,6 +24,12 @@ var model=new mongoose.Schema({
         type:Number,
         default:1
     },//gql add
+
+    runEnvironment:{
+        type:Number,
+        default:0
+    },//gql add,0-测试环境，1-生产环境
+    
     team:{
         type:mongoose.Schema.ObjectId,
         ref:"Team"

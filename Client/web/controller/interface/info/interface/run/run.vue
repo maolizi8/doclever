@@ -5,11 +5,17 @@
             <el-button type="primary" size="mini" style="margin-top: 4px;margin-right: 0px;margin-left: 5px" @click="$store.dispatch('info/interface/changeType',interfaceEditRole?'edit':'preview',{root:true})">
                 返回
             </el-button>
+
+            <el-select size="small" v-model="runEnvironment" style="margin-top: 4px;margin-right: 0px;margin-left: 5px;width:100px;" :style="{'color':runEnvironment?'red':'black'}" >
+                <el-option  value="0" label="测试环境"></el-option>
+                <el-option  value="1" label="生产环境" style="color:red;" ></el-option>
+            </el-select>
+
             <el-button type="primary" size="mini" style="margin-top: 4px;margin-right: 0px;margin-left: 5px" @click="run" title="立即运行" id="run" :loading="runPending">
                 立即运行
             </el-button>
             <span style="color:red;font-size:12px;">
-                点击“立即运行”按钮前，请先确定自己电脑所配置的环境是测试环境还是线上环境！！！
+                点击“立即运行”按钮前，请先确定选择的环境！！！
             </span>
 
             <el-button type="primary" size="mini" style="float: right;margin-top: 4px;margin-right: 5px;margin-left: 0px"  v-if="interfaceEditRole" @click="joinTest">
@@ -148,6 +154,8 @@
                 runPending:false,
                 tabType:"query",
                 showDialog:false,
+
+                runEnvironment:'0'   //gql add,0-测试环境，1-线上环境
             }
         },
         mixins:[sessionChange],
@@ -210,18 +218,40 @@
         methods:{
             run:function () {
                 var _this=this;
-                this.runPending=true;
-                store.dispatch("run").then(function (data) {
-                    _this.runPending=false;
-                    if(data.code==200)
-                    {
-                        _this.$refs.runParam[parseInt(_this.tabIndex)].resultType=1;
-                    }
-                    else
-                    {
-                        $.notify(data.msg,0);
-                    }
-                })
+                if (_this.runEnvironment==1) {
+                    $.confirm("请注意，你选择的是【线上环境】运行，请确认？",function () {
+                        
+                        _this.runPending=true;
+                        $.startHud();
+                        store.dispatch("run",{runEnvironment:1}).then(function (data) {
+                            _this.runPending=false;
+                            if(data.code==200)
+                            {
+                                _this.$refs.runParam[parseInt(_this.tabIndex)].resultType=1;
+                            }
+                            else
+                            {
+                                $.notify(data.msg,0);
+                            }
+                            $.stopHud();
+                        })
+                    })
+                }else{
+                    _this.runPending=true;
+                    store.dispatch("run",{runEnvironment:0}).then(function (data) {
+                        _this.runPending=false;
+                        if(data.code==200)
+                        {
+                            _this.$refs.runParam[parseInt(_this.tabIndex)].resultType=1;
+                        }
+                        else
+                        {
+                            $.notify(data.msg,0);
+                        }
+                        $.stopHud();
+                    })
+                }
+                
             },
             save:function () {
                 var _this=this;

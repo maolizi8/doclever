@@ -67,7 +67,7 @@
         </el-row>
         <el-row class="dialog-footer" slot="footer">
             <span style="color:red;font-size:12px;">
-                点击“立即运行”按钮前，请先确定自己电脑所配置的环境是测试环境还是线上环境！！！
+                点击“立即运行”按钮前，请先确定选择的环境！！！
             </span>
             <el-button type="primary" @click="run" :loading="runPending">
                 立即运行

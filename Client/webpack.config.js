@@ -17,6 +17,7 @@ module.exports = {
         testpoll:["./web/controller/testpoll/testpoll"],    //gql add
         report:["./web/controller/testpoll/report"],    //gql add
         pollinter:["./web/controller/testpoll/pollinter"],    //gql add
+        domainhost:["./web/controller/public/domainhost"],    //gql add
         teststatistics:["./web/controller/testStatistics/teststatistics"],    //gql add
 		
         interfaceproj:["./web/controller/interfaceproj/interfaceproj"],    //gql add

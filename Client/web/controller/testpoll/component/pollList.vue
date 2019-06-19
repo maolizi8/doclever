@@ -38,7 +38,7 @@
                                         用例数
                                     </el-col>
                                     <el-col class="col" :span="2">
-                                        创建者
+                                        运行环境
                                     </el-col>
                                     <el-col class="col" :span="2">
                                         发送邮件
@@ -69,8 +69,8 @@
                                         <el-col class="col" :span="1">
                                             {{item.testCount}}
                                         </el-col>
-                                        <el-col class="col" :span="2">
-                                            {{item.owner.name}}
+                                        <el-col class="col" :span="2" :style="{'color':item.runEnvironment?'red':'black'}">
+                                            {{item.runEnvironment?'生产环境':'测试环境'}}
                                         </el-col>
                                         <el-col class="col" :span="2">
                                             <!-- {{item.failSend?"是":"否"}} -->
