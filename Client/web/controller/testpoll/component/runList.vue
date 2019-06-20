@@ -312,6 +312,10 @@
             },
             runPoll:function (pollid) {
                 var _this=this;
+
+                 $.notify('手动运行的功能暂时不开放！',0);
+                return;
+                
                 net.post("/poll/run",{
                     poll:pollid,
                     operator:session.get("name")

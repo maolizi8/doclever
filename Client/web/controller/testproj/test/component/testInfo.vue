@@ -211,6 +211,9 @@ line10:
             run: (async function () {
                 var _this=this;
 
+                 $.notify('手动运行的功能暂时不开放！',0);
+                return;
+                
                 // if(!this.$store.state.baseUrl)
                 // {
                 //     $.tip("请设置BaseUrl",0);

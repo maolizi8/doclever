@@ -430,7 +430,7 @@ module.exports={
         },
     },
     actions:{
-        run:function (context,query) {
+        run:async function (context,query) {
             var method=context.state.interface.method;
 
             console.log("interface>info>interface>run>store.js>run-interface")
@@ -492,15 +492,61 @@ module.exports={
             var bMock=false;
             if(baseurl!="MockServer")
             {
-                var indexHttp=baseurl.indexOf("://"),indexSlash;
+                var indexHttp=baseurl.indexOf("://");
+                var indexSlash;
+                var domainHttp;
                 if(indexHttp==-1)
                 {
                     indexSlash=baseurl.indexOf("/")
+                    domainHttp='http'
                 }
                 else
                 {
                     indexSlash=baseurl.indexOf("/",indexHttp+3);
+                    domainHttp=baseurl.substring(0,indexHttp)  
                 }
+                console.log("interface>info>interface>run>store.js>>>indexHttp")
+                console.log(indexHttp)
+                console.log("interface>info>interface>run>store.js>>>indexSlash")
+                console.log(indexSlash)
+                console.log("interface>info>interface>run>store.js>>>domainHttp")
+                console.log(domainHttp)
+                
+                var domainName;
+                var domainHost;
+                if (runEnvironment==0) {
+                    if (indexHttp==-1 && indexSlash==-1) {
+                        domainName=baseurl  
+                    } else if (indexHttp>-1 && indexSlash==-1) {
+                        domainName=baseurl.substr(indexHttp+3)    
+                    }else if (indexHttp==-1 && indexSlash>-1) {
+                        domainName=baseurl.substr(0,baseurl.length-1)       
+                    }else if (indexHttp>-1 && indexSlash>-1) {
+                        domainName=baseurl.substring(indexHttp+3,indexSlash)   
+                    }
+
+                    console.log("interface>info>interface>run>store.js>>>test environment >> domainName")
+                    console.log(domainName)
+
+                    await net.get("/tools/domainhostip",{
+                        domain:domainName
+                    }).then(function (data) {
+                        if(data.code==200)
+                        {
+                            console.log("interface>info>interface>run>store.js>>>test environment >> /tools/domainhostip")
+                            console.log(data.data)
+                            if (data.data) {
+                                domainHost=data.data.host
+                            }else{
+                                $.notify('请先配置测试环境下该域名的HostIP！',0);
+                            }
+                            
+                        }else{
+                            $.notify('查找测试环境HostIP报错：'+data.msg,0);
+                        }
+                    })
+                }
+
                 if(indexSlash>-1)
                 {
                     var baseUrlTemp=baseurl.substring(0,indexSlash);
@@ -513,7 +559,13 @@ module.exports={
                     {
                         pathTemp+="/"
                     }
-                    baseurl=baseUrlTemp;
+                    //baseurl=baseUrlTemp;
+                    if (runEnvironment==0) {
+                        baseurl=domainHttp+"://"+domainHost
+                    }else{
+                        baseurl=baseUrlTemp;
+                    }
+
                     path=pathTemp+path;
                 }
                 else
@@ -522,7 +574,16 @@ module.exports={
                     {
                         path="/"+path;
                     }
+
+                    if (runEnvironment==0) {
+                        baseurl=domainHttp+"://"+domainHost
+                    }
                 }
+                console.log("interface>info>interface>run>store.js>>>baseurl")
+                console.log(baseurl)   
+                console.log("interface>info>interface>run>store.js>>>path")
+                console.log(path)    
+                
             }
             else
             {
@@ -597,6 +658,8 @@ module.exports={
 
             if (runEnvironment==0) {
                 console.log("interface>info>interface>run>store.js>runEnvironment should add Host")
+                objHeaders['Host']=domainName
+
             }
             console.log("interface>info>interface>run>store.js>run-header")
             console.log(header)

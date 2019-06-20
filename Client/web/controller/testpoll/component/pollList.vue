@@ -287,6 +287,13 @@
             runPoll:function (pollid,index) {
                 var _this=this;
                 this.runPending[index].pengding=true;
+                
+                $.notify('手动运行的功能暂时不开放！',0);
+                return;
+                
+                if (this.runPending[index].runEnvironment==1) {
+                    
+                }
                 net.post("/poll/run",{
                     poll:pollid,
                     operator:session.get("name")
