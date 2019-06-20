@@ -119,6 +119,9 @@ model.index({
 model.index({
     "pollRunTest":1
 });
+model.index({
+    "runEnvironment":1
+});
 
 model.index({
     "createdAt":1,

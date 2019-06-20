@@ -2234,6 +2234,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
     root.pollRunInterModId=''
 
 
+
     logger.debug('<runInterface2>-');
 	logger.debug('<runInterface2>-level');
     logger.debug(level);
@@ -2242,6 +2243,8 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
 	// logger.debug('<runInterface2>-testInterfaces');
     // logger.debug(testInterfaces);
     logger.info('<runInterface2>-开始运行接口：'+obj.name)
+
+    logger.info('<runInterface2>-运行环境：'+root.runEnvironment)
 
 
 	
@@ -2427,12 +2430,12 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         }
 
         if (root.runEnvironment==0) {
-            baseurl=domainHttp+"://"+domainHost
+            baseUrl=domainHttp+"://"+domainHost
         }
     }
     
-    logger.info("<runInterface2>>baseurl")
-    logger.info(baseurl)
+    logger.info("<runInterface2>>baseUrl")
+    logger.info(baseUrl)
     logger.info("<runInterface2>>path")
     logger.info(path)
 
@@ -2819,18 +2822,18 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
 
 
     var interRequest={
-        url:baseUrl+path,
-        method:method,
-        headers:JSON.stringify(header)
+        method:method
     }
     if (root.runEnvironment==0) {
         logger.info("runEnvironment should add Host")
-        objHeaders['Host']=domainName
+        header['Host']=domainName
 
-        //interRequest.url=baseUrl+path;
+        interRequest.url=domainHttp+"://"+domainHost+path;
     }else{
-        //interRequest.url=domainHttp+"://"+domainHost+path;
+        interRequest.url=baseUrl+path;
     }
+    interRequest.headers=JSON.stringify(header)
+
 
     var startDate=new Date();
     var func;
@@ -2839,7 +2842,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         method:method,
         headers:header
     }
-    
+   
 
     if(method=="POST" || method=="PUT" || method=="PATCH")
     {
@@ -2897,6 +2900,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
             let query=testInterfaces[root.pollRunTestId][testIdLength-1];
             query.pollRunTest=root.pollRunTestModId;
             query.poll=root.pollId;
+            query.runEnvironment=root.runEnvironment;
             
             logger.info('pollRunInterface.create>query');
             logger.info(query);

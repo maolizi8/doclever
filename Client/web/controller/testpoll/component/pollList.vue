@@ -288,8 +288,6 @@
                 var _this=this;
                 this.runPending[index].pengding=true;
                 if (this.runPending[index].runEnvironment==1) {
-                    $.notify('手动运行的功能暂时不开放！',0);
-                    return;
                     $.confirm("这个任务将在【线上环境】运行，请确认？",function () {
                         net.post("/poll/run",{
                             poll:pollid,
@@ -306,6 +304,22 @@
                                 $.notify(data.msg,0)
                             }
                         })
+                    })
+                }else{
+                   net.post("/poll/run",{
+                        poll:pollid,
+                        operator:session.get("name")
+                    }).then(function (data) {
+                        console.log("runPoll");
+                        _this.runPending[index].pengding=false;
+                        if(data.code==200)
+                        {
+                            $.notify("任务开始执行，请去历史记录查看运行结果",1);
+                        }
+                        else
+                        {
+                            $.notify(data.msg,0)
+                        }
                     })
                 }
                 
