@@ -39,6 +39,11 @@ var model=new mongoose.Schema({
         default:"system"
     },
 
+    runEnvironment:{
+        type:Number,
+        default:0
+    },//gql add,0-测试环境，1-生产环境
+
     runTotal:Number,
     runException:Number,
     testTotal:Number,

@@ -13,6 +13,12 @@ var model=new mongoose.Schema({
         type:mongoose.Schema.ObjectId,
         ref:"pollRunTest"
     },
+
+    runEnvironment:{
+        type:Number,
+        default:0
+    },//gql add,0-测试环境，1-生产环境
+
     // interId: {
     //     type:String,
     //     default:""

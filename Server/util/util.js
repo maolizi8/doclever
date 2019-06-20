@@ -41,6 +41,7 @@ var pollRunTestModel=null;
 var deasync = require('deasync');
 let pollRunTest=require("../model/pollRunTestModel");
 let pollRunInterface=require("../model/pollRunInterfaceModel");
+var domainHostModel=require("../model/domainHostModel")
 
 var routerMap={};
 var bProduct;
@@ -2330,15 +2331,73 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         //add http
     }
     var indexHttp=baseUrl.indexOf("://");
-	var indexSlash;
+    var indexSlash;
+    var domainHttp; //gql add
     if(indexHttp==-1)
     {
         indexSlash=baseUrl.indexOf("/")
+        domainHttp='http'
     }
     else
     {
         indexSlash=baseUrl.indexOf("/",indexHttp+3);
+        domainHttp=baseUrl.substring(0,indexHttp)  
     }
+    logger.info("<runInterface2>>>>indexHttp")
+    logger.info(indexHttp)
+    logger.info("<runInterface2>>indexSlash")
+    logger.info(indexSlash)
+    logger.info("<runInterface2>>domainHttp")
+    logger.info(domainHttp)
+
+    var domainName;
+    var domainHost;
+    if (root.runEnvironment==0) {
+        if (indexHttp==-1 && indexSlash==-1) {
+            domainName=baseUrl  
+        } else if (indexHttp>-1 && indexSlash==-1) {
+            domainName=baseUrl.substr(indexHttp+3)    
+        }else if (indexHttp==-1 && indexSlash>-1) {
+            domainName=baseUrl.substr(0,baseUrl.length-1)       
+        }else if (indexHttp>-1 && indexSlash>-1) {
+            domainName=baseUrl.substring(indexHttp+3,indexSlash)   
+        }
+
+        logger.info("<runInterface2>>domainName")
+        logger.info(domainName)
+
+        let domainObj=await (domainHostModel.findOneAsync({
+            domain:domainName,
+            is_delete:0
+        }))
+        if (domainObj) {
+            domainHost=domainObj.host
+        }else{
+            testInterfaces[root.pollRunTestId][testIdLength-1].errMessage="未设置baseUrl"
+
+            root.output+="<span style='color:red'>[ERROR]：接口 "+obj.name+"，域名："+domainName+" ，没有配置测试环境Host!!</span><br>"
+            
+            //return {};
+            root.output+="["+moment().format("YYYY-MM-DD HH:mm:ss")+"]结束运行接口："+obj.name+"<span style='color:red'>(请检查测试环境Host)</span><br>"
+            root.output+="<br>";
+            res={
+                status:400,
+                header:{},
+                data:"接口："+obj.name+"，域名："+domainName+" ，没有配置测试环境Host"
+            }
+        
+            testInterfaces[root.pollRunTestId][testIdLength-1].request={
+                url:obj.url,
+                method:obj.method,
+                headers:JSON.stringify(obj.header)
+            }
+        
+            testInterfaces[root.pollRunTestId][testIdLength-1].result=res
+            return res
+        }
+       
+    }
+
     if(indexSlash>-1)
     {
         var baseUrlTemp=baseUrl.substring(0,indexSlash);
@@ -2351,7 +2410,13 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         {
             pathTemp+="/"
         }
-        baseUrl=baseUrlTemp;
+        //baseUrl=baseUrlTemp;
+        if (root.runEnvironment==0) {
+            baseUrl=domainHttp+"://"+domainHost
+        }else{
+            baseUrl=baseUrlTemp;
+        }
+
         path=pathTemp+path;
     }
     else
@@ -2360,7 +2425,17 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         {
             path="/"+path;
         }
+
+        if (root.runEnvironment==0) {
+            baseurl=domainHttp+"://"+domainHost
+        }
     }
+    
+    logger.info("<runInterface2>>baseurl")
+    logger.info(baseurl)
+    logger.info("<runInterface2>>path")
+    logger.info(path)
+
 
     path=exports.handleGlobalVar(path,globalVar);
     if(path.substr(0,2)=="//")
@@ -2742,6 +2817,21 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
     logger.info('------header[cookie]-------')
     logger.info(header["Cookie"])
 
+
+    var interRequest={
+        url:baseUrl+path,
+        method:method,
+        headers:JSON.stringify(header)
+    }
+    if (root.runEnvironment==0) {
+        logger.info("runEnvironment should add Host")
+        objHeaders['Host']=domainName
+
+        //interRequest.url=baseUrl+path;
+    }else{
+        //interRequest.url=domainHttp+"://"+domainHost+path;
+    }
+
     var startDate=new Date();
     var func;
     var objReq={
@@ -2749,11 +2839,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         method:method,
         headers:header
     }
-    var interRequest={
-        url:objReq.url,
-        method:objReq.method,
-        headers:JSON.stringify(objReq.headers)
-    }
+    
 
     if(method=="POST" || method=="PUT" || method=="PATCH")
     {
@@ -3882,6 +3968,7 @@ let runPollBackend=async function (pollArr,operator) {
             runTotal:0,  //gql add
             projectInfo:[],
             order:0,    //gql add
+            runEnvironment:pollObj.runEnvironment,//gql add,0-测试环境，1-生产环境
             testId:"",   //gql add
             pollId:pollObj._id,
             pollRunId:"",   //gql add
@@ -3893,6 +3980,7 @@ let runPollBackend=async function (pollArr,operator) {
             pollName:pollObj.name,
             pollRunTime:0,
             status:99,   //0-unkown,2-success, 3-fail, 99-运行中
+            runEnvironment:pollObj.runEnvironment,//gql add,0-测试环境，1-生产环境
             operator:operator,
             testProject:pollObj.testProject._id,
             projectName:pollObj.testProject.name,
