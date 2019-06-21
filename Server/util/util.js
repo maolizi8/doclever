@@ -37,10 +37,15 @@ var versionModel=null;
 var exampleModel=null;
 
 //gql add
-var pollRunTestModel=null;
 var deasync = require('deasync');
+
+let pollRun=require("../model/pollRunModel");
 let pollRunTest=require("../model/pollRunTestModel");
 let pollRunInterface=require("../model/pollRunInterfaceModel");
+let pollRunPrd=require("../model/pollRunPrdModel");
+let pollRunTestPrd=require("../model/pollRunTestPrdModel");
+let pollRunInterfacePrd=require("../model/pollRunInterfacePrdModel");
+
 var domainHostModel=require("../model/domainHostModel")
 
 var routerMap={};
@@ -2170,8 +2175,7 @@ var removeFolder=function (path) {
 
 var removeOldData=async function() {
     try {
-        let pollRun=require("../model/pollRunModel");
-        let pollRunTest=require("../model/pollRunTestModel");
+        
         
         let date=new Date();
         
@@ -2183,14 +2187,7 @@ var removeOldData=async function() {
         date.setMilliseconds(0);
         console.log("removeOldData date1: ")
         console.log(date)
-        // let query={
-        //     //createdAt:{$lt:"2019-02-18 00:00:00"}
-        // }
-        // let r1 = await (pollRun.removeAsync({
-        //     createdAt:{$lt:date}
-        // }));
-        // console.log("removeOldData pollRun: ")
-        // console.log(r1)
+        
         let r2 = await (pollRunTest.removeAsync({
             createdAt:{$lt:date}
         }));
@@ -2376,7 +2373,7 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
         if (domainObj) {
             domainHost=domainObj.host
         }else{
-            testInterfaces[root.pollRunTestId][testIdLength-1].errMessage="未设置baseUrl"
+            testInterfaces[root.pollRunTestId][testIdLength-1].errMessage="没有配置测试环境Host"
 
             root.output+="<span style='color:red'>[ERROR]：接口 "+obj.name+"，域名："+domainName+" ，没有配置测试环境Host!!</span><br>"
             
@@ -2905,7 +2902,13 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
             logger.info('pollRunInterface.create>query');
             logger.info(query);
 
-            let interRun=await (pollRunInterface.createAsync(query));
+            let interRun;
+            if (root.runEnvironment==1) {
+                interRun=await (pollRunInterfacePrd.createAsync(query));
+            }else{
+                interRun=await (pollRunInterface.createAsync(query));
+            }
+            
             root.pollRunInterModId=interRun._id
     
             logger.info('pollRunInterface.create>done>interRun');
@@ -3075,9 +3078,18 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
             logger.info('pollRunInterface.update>normal >query')
             logger.info(query)
 
-            let interRun=await (pollRunInterface.findOneAndUpdateAsync({
-                _id:root.pollRunInterModId
-            },query));
+            
+            let interRun;
+            if (root.runEnvironment==1) {
+                interRun=await (pollRunInterfacePrd.findOneAndUpdateAsync({
+                    _id:root.pollRunInterModId
+                },query));
+            }else{
+                interRun=await (pollRunInterface.findOneAndUpdateAsync({
+                    _id:root.pollRunInterModId
+                },query));
+            }
+            
 
             logger.info('pollRunInterface.update>normal done>interRun');
             logger.info(interRun);
@@ -3150,9 +3162,17 @@ var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testIn
             logger.info('pollRunInterface.update>error >query')
             logger.info(query)
 
-            let interRun=await (pollRunInterface.findOneAndUpdateAsync({
-                _id:root.pollRunInterModId
-            },query));
+            let interRun;
+            if (root.runEnvironment==1) {
+                interRun=await (pollRunInterfacePrd.findOneAndUpdateAsync({
+                    _id:root.pollRunInterModId
+                },query));
+            }else{
+                interRun=await (pollRunInterface.findOneAndUpdateAsync({
+                    _id:root.pollRunInterModId
+                },query));
+            }
+            
 
             logger.info('pollRunInterface.update>normal done>interRun');
             logger.info(interRun);
@@ -3597,6 +3617,7 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
             try {
                 let createTestRun={
                     pollRun:root.pollRunId,
+                    runEnvironment:root.runEnvironment,
                     testId:test._id,
                     testName:test.name,
                     testGroup:test.group.name,
@@ -3607,7 +3628,15 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                     output:'',
                     interfaces:[]
                 }
-                let testRun=await (pollRunTest.createAsync(createTestRun));
+
+                let testRun;
+                if (root.runEnvironment==1) {
+                    testRun=await (pollRunTestPrd.createAsync(createTestRun));
+                }else{
+                    testRun=await (pollRunTest.createAsync(createTestRun));
+                }
+                
+
                 root.pollRunTestModId=testRun._id
 
                 logger.info('pollRunTest.create>done>testRun');
@@ -3894,7 +3923,6 @@ let runPollBackend=async function (pollArr,operator) {
 
     let poll=require("../model/pollModel");
     let pollSet=require("../model/pollSetModel");
-    let pollRun=require("../model/pollRunModel");
     let test=require("../model/testModel");
     let user=require("../model/userModel");
     let testCollection=require("../model/testCollectionModel");
@@ -3941,12 +3969,23 @@ let runPollBackend=async function (pollArr,operator) {
             continue;
         }
         try {
-            let lastRun=await (pollRun.findAsync({
-                poll:pollObj._id
-            },"status",{
-                sort:"-createdAt",
-                limit:1
-            })); 
+            let lastRun;
+            if (root.runEnvironment==1) {
+                lastRun=await (pollRunPrd.findAsync({
+                    poll:pollObj._id
+                },"status",{
+                    sort:"-createdAt",
+                    limit:1
+                })); 
+            } else {
+                lastRun=await (pollRun.findAsync({
+                    poll:pollObj._id
+                },"status",{
+                    sort:"-createdAt",
+                    limit:1
+                })); 
+            }
+            
             if (lastRun) {
                 if (lastRun[0].status==99) {
                     logger.info('runPollBackend>>poll last run> is running')
@@ -3999,11 +4038,18 @@ let runPollBackend=async function (pollArr,operator) {
         var pollRunId;
         try
         {
-            let o=await (pollRun.createAsync(query));
-            logger.debug('pollRun.create>done>o');
-            logger.debug(o._id);
-            pollRunId=o._id;
-            root.pollRunId=o._id;
+            let createPollRun;
+            if (root.runEnvironment==1) {
+                createPollRun=await (pollRunPrd.createAsync(query));
+            }else{
+                createPollRun=await (pollRun.createAsync(query));
+            }
+            
+            
+            logger.debug('pollRun.create>done>createPollRun');
+            logger.debug(createPollRun._id);
+            pollRunId=createPollRun._id;
+            root.pollRunId=createPollRun._id;
         }
         catch(e)
         {
@@ -4141,9 +4187,19 @@ let runPollBackend=async function (pollArr,operator) {
                         testOrder:root.order,
                         output:root.output
                     }
-                    let testRun=await (pollRunTest.findOneAndUpdateAsync({
-                        _id:root.pollRunTestModId
-                    },updateTestRun));
+
+                    let testRun;
+                    if (root.runEnvironment==1) {
+                        testRun=await (pollRunTestPrd.findOneAndUpdateAsync({
+                            _id:root.pollRunTestModId
+                        },updateTestRun));
+                    }else{
+                        testRun=await (pollRunTest.findOneAndUpdateAsync({
+                            _id:root.pollRunTestModId
+                        },updateTestRun));
+                    }
+                    
+
                     logger.info('pollRunTest.update>done>testRun');
                     logger.info(testRun._id);
                 } catch (error) {
@@ -4232,11 +4288,22 @@ let runPollBackend=async function (pollArr,operator) {
                 tests:[],
                 testsEndAt:moment().format("YYYY-MM-DD HH:mm:ss")
             }
-            let updatePoll=await (pollRun.findOneAndUpdateAsync({
-                _id:root.pollRunId
-            },updateQuery,{
-                new:true
-            }));
+
+            let updatePoll;
+            if (root.runEnvironment==1) {
+                updatePoll=await (pollRunPrd.findOneAndUpdateAsync({
+                    _id:root.pollRunId
+                },updateQuery,{
+                    new:true
+                }));
+            }else{
+                updatePoll=await (pollRun.findOneAndUpdateAsync({
+                    _id:root.pollRunId
+                },updateQuery,{
+                    new:true
+                }));
+            }
+            
     
             // logger.info('pollRun>done>updatepoll');
             // logger.info(updatepoll);
@@ -4256,24 +4323,7 @@ let runPollBackend=async function (pollArr,operator) {
             console.log('pollRun.updatepoll>pollObj.name')
             console.log(pollObj.name)
         } 
-        // try
-        // {
-        //     let updatepoll=await (pollRun.findOneAndUpdateAsync({
-        //         _id:pollRunId
-        //     },query,{
-        //         new:true
-        //     }));
-    
-        //     logger.info('pollRun>done>updatepoll');
-        //     logger.info(updatepoll);
-        // }
-        // catch(e)
-        // {
-        //     logger.error('pollRun.updatepoll>err')
-        //     logger.error(e)
-        //     console.log('pollRun.updatepoll>err')
-        //     console.log(e)
-        // } 
+       
         
         if(!pollObj.sendMail)
         {
@@ -4314,18 +4364,24 @@ let runPollBackend=async function (pollArr,operator) {
 
         if(recievUsers.length>0)
         {
-            let subject
+            let subject;
+            let envDesc;
+            if (root.runEnvironment==1) {
+                envDesc='生产环境'
+            } else {
+                envDesc='测试环境'
+            }
             if (root.fail>0) {
-                subject="[API自动化]-"+pollObj.name+"-测试报告(失败"+root.fail+"个) "+moment().format("YYYY-MM-DD HH:mm:ss");
+                subject="[API自动化]-"+envDesc+"-"+pollObj.name+"-测试报告(失败"+root.fail+"个) "+moment().format("YYYY-MM-DD HH:mm:ss");
                 logger.info('pollRun>sendMailReport')
 
                 //let content=`<h3>测试共(${root.count}), &nbsp;&nbsp;成功(${root.success}), &nbsp;&nbsp;失败(${root.fail}),&nbsp;&nbsp;未判定(${root.unknown})</h3>`+root.output;
-                let content=pollRunMailContent(query,pollRunId)
+                let content=pollRunMailContent(query,pollRunId,root.runEnvironment)
                 exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,recievUsers,subject,content);
                 query.sendmail=true;
             }
             else if (root.unknown>0) {
-                subject="[API自动化]-"+pollObj.name+"-测试报告（未校验"+root.unknown+"个) "+moment().format("YYYY-MM-DD HH:mm:ss");
+                subject="[API自动化]-"+envDesc+"-"+pollObj.name+"-测试报告（未校验"+root.unknown+"个) "+moment().format("YYYY-MM-DD HH:mm:ss");
                 
                 //let content=`<h3>测试共(${root.count}), &nbsp;&nbsp;成功(${root.success}), &nbsp;&nbsp;失败(${root.fail}),&nbsp;&nbsp;未判定(${root.unknown})</h3>`+root.output;
                 let content=pollRunMailContent(query,pollRunId)
@@ -4333,7 +4389,7 @@ let runPollBackend=async function (pollArr,operator) {
                 query.sendmail=true;
             }
             else{
-                subject="[API自动化]-"+pollObj.name+"-测试报告（全通过） "+moment().format("YYYY-MM-DD HH:mm:ss");
+                subject="[API自动化]-"+envDesc+"-"+pollObj.name+"-测试报告（全通过） "+moment().format("YYYY-MM-DD HH:mm:ss");
                 
                 //let content=`<h3>测试共(${root.count}), &nbsp;&nbsp;成功(${root.success}), &nbsp;&nbsp;失败(${root.fail}),&nbsp;&nbsp;未判定(${root.unknown})</h3>`+root.output;
                 let content=pollRunMailContent(query,pollRunId)
@@ -4351,7 +4407,13 @@ let runPollBackend=async function (pollArr,operator) {
     }
 }
 
-var pollRunMailContent=function(pollInfo,pollRunId){
+var pollRunMailContent=function(pollInfo,pollRunId,runEnvironment){
+    var envDesc;
+    if (runEnvironment==1) {
+        envDesc='生产环境'
+    } else {
+        envDesc='测试环境'
+    }
     var html=`<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -4363,7 +4425,7 @@ var pollRunMailContent=function(pollInfo,pollRunId){
                 line-height:25px;
             }
             .container{
-                padding:10px 20px;
+                padding:5px 10px;
             }
             .table{
                 width: 100%;
@@ -4398,15 +4460,19 @@ var pollRunMailContent=function(pollInfo,pollRunId){
     </head>
     <body>
         <div class="container" id="main">
-            <h2>
+            <h2 style="font-size:20px;font-weight:bold;">
                 <span style="font-size:80%;font-weight:normal;">测试集合：</span>
-                ${pollInfo.projectName}/${pollInfo.collectionName}`
+                ${pollInfo.projectName}/${pollInfo.collectionName}
+                &nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size:80%;font-weight:normal;">运行环境：<span style="font-weight:bold;">${envDesc}</span></span>
+            </h2>
+
+            
+            <br />`
     
     if (pollRunId) {
-        html+=` <a style="font-size:80%;font-weight:normal;" href="http://yyw-0656:9000/html/web/views/report.html?id=${pollRunId}">查看详细报告</a>`
+        html+=` <a style="font-size:14px;font-weight:normal;" href="http://yyw-0656:9000/html/web/views/report.html?id=${pollRunId}&env=${runEnvironment}">查看详细报告</a><br />`
     }
-    html+=` </h2>
-
+    html+=` 
             <div class="clear"></div>
             <table class="table" style="width:300px;">
                 <tr>

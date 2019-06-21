@@ -86,6 +86,11 @@ model.configOutputField(null,[
     "createdAt",
     "updatedAt"
 ]);
+
+model.index({
+    "runEnvironment":1
+});
+
 var dbManage=db.model("Poll",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));
 module.exports=dbManage;

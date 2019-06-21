@@ -82,8 +82,21 @@ var interface=[
     },
     {
         "method":"GET",
+        "path":"/poll/simpleinfo",
+        "param": {
+            id:{
+                type:String,
+            }
+        },
+        "data":String,
+        user:1,
+        handle:poll.simpleinfo
+    },
+    {
+        "method":"GET",
         "path":"/poll/list",
         "param": {
+            runEnvironment:Number,
             simple:{
                 type:String,
                 optional:1
@@ -163,6 +176,7 @@ var interface=[
             poll:{
                 type:String,
             },
+            runEnvironment:Number,
             page:Number,
             startdate:{
                 type:String,
@@ -188,6 +202,7 @@ var interface=[
             poll:{
                 type:String,
             },
+            runEnvironment:Number,
             startdate:{
                 type:String,
                 optional:1
@@ -231,7 +246,8 @@ var interface=[
         "param": {
             id:{
                 type:String,
-            }
+            },
+            runEnvironment:Number
         },
         "data":String,
         handle:poll.runInfo2
@@ -271,6 +287,7 @@ var interface=[
             id:{
                 type:String,
             },
+            runEnvironment:Number,
             page:Number,
             status:Number
         },
@@ -284,7 +301,8 @@ var interface=[
         "param": {
             testrunid:{
                 type:String,
-            }
+            },
+            runEnvironment:Number,
         },
         "data":String,
         handle:poll.runInfoTestsInterfaces

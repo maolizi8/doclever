@@ -17,6 +17,9 @@ var pollSet=require("../../model/pollSetModel") //gql add
 var pollRun=require("../../model/pollRunModel") //gql add
 var pollRunTest=require("../../model/pollRunTestModel") //gql add
 let pollRunInterface=require("../../model/pollRunInterfaceModel");
+var pollRunPrd=require("../../model/pollRunPrdModel") //gql add
+var pollRunTestPrd=require("../../model/pollRunTestPrdModel") //gql add
+let pollRunInterfacePrd=require("../../model/pollRunInterfacePrdModel");
 let pollFigureInterRun=require("../../model/pollFigureInterRunModel");
 
 var moment=require("moment");//gql add
@@ -179,6 +182,25 @@ function  Poll() {
         }
     }
 
+    this.simpleinfo=async (req,res)=> {
+        try
+        {
+            let query={
+                _id:req.clientParam.id
+            }
+            let obj=await (poll.findOneAsync(query,"name runEnvironment"))
+            if(!obj)
+            {
+                util.throw(e.pollNotFound,"定时任务不存在");
+            }
+            util.ok(res,obj,"ok");
+        }
+        catch (err)
+        {
+            util.catch(res,err);
+        }
+    }
+
     this.list=async (req,res)=> {
         try
         {
@@ -188,7 +210,9 @@ function  Poll() {
             let arr;
             //let userId=req.userInfo._id;
             if (!req.clientParam.simple) {
-                arr=await (poll.findAsync({},null,{
+                arr=await (poll.findAsync({
+                    runEnvironment:req.clientParam.runEnvironment
+                },null,{
                     sort:"name",
                     populate:[{
                         path:"testProject",
@@ -211,12 +235,23 @@ function  Poll() {
                     obj._doc.testCount=tests.tests.length;
                     
                     try {
-                        let lastRun=await (pollRun.findAsync({
-                            poll:obj._id
-                        },"status",{
-                            sort:"-createdAt",
-                            limit:1
-                        })); 
+                        let lastRun;
+                        if (req.clientParam.runEnvironment==1) {
+                            lastRun=await (pollRunPrd.findAsync({
+                                poll:obj._id
+                            },"status",{
+                                sort:"-createdAt",
+                                limit:1
+                            })); 
+                        }else{
+                            lastRun=await (pollRun.findAsync({
+                                poll:obj._id
+                            },"status",{
+                                sort:"-createdAt",
+                                limit:1
+                            })); 
+                        }
+                        
                         //console.log(lastRun)
                         obj._doc.lastStatus=lastRun?lastRun[0].status:0
                     } catch (error) {
@@ -389,13 +424,25 @@ function  Poll() {
             let sort=req.clientParam.sortByFail?"-testFail":"-createdAt"
             let page=req.clientParam.page
             //"pollName projectName collectionName status operator testFail testSuccess testTotal testUnkown createdAt"
-            let obj=await (pollRun.findAsync(query,
-               null,
-                {
-                    sort:sort,
-                    limit:10,
-                    skip:10*page
-                }));
+            let obj;
+            if (req.clientParam.runEnvironment==1) {
+                obj=await (pollRunPrd.findAsync(query,
+                    null,
+                     {
+                         sort:sort,
+                         limit:10,
+                         skip:10*page
+                     }));
+            }else{
+                obj=await (pollRun.findAsync(query,
+                    null,
+                     {
+                         sort:sort,
+                         limit:10,
+                         skip:10*page
+                     }));
+            }
+            
             
             util.ok(res,obj,"ok");
         }
@@ -421,7 +468,13 @@ function  Poll() {
                 query.createdAt={$gte:start,$lte:end}
             }
             
-            let obj=await (pollRun.countAsync(query));
+            let obj;
+            if (req.clientParam.runEnvironment==1) {
+                obj=await (pollRunPrd.countAsync(query));
+            }else{
+                obj=await (pollRun.countAsync(query));
+            }
+            
             
             util.ok(res,obj,"ok");
         }
@@ -468,23 +521,14 @@ function  Poll() {
                 _id:req.clientParam.id
             }
             
-            let obj=await (pollRun.findOneAsync(query,null,{
-                // populate:[{
-                //     path:"poll",
-                //     select:"name"
-                // },{
-                //     path:"testProject",
-                //     select:"name"
-                // },{
-                //     path:"testCollection",
-                //     select:"name"
-                // }]
-            }));
-            // obj._doc.tests=await (pollRunTest.findAsync({
-            //     pollRun:req.clientParam.id
-            // },null,{
-            //     sort:"-status"
-            // }));
+            let obj;
+            if (req.clientParam.runEnvironment==1) {
+                obj=await (pollRunPrd.findOneAsync(query));
+            } else {
+                obj=await (pollRun.findOneAsync(query));
+            }
+            
+           
             
             util.ok(res,obj,"ok");
         }
@@ -553,14 +597,27 @@ function  Poll() {
         try
         {
             
-            let tests=await (pollRunTest.findAsync({
-                pollRun:req.clientParam.id,
-                status:req.clientParam.status
-            },"pollRun testId testName testGroup testModule status mode testOrder output interfaces",{
-                skip:20*req.clientParam.page,
-                limit:20,
-                sort:"createdAt"
-            }));
+            let tests;
+            if (req.clientParam.runEnvironment==1) {
+                tests=await (pollRunTestPrd.findAsync({
+                    pollRun:req.clientParam.id,
+                    status:req.clientParam.status
+                },"pollRun testId testName testGroup testModule status mode testOrder output interfaces",{
+                    skip:20*req.clientParam.page,
+                    limit:20,
+                    sort:"createdAt"
+                }));
+            } else {
+                tests=await (pollRunTest.findAsync({
+                    pollRun:req.clientParam.id,
+                    status:req.clientParam.status
+                },"pollRun testId testName testGroup testModule status mode testOrder output interfaces",{
+                    skip:20*req.clientParam.page,
+                    limit:20,
+                    sort:"createdAt"
+                }));
+            }
+            
             if (tests) {
                 for (let test of tests) {
                     test.interShow=0
@@ -585,12 +642,21 @@ function  Poll() {
     this.runInfoTestsInterfaces=async (req,res)=> {
         try
         {
+            let interList;
+            if (req.clientParam.runEnvironment==1) {
+                interList = await (pollRunInterfacePrd.findAsync({
+                    pollRunTest:req.clientParam.testrunid
+                },null,{
+                    sort:"createdAt"
+                }))
+            }else{
+                interList = await (pollRunInterface.findAsync({
+                    pollRunTest:req.clientParam.testrunid
+                },null,{
+                    sort:"createdAt"
+                }))
+            }
             
-            let interList = await (pollRunInterface.findAsync({
-                pollRunTest:req.clientParam.testrunid
-            },null,{
-                sort:"createdAt"
-            }))
 
             //console.log(tests)
             util.ok(res,interList,"ok");

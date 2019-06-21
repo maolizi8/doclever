@@ -1,126 +1,132 @@
 <template>
-   
-        <el-col class="col" style="" id="showContent">
-                <el-row class="row" style="padding:10px;">
-                    <transition name="component-fade" mode="out-in">
-                        <el-row class="row box-shadow" style="">
-                            <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
-                                自动化测试-定时任务
-                                
-                                <!-- &nbsp;&nbsp;&nbsp;&nbsp;
-                                <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole==0 || sysRole==2 ">
-                                    去统计<i class="el-icon-d-arrow-right"></i>
-                                </a> -->
+   <el-col class="col" style="" id="showContent">
+        <el-row class="row" style="padding:10px;">
+            <transition name="component-fade" mode="out-in">
+                <el-row class="row box-shadow" style="">
+                    <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
+                        <span>
+                        自动化测试-定时任务
+                        </span>
+                        <!-- &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole==0 || sysRole==2 ">
+                            去统计<i class="el-icon-d-arrow-right"></i>
+                        </a> -->
+                        <el-select size="small" v-model="runEnvironment" style="margin-left: 20px;width:100px;">
+                            <el-option  value="0" label="测试环境"></el-option>
+                            <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0 || sysRole==1 || sysRole==2 "></el-option>
+                        </el-select>
+                        <el-button type="primary" size="mini" style="margin-left: 10px;" @click="searchPollList">
+                            筛选
+                        </el-button>
 
-                                <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="setPollSender" v-if="sysRole==0">
-                                    设置邮件发送者
-                                </el-button>
-                                <!-- <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="showAdd=true">
-                                   <i class="fa fa-plus"></i> 添加定时任务
-                                </el-button> -->
-                                <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="pollPop()" v-if="sysRole==0 || sysRole==2 ">
-                                   <i class="fa fa-plus"></i> 添加定时任务
-                                </el-button>
-                            </el-row>
-                            <el-row class="row" style="height: 1px;background-color: lightgray"></el-row>
-                            <el-row class="row" style="border-bottom-left-radius: 5px;border-bottom-right-radius: 5px">
-                                <el-row class="row" style="height: 30px;line-height: 30px;text-align: center;background-color: #ebebeb" :style="{paddingRight:paddingRight+'px'}">
-                                    <el-col class="col" :span="3">
-                                        任务主题 
-                                        <el-tooltip class="item" effect="dark" placement="bottom" trigger="hover"  content="测试结果发送报告的主题">
-                                            <i class="el-icon-info" style="font-size: 12px;"></i>
-                                        </el-tooltip>
-                                    </el-col>
-                                    <el-col class="col" :span="6">
-                                        测试项目/集合
-                                    </el-col>
-                                    <el-col class="col" :span="1">
-                                        用例数
-                                    </el-col>
-                                    <el-col class="col" :span="2">
-                                        运行环境
-                                    </el-col>
-                                    <el-col class="col" :span="2">
-                                        发送邮件
-                                    </el-col>
-                                    <el-col class="col" :span="2">
-                                        仅失败发送
-                                    </el-col>
-                                    <el-col class="col" :span="2">
-                                        是否开启
-                                    </el-col>
-                                    <el-col class="col" :span="2">
-                                        当前状态
-                                    </el-col>
-                                    <el-col class="col" :span="4">
-                                        操作
-                                    </el-col>
-                                </el-row>
-                                <el-row class="row" style="overflow-y: auto;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px" id="">
-                                    <el-row class="row" style="height: 40px;line-height: 40px;text-align: center;border-bottom: 1px solid #ccc;" v-for="(item,index) in arr" :key="index" >
-                                        <el-col class="col" :span="3" style="overflow: hidden;text-overflow:ellipsis;">
-                                            <span>{{item.name}}</span>
-                                        </el-col>
-                                        <el-col class="col" :span="6" style="overflow: hidden;text-overflow:ellipsis;">
-                                            <el-tooltip class="item" effect="dark" :content="item.testProject.name+'/'+item.testCollection.name" placement="bottom">
-                                                <span>{{item.testProject.name}}/{{item.testCollection.name}}</span>
-                                            </el-tooltip>
-                                        </el-col>
-                                        <el-col class="col" :span="1">
-                                            {{item.testCount}}
-                                        </el-col>
-                                        <el-col class="col" :span="2" :style="{'color':item.runEnvironment?'red':'black'}">
-                                            {{item.runEnvironment?'生产环境':'测试环境'}}
-                                        </el-col>
-                                        <el-col class="col" :span="2">
-                                            <!-- {{item.failSend?"是":"否"}} -->
-                                            <i class="el-icon-success" style="color: green" v-if="item.sendMail"></i>
-                                            <i class="el-icon-error" style="color: red" v-else></i>
-                                        </el-col>
-                                        <el-col class="col" :span="2">
-                                            <!-- {{item.failSend?"是":"否"}} -->
-                                            <i class="el-icon-success" style="color: green" v-if="item.failSend"></i>
-                                            <i class="el-icon-error" style="color: red" v-else></i>
-                                        </el-col>
-                                        <el-col class="col" :span="2">
-                                            <!-- {{item.enabled?"是":"否"}} -->
-                                            <i class="el-icon-success" style="color: green" v-if="item.enabled"></i>
-                                            <i class="el-icon-error" style="color: red" v-else></i>
-                                        </el-col>
-                                        <el-col class="col" :span="2">
-                                            <i class="el-icon-question" style="color: gray" v-if="item.lastStatus==0"></i>
-                                            <i class="el-icon-loading" v-else-if="item.lastStatus==99"></i>
-                                            <i class="el-icon-success" style="color: green" v-else-if="item.lastStatus==2"></i>
-                                            <i class="el-icon-error" style="color: red" v-else-if="item.lastStatus==3"></i>
-                                            <i v-else  class="el-icon-question" style="color: gray" ></i>
-                                        </el-col>
-                                        <el-col class="col" :span="4">
-                                            <el-button type="text" size="mini" @click.native="pollPop(item)" v-if="sysRole==0 || sysRole==2 ">
-                                                编辑
-                                            </el-button>
-                                            <el-button type="text" style="color: green" size="mini" @click.native="runPoll(item._id,index)" :loading="runPending[index].pending">
-                                                立即运行
-                                            </el-button>
-                                            <a :href="'testpoll.html?pollid='+item._id" style="color: purple;font-size:12px;" target="_blank" rel="noopener noreferrer">历史记录</a>
-                                            <!-- <el-button type="text" style="color: purple" size="mini" @click.native="runList(item._id)">
-                                                历史记录
-                                            </el-button> -->
-                                            <el-button type="text" style="color: red" size="mini" @click.native="remove(index)" v-if="sysRole==0">
-                                                删除
-                                            </el-button>
-                                        </el-col>
-                                    </el-row>
-                                </el-row>
+                        <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="setPollSender" v-if="sysRole==0">
+                            设置邮件发送者
+                        </el-button>
+                        <!-- <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="showAdd=true">
+                            <i class="fa fa-plus"></i> 添加定时任务
+                        </el-button> -->
+                        <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click="pollPop()" v-if="sysRole==0 || sysRole==1 ">
+                            <i class="fa fa-plus"></i> 添加定时任务
+                        </el-button>
+                    </el-row>
+                    <el-row class="row" style="height: 1px;background-color: lightgray"></el-row>
+                    <el-row class="row" style="border-bottom-left-radius: 5px;border-bottom-right-radius: 5px">
+                        <el-row class="row" style="height: 30px;line-height: 30px;text-align: center;background-color: #ebebeb" :style="{paddingRight:paddingRight+'px'}">
+                            <el-col class="col" :span="3">
+                                任务主题 
+                                <el-tooltip class="item" effect="dark" placement="bottom" trigger="hover"  content="测试结果发送报告的主题">
+                                    <i class="el-icon-info" style="font-size: 12px;"></i>
+                                </el-tooltip>
+                            </el-col>
+                            <el-col class="col" :span="6">
+                                测试项目/集合
+                            </el-col>
+                            <el-col class="col" :span="1">
+                                用例数
+                            </el-col>
+                            <el-col class="col" :span="2">
+                                运行环境
+                            </el-col>
+                            <el-col class="col" :span="2">
+                                发送邮件
+                            </el-col>
+                            <el-col class="col" :span="2">
+                                仅失败发送
+                            </el-col>
+                            <el-col class="col" :span="2">
+                                是否开启
+                            </el-col>
+                            <el-col class="col" :span="2">
+                                当前状态
+                            </el-col>
+                            <el-col class="col" :span="4">
+                                操作
+                            </el-col>
+                        </el-row>
+                        <el-row class="row" style="overflow-y: auto;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px" id="">
+                            <el-row class="row" style="height: 40px;line-height: 40px;text-align: center;border-bottom: 1px solid #ccc;" v-for="(item,index) in arr" :key="index" >
+                                <el-col class="col" :span="3" style="overflow: hidden;text-overflow:ellipsis;">
+                                    <span>{{item.name}}</span>
+                                </el-col>
+                                <el-col class="col" :span="6" style="overflow: hidden;text-overflow:ellipsis;">
+                                    <el-tooltip class="item" effect="dark" :content="item.testProject.name+'/'+item.testCollection.name" placement="bottom">
+                                        <span>{{item.testProject.name}}/{{item.testCollection.name}}</span>
+                                    </el-tooltip>
+                                </el-col>
+                                <el-col class="col" :span="1">
+                                    {{item.testCount}}
+                                </el-col>
+                                <el-col class="col" :span="2" :style="{'color':item.runEnvironment?'red':'black'}">
+                                    {{item.runEnvironment?'生产环境':'测试环境'}}
+                                </el-col>
+                                <el-col class="col" :span="2">
+                                    <!-- {{item.failSend?"是":"否"}} -->
+                                    <i class="el-icon-success" style="color: green" v-if="item.sendMail"></i>
+                                    <i class="el-icon-error" style="color: red" v-else></i>
+                                </el-col>
+                                <el-col class="col" :span="2">
+                                    <!-- {{item.failSend?"是":"否"}} -->
+                                    <i class="el-icon-success" style="color: green" v-if="item.failSend"></i>
+                                    <i class="el-icon-error" style="color: red" v-else></i>
+                                </el-col>
+                                <el-col class="col" :span="2">
+                                    <!-- {{item.enabled?"是":"否"}} -->
+                                    <i class="el-icon-success" style="color: green" v-if="item.enabled"></i>
+                                    <i class="el-icon-error" style="color: red" v-else></i>
+                                </el-col>
+                                <el-col class="col" :span="2">
+                                    <i class="el-icon-question" style="color: gray" v-if="item.lastStatus==0"></i>
+                                    <i class="el-icon-loading" v-else-if="item.lastStatus==99"></i>
+                                    <i class="el-icon-success" style="color: green" v-else-if="item.lastStatus==2"></i>
+                                    <i class="el-icon-error" style="color: red" v-else-if="item.lastStatus==3"></i>
+                                    <i v-else  class="el-icon-question" style="color: gray" ></i>
+                                </el-col>
+                                <el-col class="col" :span="4">
+                                    <el-button type="text" size="mini" @click.native="pollPop(item)" v-if="sysRole==0 || sysRole==1">
+                                        编辑
+                                    </el-button>
+                                    <el-button type="text" style="color: green" size="mini" @click.native="runPoll(item._id,index,item.runEnvironment)"  v-if="(sysRole==0 || sysRole==1) || item.runEnvironment==0 " >
+                                        立即运行
+                                    </el-button>
+                                    <a :href="'testpoll.html?pollid='+item._id" style="color: purple;font-size:12px;" target="_blank" rel="noopener noreferrer">历史记录</a>
+                                    <!-- 
+                                        <a :href="'testpoll.html?pollid='+item._id+'&env='+runEnvironment" style="color: purple;font-size:12px;" target="_blank" rel="noopener noreferrer">历史记录</a>
+                                        
+                                     <el-button type="text" style="color: purple" size="mini" @click.native="runList(item._id)">
+                                        历史记录
+                                    </el-button> -->
+                                    <el-button type="text" style="color: red" size="mini" @click.native="remove(index)" v-if="sysRole==0">
+                                        删除
+                                    </el-button>
+                                </el-col>
                             </el-row>
                         </el-row>
-                    </transition>
-                
-                
+                    </el-row>
                 </el-row>
-        </el-col>
-
-        
-
+            </transition>
+                
+        </el-row>
+    </el-col>
    
 </template>
 <style scoped>
@@ -157,6 +163,7 @@
                 showConfig:false,
                 confPending:false,
 
+                runEnvironment:'0',   //gql add,0-测试环境，1-生产环境
                 
                 collectionId:""
             }
@@ -168,12 +175,11 @@
         },
         computed:{
             sysRole:function () {
-                // if (session.get("role")==0 || session.get("role")==2 ) {
-                //     return true
-                // } else {
-                //     return false
-                // }
+               
                 return session.get("role")
+            },
+            runPrdRole:function () {
+               return session.get("prdRole")
             },
             arr:function () {
                 return this.$store.state.pollList;
@@ -284,17 +290,17 @@
                     $.notify(err,0);
                 })
             },
-            runPoll:function (pollid,index) {
+            runPoll:function (pollid,index,runEnvironment) {
                 var _this=this;
-                this.runPending[index].pengding=true;
-                if (this.runPending[index].runEnvironment==1) {
+                //this.arr[index].pengding=true;
+                if (runEnvironment==1) {
                     $.confirm("这个任务将在【线上环境】运行，请确认？",function () {
                         net.post("/poll/run",{
                             poll:pollid,
                             operator:session.get("name")
                         }).then(function (data) {
                             console.log("runPoll");
-                            _this.runPending[index].pengding=false;
+                            //_this.arr[index].pengding=false;
                             if(data.code==200)
                             {
                                 $.notify("任务开始执行，请去历史记录查看运行结果",1);
@@ -311,7 +317,7 @@
                         operator:session.get("name")
                     }).then(function (data) {
                         console.log("runPoll");
-                        _this.runPending[index].pengding=false;
+                        //_this.arr[index].pengding=false;
                         if(data.code==200)
                         {
                             $.notify("任务开始执行，请去历史记录查看运行结果",1);
@@ -381,6 +387,28 @@
                             $.notify(data.msg,0);
                         }
                     })
+                })
+            },
+
+            searchPollList:function (){
+                var _this=this;
+                $.startHud();
+                net.get("/poll/list",{
+                    runEnvironment:_this.runEnvironment
+                }).then(function (data) {
+                    $.stopHud();
+
+                    console.log('searchPollList>data')
+                    console.log(data)
+
+                    if(data.code==200)
+                    {
+                        _this.$store.state.pollList=data.data;
+                    }else
+                    {
+                        $.notify(data.msg,0)
+                    }
+                   
                 })
             },
         }

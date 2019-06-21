@@ -4,26 +4,25 @@
             <transition name="component-fade" mode="out-in">
                 <el-row class="row box-shadow" style="">
                     <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
-                        定时任务 - 
-                        <span style="font-weight:bold;color:black;" v-if="runArr.length>0">
-                            {{runArr[0].pollName}}
+                        <span style="font-weight:bold;color:black;font-size: 16px;">
+                            {{pollInfo.name}}
                         </span>
-                         - 运行记录
-                         <!-- &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="statistics.html" style="color: purple;font-size:12px;" target="_blank" v-if="sysRole==0 || sysRole==2 ">
-                            去统计<i class="el-icon-d-arrow-right"></i></a> -->
-
-                        <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="runPoll(pollId)">
-                                                立即运行
-                                            </el-button>
+                         - 运行记录   
+                         (当前配置： <span style="font-weight:bold;color:black;font-size: 16px;" :style="{'color':pollInfo.runEnvironment?'red':'black'}">
+                            {{pollInfo.runEnvironment?'生产环境':'测试环境'}}
+                        </span>)
+                        
+                        <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="runPoll(pollId)"  v-if="(sysRole==0 || sysRole==1) || pollInfo.runEnvironment==0 " >
+                            立即运行
+                        </el-button>
                     </el-row>
                     <el-row class="row" style="height: 1px;background-color: lightgray"></el-row>
                     <el-form label-position="top" label-width="80px" style="padding: 10px 20px 20px 10px" id="form-info">
                         <el-row class="row">
-                            <el-col class="col" :span="4">
+                            <el-col class="col" :span="3">
                                 <span style="color:red;">*</span>选择周期:
                             </el-col>
-                            <el-col class="col" :span="8">
+                            <el-col class="col" :span="7">
                                 <el-date-picker size="mini" style="width: 90%" 
                                 v-model="periodDate"
                                 type="daterange"
@@ -33,153 +32,122 @@
                                 :unlink-panels="true">
                                 </el-date-picker>
                             </el-col>
-                            <el-col class="col" :span="8">
-                                <!-- <el-switch v-model="sortByFail" active-color="#13ce66" inactive-color="#ff4949" :active-value="1" :inactive-value="0"></el-switch> -->
-                    
-                                <el-checkbox label="失败次数高的排序靠前" v-model="sortByFail"></el-checkbox>
+                            <el-col class="col" :span="3">
+                                选择环境：
+                            </el-col>
+                            <el-col class="col" :span="5">
+                               <el-select size="small" v-model="runEnvironment" style="">
+                                    <el-option  value="0" label="测试环境"></el-option>
+                                    <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0 || sysRole==1 || sysRole==2 "></el-option>
+                                </el-select>
                             </el-col>
                             <el-col class="col" :span="4">
-                            <el-button type="primary" size="mini" style="margin-left: 10px;" @click.native="query">
+                                 <el-checkbox label="失败次数高的排序靠前" v-model="sortByFail"></el-checkbox>
+                            </el-col>
+                            <el-col class="col" :span="2">
+                                <el-button type="primary" size="mini" style="margin-left: 10px;" @click.native="query">
                                     查询
                                 </el-button>
                             </el-col>
                         </el-row>
                     </el-form>
-                    <el-row class="row" style="border-bottom-left-radius: 5px;border-bottom-right-radius: 5px">
-                        <el-row class="row" style="height: 30px;line-height: 30px;text-align: center;background-color: #ebebeb" :style="{paddingRight:paddingRight+'px'}">
-                            <!-- <el-col class="col" :span="3">
-                                任务主题 
-                                <el-tooltip class="item" effect="dark" placement="bottom" trigger="hover"  content="测试结果发送报告的主题">
-                                    <i class="el-icon-info" style="font-size: 12px;"></i>
-                                </el-tooltip>
-                            </el-col> -->
-                            <el-col class="col" :span="5">
-                                测试项目/集合
-                            </el-col>
 
-                            <!-- <el-col class="col" :span="7">
-                                测试模块/业务/用例
-                            </el-col> -->
-                            <el-col class="col" :span="2">
-                                用例数
-                            </el-col>
-                            <el-col class="col" :span="2">
-                                失败
-                            </el-col>
-                            <el-col class="col" :span="2">
-                                成功
-                            </el-col>
-                            <el-col class="col" :span="2">
-                                未校验
-                            </el-col>
-                            <el-col class="col" :span="2">
-                                通过率
-                            </el-col>
-
-                            <el-col class="col" :span="2">
-                                操作者
-                            </el-col>
-                            <el-col class="col" :span="1">
-                               状态
-                            </el-col>
-                            <el-col class="col" :span="3">
-                               运行时间
-                            </el-col>
-                            <el-col class="col" :span="3">
-                                操作
-                            </el-col>
-                        </el-row>
-                        <el-row class="row" style="overflow-y: auto;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px" id="">
-                            <el-row class="row" style="line-height: 30px;text-align: center;border-bottom: 1px solid #ccc;" v-for="(item,index) in runArr" :key="index" >
-                                <!-- <el-col class="col" :span="3" style="overflow: hidden;text-overflow:ellipsis;">
-                                    <span>{{item.pollName}}</span>
-                                </el-col> -->
-                                <el-col class="col" :span="5" style="overflow: hidden;text-overflow:ellipsis;">
-                                    <el-tooltip class="item" effect="dark" :content="item.projectName+'/'+item.collectionName" placement="bottom">
-                                        <span>{{item.projectName}}/{{item.collectionName}}</span>
-                                    </el-tooltip>
-                                </el-col>
-
-                                <!-- <el-col class="col" :span="7" style="text-align:left;font-size:14px;padding: 2px 0;">
-                                    共{{item.testTotal}}个测试用例（失败{{item.testFail}}个，成功{{item.testSuccess}}个，未校验{{item.testUnkown}}个）
-                                </el-col> -->
-                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
-                                    {{item.testTotal}}
-                                </el-col>
-                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
-                                    {{item.testFail}}
-                                </el-col>
-                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
-                                    {{item.testSuccess}}
-                                </el-col>
-                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
-                                   {{item.testUnkown}}
-                                </el-col>
-                                <el-col class="col" :span="2" style="text-align:center;font-size:14px;padding: 2px 0;">
-                                   {{Math.round((item.testSuccess/item.testTotal)* 10000)/100}}%
-                                </el-col>
+                    
 
 
-                                <el-col class="col" :span="2">
-                                    {{item.operator?item.operator:"system"}}
-                                </el-col>
-                                <el-col class="col" :span="1">
-                                    <i class="el-icon-question" style="color: gray" v-if="item.status==0"></i>
-                                    <i class="el-icon-loading" v-else-if="item.status==99"></i>
-                                    <i class="el-icon-success" style="color: green" v-else-if="item.status==2"></i>
-                                    <i class="el-icon-error" style="color: red" v-else-if="item.status==3"></i>
-                                    <i class="el-icon-warning" style="color: orange" v-else-if="item.status==4"></i>
-                                </el-col>
-                                <el-col class="col" :span="3">
-                                    <!-- {{item.createdAt}} 至 {{item.updatedAt}} -->
-                                    <span style="font-size:12px;line-height: 20px;" v-if="item.status==0">
-                                        {{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:item.updatedAt}}
-                                    </span>
-                                    <span style="font-size:12px;line-height: 20px;"  v-else-if="item.status==2">
-                                        {{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:item.updatedAt}}
-                                    </span>
-                                    <span style="font-size:12px;line-height: 20px;" v-else>
-                                        {{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:"--"}}
-                                    </span>
-                                   <!-- <el-tooltip class="item" effect="dark" :content="item.createdAt+'至'+item.testsEndAt?item.testsEndAt:item.updatedAt" placement="bottom" v-if="item.status==0">
-                                        <span style="font-size:12px;line-height: 20px;">{{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:item.updatedAt}}</span>
-                                    </el-tooltip>
-                                   <el-tooltip class="item" effect="dark" :content="item.createdAt+'至'+item.testsEndAt?item.testsEndAt:item.updatedAt" placement="bottom" v-else-if="item.status==2">
-                                        <span style="font-size:12px;line-height: 20px;">{{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:item.updatedAt}}</span>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" :content="item.createdAt+'至'+item.testsEndAt?item.testsEndAt:'--'" placement="bottom" v-else>
-                                        <span style="font-size:12px;line-height: 20px;">{{item.createdAt}} 至 {{item.testsEndAt?item.testsEndAt:"--"}}</span>
-                                    </el-tooltip> -->
-                                </el-col>
-                                <el-col class="col" :span="3">
-                                    <a :href="'report0.html?id='+item._id" target="_blank" style="color: purple;font-size:12px;">详情1</a>
-                                    <a :href="'report.html?id='+item._id" target="_blank" style="color: purple;font-size:12px;">详情2</a>
-                                    <template  v-if="item.status==3 || item.status==4 ">
-                                        <el-button v-if="item.failReason" type="text" size="mini" style="margin-left:3px;" @click.native="editFailReason(item)">
-                                            <span v-if="item.failReason.reason==1">接口变更</span>
-                                            <span v-if="item.failReason.reason==2">应用异常有bug</span>
-                                            <span v-if="item.failReason.reason==3">测试环境异常</span>
-                                            <span v-if="item.failReason.reason==4">应用部署导致</span>
-                                            <span v-if="item.failReason.reason==5">用例问题</span>
-                                            <span v-if="item.failReason.reason==99">其他</span>
+                    <el-row class="" style="border-bottom-left-radius: 5px;border-bottom-right-radius: 5px">
+                        <table class="table box-shadow">
+                            <thead>
+                                <tr>
+                                    <th style="">测试项目/集合</th>
+                                    <th style="">运行环境</th>
+                                    <th style="">用例数</th>
+                                    <th style="">失败</th>
+                                    <th style="">成功</th>
+                                    <th style="">未校验</th>
+                                    <th style="">通过率</th>
+                                    <th style="">操作者</th>
+                                    <th style="">状态</th>
+                                    <th style="">运行时间</th>
+                                    <th style="width:150px">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="">
+                                <tr v-for="(item,index) in runArr" :key="index">
+                                    <td>
+                                        <el-tooltip class="item" effect="dark" :content="item.projectName+'/'+item.collectionName" placement="bottom">
+                                            <span>{{item.projectName}}/{{item.collectionName}}</span>
+                                        </el-tooltip>
+                                    </td>
+                                    <td>
+                                        {{item.runEnvironment?'生产环境':'测试环境'}}
+                                    </td>
+                                    <td>
+                                        {{item.testTotal}}
+                                    </td>
+                                    <td>
+                                        {{item.testFail}}
+                                    </td>
+                                    <td>
+                                        {{item.testSuccess}}
+                                    </td>
+                                    <td>
+                                        {{item.testUnkown}}
+                                    </td>
+                                    <td>
+                                       {{Math.round((item.testSuccess/item.testTotal)* 10000)/100}}%
+                                    </td>
+                                    <td>
+                                       {{item.operator?item.operator:"system"}}
+                                    </td>
+                                    <td>
+                                       <i class="el-icon-question" style="color: gray" v-if="item.status==0"></i>
+                                        <i class="el-icon-loading" v-else-if="item.status==99"></i>
+                                        <i class="el-icon-success" style="color: green" v-else-if="item.status==2"></i>
+                                        <i class="el-icon-error" style="color: red" v-else-if="item.status==3"></i>
+                                        <i class="el-icon-warning" style="color: orange" v-else-if="item.status==4"></i>
+                                    </td>
+                                    <td>
+                                       <span style="font-size:12px;line-height: 20px;" v-if="item.status==0">
+                                            {{item.createdAt}} 至 <br />{{item.testsEndAt?item.testsEndAt:item.updatedAt}}
+                                        </span>
+                                        <span style="font-size:12px;line-height: 20px;"  v-else-if="item.status==2">
+                                            {{item.createdAt}} 至 <br />{{item.testsEndAt?item.testsEndAt:item.updatedAt}}
+                                        </span>
+                                        <span style="font-size:12px;line-height: 20px;" v-else>
+                                            {{item.createdAt}} 至 <br />{{item.testsEndAt?item.testsEndAt:"--"}}
+                                        </span>
+                                    </td>
+                                    <td>
+                                       <!-- <a :href="'report0.html?id='+item._id+'&env='+item.runEnvironment" target="_blank" style="color: purple;font-size:12px;">详情1</a> -->
+                                        <a :href="'report.html?id='+item._id+'&env='+item.runEnvironment" target="_blank" style="color: purple;font-size:12px;">详情</a>
+                                        <template  v-if="item.status==3 || item.status==4 ">
+                                            <el-button v-if="item.failReason" type="text" size="mini" style="margin-left:3px;" @click.native="editFailReason(item)">
+                                                <span v-if="item.failReason.reason==1">接口变更</span>
+                                                <span v-if="item.failReason.reason==2">应用异常有bug</span>
+                                                <span v-if="item.failReason.reason==3">测试环境异常</span>
+                                                <span v-if="item.failReason.reason==4">应用部署导致</span>
+                                                <span v-if="item.failReason.reason==5">用例问题</span>
+                                                <span v-if="item.failReason.reason==99">其他</span>
+                                            </el-button>
+                                            <el-button v-else type="text" size="mini" style="margin-left:3px;color:green;" @click.native="editFailReason(item)">
+                                                失败原因
+                                            </el-button>
+                                        </template>
+
+                                        
+                                        <el-button type="text" size="mini" style="margin-left:3px;color:red;" @click.native="deleteRunRecord(item._id)" v-if="item.status==99 || sysRole==0 ">
+                                            删除
                                         </el-button>
-                                        <el-button v-else type="text" size="mini" style="margin-left:3px;color:green;" @click.native="editFailReason(item)">
-                                            失败原因
-                                        </el-button>
-                                    </template>
-
+                                    </td>
                                     
-                                    <el-button type="text" size="mini" style="margin-left:3px;color:red;" @click.native="deleteRunRecord(item._id)" v-if="item.status==99 || sysRole==0 ">
-                                        删除
-                                    </el-button>
-                                </el-col>
-                            </el-row>
-                        </el-row>
-
-                        <el-row class="row" >
-                            <!-- <page @change="changePage" ref="page"></page> -->
-                            <page @change="changePage" ref="page" :pages="totalPages" :numofpage="numOfPage"></page>
-                        </el-row>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </el-row>
+                    <el-row class="row" >
+                        <!-- <page @change="changePage" ref="page"></page> -->
+                        <page @change="changePage" ref="page" :pages="totalPages" :numofpage="numOfPage"></page>
                     </el-row>
                 </el-row>
             </transition>
@@ -193,7 +161,6 @@
     .box-shadow{
         border-radius: 5px;box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.24);background-color: white;height: 66%;
     }
-
     .table{
         width: 100%;
         padding: 10px;
@@ -220,6 +187,11 @@
     .table-light th,.table-light td{
         border:1px solid #eeeeee;
     }
+    .box-shadow{
+        border-radius: 5px;
+        box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.24);
+        background-color: white;
+    }
     
     .clear{
         height:20px;
@@ -241,7 +213,7 @@
             return {
                 periodDate:"",
                 sortByFail:false,
-
+                runEnvironment:"0",
                 //listTotal:0,
 				numOfPage:20
             }
@@ -253,16 +225,17 @@
         },
         computed:{
             sysRole:function () {
-                // if (session.get("role")==0 || session.get("role")==2 ) {
-                //     return true
-                // } else {
-                //     return false
-                // }
+               
                 return session.get("role")
             },
             pollId:function () {
                
                 return this.$store.state.pollid;
+               
+            },
+            pollInfo:function () {
+               
+                return this.$store.state.pollInfo;
                
             },
             runArr:function () {
@@ -384,8 +357,8 @@
             },
             query:function(){
 
-                if (!this.periodDate) {
-                    $.tip("请选择统计周期",0);
+                if (this.periodDate.length==1) {
+                    $.tip("统计周期开始和结束时间不可只填一个！",0);
                     return;
                 }
 				console.log("runList.vue>query>this.periodDate")
@@ -399,10 +372,15 @@
                 let params={
                             poll:_this.$store.state.pollid,
                             page:0,
-                            startdate:_this.periodDate[0],
-                            enddate:_this.periodDate[1],
+                            runEnvironment:_this.runEnvironment,
+                            //startdate:_this.periodDate[0],
+                            //enddate:_this.periodDate[1],
                             sortByFail:_this.sortByFail?1:0
                             }
+                if (this.periodDate.length==2) {
+                    params.startdate=_this.periodDate[0]
+                    params.enddate=_this.periodDate[1]
+                }
                 console.log("runList.vue>query>params")
                 console.log(params)
 
@@ -422,6 +400,7 @@
                  Promise.all([
                     net.get("/poll/runlistcount",{
                             poll:_this.$store.state.pollid,
+                            runEnvironment:_this.runEnvironment,
                             startdate:_this.periodDate[0],
                             enddate:_this.periodDate[1]
                             }),

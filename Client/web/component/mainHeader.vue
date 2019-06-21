@@ -13,7 +13,7 @@
                         <el-dropdown-item command="goToTest">测试项目管理</el-dropdown-item>
                         <el-dropdown-item command="goToPoll">定时任务管理</el-dropdown-item>
                         <el-dropdown-item command="goToStatistics">测试结果统计</el-dropdown-item>
-                        <el-dropdown-item command="goToFigureInterfaces" v-if="sysRole">接口统计配置</el-dropdown-item>
+                        <el-dropdown-item command="goToFigureInterfaces" v-if="sysRole==0 || sysRole==1 ">接口统计配置</el-dropdown-item>
                         <el-dropdown-item command="goToDomainHost">测试环境HOST</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -128,11 +128,12 @@
             sysRole:function () {
                 console.log('session.get-role>')
                 console.log(session.get("role"))
-                if (session.get("role")==0 || session.get("role")==2 ) {
-                    return true
-                } else {
-                    return false
-                }
+                // if (session.get("role")==0 || session.get("role")==2 ) {
+                //     return true
+                // } else {
+                //     return false
+                // }
+                return session.get("role")
             },
             team:function(){
                 console.log("mianHeader.vue>teamid:")

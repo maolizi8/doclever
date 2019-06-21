@@ -9,8 +9,12 @@ var model=new mongoose.Schema({
     password:String,
 
     role:{
-        type:Number,    //0-系统管理员， 1-开发管理员，2-测试管理员 99-普通用户
+        type:Number,    //0-系统管理员， 1-测试管理员，2-测试人员, 11-开发管理员，12-开发人员， 99-普通用户
         default:99
+    },
+    prdRole:{
+        type:Number,    
+        default:0   //线上环境调试的权限： 0-无， 1-有。 role为0或2
     },
 
     sex:String,

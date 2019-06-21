@@ -7,7 +7,9 @@ var store=new Vuex.Store({
         pollList:[],
         collectionOfTest:[],
         type:0,	//0-list, 1-detail info
+        runEnvironment:0,   //gql add,0-测试环境，1-生产环境
         pollid:"",
+        pollInfo:{},
         islist:0,
         pollRunList:[],
         pollRunTotal:0,
@@ -24,37 +26,38 @@ var store=new Vuex.Store({
     actions:{
         init:function (context) {
             context.state.pollid=getUrlParam("pollid");
+            //context.state.runEnvironment=getUrlParam("env");
             
             if (context.state.pollid) {
                 context.state.type=1;
                 context.state.islist=1;
 				
-                // return net.post("/poll/runlist",{
-                //     poll:context.state.pollid,
-                //     page:0
-                // }).then(function (data) {
-                    
-                //     if(data.code==200)
-                //     {
-                //         context.state.pollRunList=data.data;
-                //     }
-                //     else
-                //     {
-                //         $.notify(data.msg,0)
-                //     }
-                // })
-
                 Promise.all([
+                    net.get("/poll/simpleinfo",{
+                        id:context.state.pollid
+                    }),
                     net.get("/poll/runlistcount",{
-                            poll:context.state.pollid
-                            }),
+                            poll:context.state.pollid,
+                            runEnvironment:context.state.runEnvironment
+                        }),
                     net.post("/poll/runlist",{
                             poll:context.state.pollid,
+                            runEnvironment:context.state.runEnvironment,
                             page:0
                         })
                 ]).then(function (result) {
-                    var obj1=result[0];
-                    var obj2=result[1];
+                    var obj0=result[0];
+                    var obj1=result[1];
+                    var obj2=result[2];
+                    if(obj0.code==200)
+                    {
+                        context.state.pollInfo=obj0.data
+                    }
+                    else
+                    {
+                        throw obj0.msg;
+                    }
+                    
                     if(obj1.code==200)
                     {
                         context.state.pollRunTotal=obj1.data
@@ -81,10 +84,12 @@ var store=new Vuex.Store({
 				context.state.type=0;
                 context.state.islist=0;
 				
-                return net.get("/poll/list",{}).then(function (data) {
+                return net.get("/poll/list",{
+                    runEnvironment:0
+                }).then(function (data) {
                     if(data.code==200)
                     {
-                        context.state.pollList=data.data;
+                        context.state.pollList=data.data; 
                     }else
                     {
                         $.notify(data.msg,0)

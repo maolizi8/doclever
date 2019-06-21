@@ -7,7 +7,7 @@ var db=require("../util/db.js");
 var model=new mongoose.Schema({
     pollRun:{
         type:mongoose.Schema.ObjectId,
-        ref:"PollRun"
+        ref:"PollRunPrd"
     },
     // testId:{
     //     type:mongoose.Schema.ObjectId,
@@ -15,9 +15,9 @@ var model=new mongoose.Schema({
     // },
     runEnvironment:{
         type:Number,
-        default:0
+        default:1
     },//gql add,0-测试环境，1-生产环境
-
+    
     testId:String,
     testName:{
         type:String,
@@ -64,7 +64,7 @@ model.index({
     "createdAt":1
 });
 
-var dbManage=db.model("pollRunTest",model);
+var dbManage=db.model("PollRunTestPrd",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));
 module.exports=dbManage;
 

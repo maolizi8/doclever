@@ -5,7 +5,7 @@
             <div class="collectionMenu" style="height:26px;width:auto;line-height: 26px;position: absolute;right: 5px;top:2px;display: none" @click="$event.stopPropagation()" v-if="editRole">
                 <i class="el-icon-news icon-button" style="color:#17B9E6;"  @click="copyCollection(item)" title="复制集合"></i>
                 <i class="el-icon-edit icon-button" style="color:#17B9E6;"  @click="renameCollection(item)" title="修改名称"></i>
-                <i class="el-icon-delete icon-button" style="color:red;" @click="remove(item,index)" title="删除" v-if="sysRole"></i>
+                <i class="el-icon-delete icon-button" style="color:red;" @click="remove(item,index)" title="删除" v-if="sysRole==0||sysRole==1"></i>
             </div>
         </el-row>
     </el-row>
@@ -36,11 +36,7 @@
                 return this.$store.getters.editRole;
             },
 			sysRole:function () {
-				if (session.get("role")==0 || session.get("role")==2 ) {
-					return true
-				} else {
-					return false
-				}
+				return session.get("role")
 			},
         },
         methods: {

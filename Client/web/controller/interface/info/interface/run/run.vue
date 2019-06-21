@@ -155,7 +155,7 @@
                 tabType:"query",
                 showDialog:false,
 
-                runEnvironment:'0'   //gql add,0-测试环境，1-线上环境
+                runEnvironment:'0'   //gql add,0-测试环境，1-生产环境
             }
         },
         mixins:[sessionChange],

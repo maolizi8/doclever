@@ -35,9 +35,13 @@ var vue=new Vue({
 		console.log("report.js>created::")
 		
         this.id=getUrlParam("id");
+        this.env=getUrlParam("env");
 
         var _this=this;
-        let query={id:_this.id}
+        let query={
+            id:_this.id,
+            runEnvironment:_this.env?_this.env:0
+        }
         net.get("/poll/runinfo2",query).then(function (data) {
             console.log("runInfo");
             if(data.code==200)

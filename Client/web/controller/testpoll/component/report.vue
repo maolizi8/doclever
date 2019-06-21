@@ -5,7 +5,7 @@
             {{info.projectName}}/{{info.collectionName}}
             <span style="font-size:80%;font-weight:normal;" v-if="info.status==99">【正在执行中】</span>
             </h2>
-        <p>运行时间：{{info.createdAt}}</p>
+        <p>运行环境：<span :style="{'color':runEnv==1?'red':'black'}">{{runEnv==1?"生产环境":"测试环境"}}</span>  &nbsp;&nbsp;&nbsp;&nbsp; 运行时间：{{info.createdAt}}</p>
         <table class="table" style="width:300px;">
             <tr>
                 <th>失败</th>
@@ -207,6 +207,9 @@
 			runId:function(){
 				return getUrlParam("id");
             },
+            runEnv:function(){
+				return getUrlParam("env")?getUrlParam("env"):0;
+            },
             // statusRep:function(){
 			// 	return getUrlParam("status")?getUrlParam("status"):2;
             // },
@@ -258,6 +261,7 @@
                if (index!=-1) {
                     var query={
                         //testrunid:polltestid
+                        runEnvironment:_this.runEnv,
                         testrunid:_this.runTestLists[index]._id
                     }
                     _this.runTestLists[index].interShow=1
@@ -285,6 +289,7 @@
                     {
                         var query={
                             //testrunid:polltestid
+                            runEnvironment:_this.runEnv,
                             testrunid:_this.runTestLists[i]._id
                         }
                         if (_this.runTestLists[i].interShow!=1 && _this.runTestLists[i].interShow!=2 ) {
@@ -348,6 +353,7 @@
 				var _this=this;
 				let query={
 							id:_this.runId,
+                            runEnvironment:_this.runEnv,
 							page:page,
                             status:_this.statusRep
 							}
@@ -387,6 +393,7 @@
                 //_this.page=0
 				let query={
 							id:_this.runId,
+                            runEnvironment:_this.runEnv,
                             page:0,
                             status:status
 							}
@@ -448,12 +455,14 @@
         },
         created:function () {
             var id=getUrlParam("id");
+            var env=getUrlParam("env");
              //var status=getUrlParam("status");
 
             var _this=this;
             let query={
 							id:id,
-							page:0,
+                            page:0,
+                            runEnvironment:env?env:0,
                             status:_this.statusRep
                             }
             

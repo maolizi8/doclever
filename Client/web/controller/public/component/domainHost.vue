@@ -2,10 +2,10 @@
     <el-row class="row" id="maincontent">
         <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
             测试环境HOST配置
-            <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px"  @click.native="openPop()" v-if="sysRole==0 || sysRole==2 ">
+            <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px"  @click.native="openPop()" v-if="sysRole==0 || sysRole==1 || sysRole==2 ">
                 <i class="fa fa-plus"></i> 添加Host
             </el-button>
-            <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px"  @click.native="importHost()" v-if="sysRole==0 || sysRole==2 ">
+            <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px"  @click.native="importHost()" v-if="sysRole==0 || sysRole==1 || sysRole==2 ">
                 <i class="fa fa-download"></i> 导入Host
             </el-button>
         </el-row>
@@ -28,10 +28,10 @@
                         <td>{{item.host}}</td>
                         <td>{{item.platform}}</td>
                         <td>
-                            <el-button type="text" size="mini" @click.native="openPop(item)" v-if="sysRole==0 || sysRole==2 ">
+                            <el-button type="text" size="mini" @click.native="openPop(item)" v-if="sysRole==0 || sysRole==1 || sysRole==2 ">
                                 编辑
                             </el-button>
-                            <el-button type="text" style="color: red" size="mini" @click.native="remove(index)" v-if="sysRole==0">
+                            <el-button type="text" style="color: red" size="mini" @click.native="remove(index)" v-if="sysRole==0 || sysRole==1 || sysRole==2 ">
                                 删除
                             </el-button>
                         </td>
