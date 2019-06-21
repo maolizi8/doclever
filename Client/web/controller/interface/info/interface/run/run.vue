@@ -8,7 +8,7 @@
 
             <el-select size="small" v-model="runEnvironment" style="margin-top: 4px;margin-right: 0px;margin-left: 5px;width:100px;" :style="{'color':runEnvironment?'red':'black'}" >
                 <el-option  value="0" label="测试环境"></el-option>
-                <el-option  value="1" label="生产环境" style="color:red;" ></el-option>
+                <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0||sysRole==1||sysRole==2"></el-option>
             </el-select>
 
             <el-button type="primary" size="mini" style="margin-top: 4px;margin-right: 0px;margin-left: 5px" @click="run" title="立即运行" id="run" :loading="runPending">
@@ -164,6 +164,10 @@
             "runparam":runParam
         },
         computed:{
+            sysRole:function () {
+               
+                return session.get("role")
+            },
             curParam:function () {
                 return this.$store.getters.curParam;
             },
@@ -219,7 +223,7 @@
             run:function () {
                 var _this=this;
                 if (_this.runEnvironment==1) {
-                    $.confirm("请注意，你选择的是【线上环境】运行，请确认？",function () {
+                    $.confirm("请注意，你选择的是【生产环境】运行，请确认？",function () {
                         
                         _this.runPending=true;
                         $.startHud();

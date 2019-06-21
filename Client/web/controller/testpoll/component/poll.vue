@@ -366,7 +366,7 @@
 
                if(_this.poll.runEnvironment==1)
                 {
-                    $.confirm("请注意，你选择的是【线上环境】运行，请确认？",function () {
+                    $.confirm("请注意，你选择的是【生产环境】运行，请确认？",function () {
                         console.log("确定选择的环境，go on")
                         savefunc()
                     })

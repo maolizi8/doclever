@@ -38,7 +38,7 @@
                             <el-col class="col" :span="5">
                                <el-select size="small" v-model="runEnvironment" style="">
                                     <el-option  value="0" label="测试环境"></el-option>
-                                    <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0 || sysRole==1 || sysRole==2 "></el-option>
+                                    <el-option  value="1" label="生产环境" style="color:red;"></el-option>
                                 </el-select>
                             </el-col>
                             <el-col class="col" :span="4">
@@ -286,25 +286,46 @@
             runPoll:function (pollid) {
                 var _this=this;
 
-                 $.notify('手动运行的功能暂时不开放！',0);
-                return;
+                if (_this.pollInfo.runEnvironment==1) {
+                    $.confirm("这个任务将在【生产环境】运行，请确认？",function () {
+                        net.post("/poll/run",{
+                            poll:pollid,
+                            operator:session.get("name")
+                        }).then(function (data) {
+                            console.log("runPoll");
+                            if(data.code==200)
+                            {
+                                $.notify("任务开始执行，请去历史记录查看运行结果",1);
+                                
+                                window.location.reload()
+                            }
+                            else
+                            {
+                                $.notify(data.msg,0)
+                            }
+                        })
+                    })
+                }else{
+                    net.post("/poll/run",{
+                            poll:pollid,
+                            operator:session.get("name")
+                        }).then(function (data) {
+                            console.log("runPoll");
+                            if(data.code==200)
+                            {
+                                $.notify("任务开始执行，请去历史记录查看运行结果",1);
+                                
+                                window.location.reload()
+                            }
+                            else
+                            {
+                                $.notify(data.msg,0)
+                            }
+                        })
+                    
+                }
+               
                 
-                net.post("/poll/run",{
-                    poll:pollid,
-                    operator:session.get("name")
-                }).then(function (data) {
-                    console.log("runPoll");
-                    if(data.code==200)
-                    {
-                         $.notify("任务开始执行，请去历史记录查看运行结果",1);
-                         
-                        window.location.reload()
-                    }
-                    else
-                    {
-                        $.notify(data.msg,0)
-                    }
-                })
             },
             editFailReason:function (runitem) {
                 var _this=this;

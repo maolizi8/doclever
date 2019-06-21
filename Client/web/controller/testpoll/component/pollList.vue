@@ -13,7 +13,7 @@
                         </a> -->
                         <el-select size="small" v-model="runEnvironment" style="margin-left: 20px;width:100px;">
                             <el-option  value="0" label="测试环境"></el-option>
-                            <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0 || sysRole==1 || sysRole==2 "></el-option>
+                            <el-option  value="1" label="生产环境" style="color:red;"></el-option>
                         </el-select>
                         <el-button type="primary" size="mini" style="margin-left: 10px;" @click="searchPollList">
                             筛选
@@ -294,7 +294,7 @@
                 var _this=this;
                 //this.arr[index].pengding=true;
                 if (runEnvironment==1) {
-                    $.confirm("这个任务将在【线上环境】运行，请确认？",function () {
+                    $.confirm("这个任务将在【生产环境】运行，请确认？",function () {
                         net.post("/poll/run",{
                             poll:pollid,
                             operator:session.get("name")
