@@ -1,28 +1,25 @@
 /**
- * Created by gql on 2019/06/18.
+ * Created by gql on 2019/06/21.
  */
 var mongoose = require('mongoose');
 var mongoomise=require("mongoomise")
 var db=require("../util/db.js");
 var model=new mongoose.Schema({
-    poll:{
+    project:{
         type:mongoose.Schema.ObjectId,
-        ref:"Poll"
+        ref:"Project"
     },
-    pollRunTest:{
+    group:{
         type:mongoose.Schema.ObjectId,
-        ref:"PollRunTestPrd"
+        ref:"Group"
     },
 
     runEnvironment:{
         type:Number,
         default:1
-    },//gql add,0-测试环境，1-生产环境
+    },//1-生产环境
 
-    // interId: {
-    //     type:String,
-    //     default:""
-    // },
+    
     interId: {
         type:mongoose.Schema.ObjectId,
         ref:"Interface"
@@ -123,12 +120,7 @@ model.index({
     "runEnvironment":1
 });
 
-model.index({
-    "createdAt":1,
-    "pollRunTest":1
-});
-
-var dbManage=db.model("PollRunInterfacePrd",model);
+var dbManage=db.model("InterfaceRunOnPrd",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));
 module.exports=dbManage;
 

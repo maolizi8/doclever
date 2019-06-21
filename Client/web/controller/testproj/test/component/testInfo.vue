@@ -1,9 +1,15 @@
 <template>
     <el-row class="row">
         <el-row class="row" style="height: 35px;line-height: 35px">
-            <el-button type="primary" size="mini" style="float: left;margin-top: 4px;margin-right: 5px;margin-left: 5px" @click="run" :loading="runPending">
+            <el-select size="small" v-model="runEnvironment" style="margin-left: 20px;width:100px;">
+                <el-option  value="0" label="测试环境"></el-option>
+                <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0||sysRole==1"></el-option>
+            </el-select>
+            <el-button type="primary" size="mini" style="float: left;margin-top: 4px;margin-right: 10px;margin-left: 10px" @click="run" :loading="runPending">
                 立即运行
             </el-button>
+
+            
             <span style="color:red;font-size:12px;">
                 点击“立即运行”按钮前，请先确定选择的环境！！！
             </span>
@@ -129,6 +135,8 @@ line10:
             return {
                 runPending:false,
                 savePending:false,
+
+                runEnvironment:"0",
                 type:"ui"
             }
         },
@@ -149,6 +157,9 @@ line10:
             }
         },
         computed:{
+            sysRole:function () {
+                return session.get("role")
+            },
             editRole:function () {
                 return this.$store.getters.editRole;
             },
@@ -210,81 +221,86 @@ line10:
             },
             run: (async function () {
                 var _this=this;
-
-                 $.notify('手动运行的功能暂时不开放！',0);
-                return;
+                if (_this.runEnvironment==1) {
+                    $.confirm("这个任务将在【生产环境】运行，请确认？",function () {
+                        runTest(_this.runEnvironment)
+                    })
+                }else{
+                    runTest(_this.runEnvironment)
+                }
                 
-                // if(!this.$store.state.baseUrl)
-                // {
-                //     $.tip("请设置BaseUrl",0);
-                //     return;
-                // }
+                function runTest(runEnvironment){
+                    console.log('testInfo.vue>runTest>runEnvironment')
+                    console.log(runEnvironment)
+                    _this.runPending=true;
+                    _this.test.output="";
+                    var root={}
+                    root.runEnvironment=runEnvironment
+                    root.output="";
+                    root.projectInfo=[];
+                    root.success=0;
+                    root.fail=0;
+                    root.unknown=0;
+                    var env={};
 
-                this.runPending=true;
-                this.test.output="";
-                var root={}
-                root.output="";
-                root.projectInfo=[];
-                root.success=0;
-                root.fail=0;
-                root.unknown=0;
-                var env={};
+                    if(_this.$store.state.env)
+                    {
+                        _this.$store.state.env.forEach(function (obj) {
+                            env[obj.key]=obj.value;
+                        })
+                    }
+                    var str="";
+                    if(_this.type=="code")
+                    {
+                        var ele=document.getElementById("testContent");
+                        str=ele.innerHTML;
+                    }
+                    else if(_this.type=="ui")
+                    {
+                        var arr=_this.test.ui;
+                        str=helper.convertToCode(arr);
+                    }
 
-                if(this.$store.state.env)
-                {
-                    this.$store.state.env.forEach(function (obj) {
-                        env[obj.key]=obj.value;
-                    })
-                }
-                var str="";
-                if(this.type=="code")
-                {
-                    var ele=document.getElementById("testContent");
-                    str=ele.innerHTML;
-                }
-                else if(this.type=="ui")
-                {
-                    var arr=this.test.ui;
-                    str=helper.convertToCode(arr);
-                }
+                    console.log('testInfo.vue>before runTestCode>_this.test')
+                    console.log(_this.test)
+                    try
+                    {
+                        console.log('testInfo.vue>run>env')
+                        console.log(env)
 
-                console.log('testInfo.vue>before runTestCode>this.test')
-                console.log(this.test)
-                try
-                {
-                    console.log('testInfo.vue>run>env')
-                    console.log(env)
+                        /**
+                         * helper.runTestCode2(str,_this.test,{},{
+                            baseUrl:_this.$store.state.baseUrl,
+                            env:env,
+                        },root,[],_this.type,undefined,0,null).then(function (ret) {
+                        */
+                        helper.runTestCode2(str,_this.test,{},{
+                            baseUrl:_this.$store.state.baseUrl,
+                            env:env,
+                        },root,[],_this.type,undefined,1,null,'test').then(function (ret) {
+                            
+                            console.log('testInfo.vue>after runTestCode2>ret')
+                            console.log(ret)
 
-                    /**
-                     * helper.runTestCode2(str,this.test,{},{
-                        baseUrl:this.$store.state.baseUrl,
-                        env:env,
-                    },root,[],this.type,undefined,0,null).then(function (ret) {
-                     */
-                    helper.runTestCode2(str,this.test,{},{
-                        baseUrl:this.$store.state.baseUrl,
-                        env:env,
-                    },root,[],this.type,undefined,1,null,'test').then(function (ret) {
-                        
-                        console.log('testInfo.vue>after runTestCode2>ret')
-                        console.log(ret)
-
+                            _this.runPending=false;
+                            _this.test.output=root.output;
+                            $.notify("运行完成",1);
+                        }).catch(function (err) {
+                            _this.runPending=false;
+                            
+                            root.output+="<span style='color:red'>[ERROR]："+err+"</span><br>"
+                            _this.test.output=root.output;
+                        })
+                    }
+                    catch(e)
+                    {
                         _this.runPending=false;
+                        root.output+=e+"<br>"
                         _this.test.output=root.output;
-                        $.notify("运行完成",1);
-                    }).catch(function (err) {
-                        _this.runPending=false;
-                        
-                        root.output+="<span style='color:red'>[ERROR]："+err+"</span><br>"
-                        _this.test.output=root.output;
-                    })
+                    }
                 }
-                catch(e)
-                {
-                    _this.runPending=false;
-                    root.output+=e+"<br>"
-                    _this.test.output=root.output;
-                }
+
+                
             }),
 
             //geqiuli modify
