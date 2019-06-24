@@ -1,9 +1,9 @@
 <template>
     <el-row class="row">
         <el-row class="row" style="height: 35px;line-height: 35px">
-            <el-select size="small" v-model="runEnvironment" style="margin-left: 20px;width:100px;">
+            <el-select size="small" v-model="runEnvironment" style="float: left;margin-left: 20px;width:100px;">
                 <el-option  value="0" label="测试环境"></el-option>
-                <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0||sysRole==1"></el-option>
+                <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0||sysRole==1||sysRole==2"></el-option>
             </el-select>
             <el-button type="primary" size="mini" style="float: left;margin-top: 4px;margin-right: 10px;margin-left: 10px" @click="run" :loading="runPending">
                 立即运行
@@ -125,7 +125,7 @@
 line10:
 <testbaseurl style="width: 300px"></testbaseurl>
 */
-
+    var sessionChange=require("common/mixins/session");
     var testContentCode=require("./testContentCode.vue");
     var testContentUI=require("./testContentUI.vue");
     //var testBaseUrl=require("./testBaseUrl.vue");
@@ -140,6 +140,7 @@ line10:
                 type:"ui"
             }
         },
+        mixins:[sessionChange],
         components:{
             //"testbaseurl":testBaseUrl,
             "testcode":testContentCode,

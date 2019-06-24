@@ -115,6 +115,8 @@
 
 <script>
     var userSession=require("component/userSession.vue")
+    var sessionChange=require("common/mixins/session");
+    
     module.exports={
         props:["menu","islist"],
         data:function () {
@@ -124,6 +126,7 @@
                 islist:this.islist?this.islist:0
             }
         },
+        mixins:[sessionChange],
         computed:{
             sysRole:function () {
                 console.log('session.get-role>')

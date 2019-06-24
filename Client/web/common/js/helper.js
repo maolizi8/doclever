@@ -2423,14 +2423,53 @@ helper.runInterface=async function (obj,global,test,root,opt,id,testid,source) {
     var path=obj.url;
     var indexHttp=baseurl.indexOf("://");
 	var indexSlash;
+    var domainHttp;
     if(indexHttp==-1)
     {
         indexSlash=baseurl.indexOf("/")
+        domainHttp='http'
     }
     else
     {
         indexSlash=baseurl.indexOf("/",indexHttp+3);
+        domainHttp=baseurl.substring(0,indexHttp)  
     }
+
+    var domainName;
+    var domainHost;
+    if (root.runEnvironment==0) {
+        if (indexHttp==-1 && indexSlash==-1) {
+            domainName=baseurl  
+        } else if (indexHttp>-1 && indexSlash==-1) {
+            domainName=baseurl.substr(indexHttp+3)    
+        }else if (indexHttp==-1 && indexSlash>-1) {
+            domainName=baseurl.substr(0,baseurl.length-1)       
+        }else if (indexHttp>-1 && indexSlash>-1) {
+            domainName=baseurl.substring(indexHttp+3,indexSlash)   
+        }
+
+        console.log("helper.js>runInterface>>>test environment >> domainName")
+        console.log(domainName)
+
+        await net.get("/tools/domainhostip",{
+            domain:domainName
+        }).then(function (data) {
+            if(data.code==200)
+            {
+                console.log("helper.js>runInterface>>>test environment >> /tools/domainhostip")
+                console.log(data.data)
+                if (data.data) {
+                    domainHost=data.data.host
+                }else{
+                    $.notify('请先配置测试环境下该域名的HostIP！',0);
+                }
+                
+            }else{
+                $.notify('查找测试环境HostIP报错：'+data.msg,0);
+            }
+        })
+    }
+
     if(indexSlash>-1)
     {
         var baseUrlTemp=baseurl.substring(0,indexSlash);
@@ -2443,7 +2482,13 @@ helper.runInterface=async function (obj,global,test,root,opt,id,testid,source) {
         {
             pathTemp+="/"
         }
-        baseurl=baseUrlTemp;
+
+        //baseurl=baseUrlTemp;
+        if (root.runEnvironment==0) {
+            baseurl=domainHttp+"://"+domainHost
+        }else{
+            baseurl=baseUrlTemp;
+        }
         // console.log('helper.js--runInterface>baseUrlTemp、pathTemp')
         // console.log(baseUrlTemp)
         // console.log(pathTemp)
@@ -2455,9 +2500,16 @@ helper.runInterface=async function (obj,global,test,root,opt,id,testid,source) {
         {
             path="/"+path;
         }
+        if (root.runEnvironment==0) {
+            baseurl=domainHttp+"://"+domainHost
+        }
     }
-    // console.log('helper.js--runInterface>path before handleGlobalVar')
-    // console.log(path)
+
+    console.log('helper.js--runInterface>baseurl')
+   console.log(baseurl)
+    console.log('helper.js--runInterface>path before handleGlobalVar')
+   console.log(path)
+
     path=helper.handleGlobalVar(path,globalVar);
     // console.log('helper.js--runInterface>path after handleGlobalVar')
     // console.log(path)
@@ -2562,6 +2614,11 @@ helper.runInterface=async function (obj,global,test,root,opt,id,testid,source) {
         }
     })
 
+    if (root.runEnvironment==0) {
+        console.log("helper.js--runInterface>>runEnvironment should add Host")
+        objHeaders['Host']=domainName
+
+    }
    
 	
     if(obj.pullInject)
@@ -3023,6 +3080,7 @@ helper.runInterface=async function (obj,global,test,root,opt,id,testid,source) {
         console.log(body)
         console.log(header)
         console.log(bNet)
+    
 
     var func;
     if(bUpload || (obj.bodyInfo && obj.bodyInfo.type==1))

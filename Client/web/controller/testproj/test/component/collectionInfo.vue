@@ -1,6 +1,10 @@
 <template>
     <el-row class="row">
         <el-row class="row" style="height: 35px;line-height: 35px">
+            <el-select size="small" v-model="runEnvironment" style="float: left;margin-left: 20px;width:100px;">
+                <el-option  value="0" label="测试环境"></el-option>
+                <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0||sysRole==1"></el-option>
+            </el-select>
             <el-button type="primary" size="mini" style="float: left;margin-top: 4px;margin-right: 5px;margin-left: 5px" @click="run" :loading="runPending">
                 立即运行
             </el-button>
@@ -142,7 +146,7 @@
 /*
 line13:<testbaseurl style="width: 300px"></testbaseurl>
 */
-
+    var sessionChange=require("common/mixins/session");
     //var testBaseUrl=require("./testBaseUrl.vue");
     module.exports = {
         props:["testid"],
@@ -155,11 +159,14 @@ line13:<testbaseurl style="width: 300px"></testbaseurl>
                 lastEle:null,
                 paddingRight:0,
 
+                runEnvironment:"0",
+
                 collectionRunInfo:{},
                 hasrun:false,
                 testid:this.testid
             }
         },
+        mixins:[sessionChange],
         components:{
             //"testbaseurl":testBaseUrl
         },
@@ -167,6 +174,9 @@ line13:<testbaseurl style="width: 300px"></testbaseurl>
             // collectionRunInfo:function () {
             //     return this.$store.state.collectionRunInfo;
             // },
+            sysRole:function () {
+                return session.get("role")
+            },
             info:function () {
                 console.log("collectionInfo.vue>info")
                 console.log(this.$store.state.selCollection)
@@ -207,117 +217,125 @@ line13:<testbaseurl style="width: 300px"></testbaseurl>
             run:async function () {
                 var _this=this;
                 
-                 $.notify('手动运行的功能暂时不开放！',0);
-                return;
+                if (_this.runEnvironment==1) {
+                    $.confirm("这个任务将在【生产环境】运行，请确认？",function () {
+                        runTest(_this.runEnvironment)
+                    })
+                }else{
+                    runTest(_this.runEnvironment)
+                }
                 
                 // if(!this.$store.state.baseUrl)
                 // {
                 //     $.tip("请设置BaseUrl",0);
                 //     return;
                 // }
+                async function runTest(runEnvironment){
+                    _this.runPending=true;
+                    var test={
+                        name:"",
+                        status:0
+                    };
+                    var root={}
+                    root.runEnvironment=runEnvironment
+                    root.output="";
+                    root.projectInfo=[];
+                    root.total=_this.arr.length;
+                    root.success=0;
+                    root.fail=0;
+                    root.unknown=0;
+                    var env={};
 
-                this.runPending=true;
-                var test={
-                    name:"",
-                    status:0
-                };
-                var root={}
-                root.output="";
-                root.projectInfo=[];
-                root.total=this.arr.length;
-                root.success=0;
-                root.fail=0;
-                root.unknown=0;
-                var env={};
-
-                if(this.$store.state.env)
-                {
-                    this.$store.state.env.forEach(function (obj) {
-                        env[obj.key]=obj.value;
-                    })
-                }
-
-                /* var arr=this.arr.map(function (obj) {
-                    return {
-                        type:"test",
-                        data:obj.test._id,
-                        mode:obj.mode,
-                        id:obj.id,
-                        name:obj.test.name,
-                        argv:obj.argv,
+                    if(_this.$store.state.env)
+                    {
+                        _this.$store.state.env.forEach(function (obj) {
+                            env[obj.key]=obj.value;
+                        })
                     }
-                })
 
-                console.log('collectionInfo.vue>run>this.arr (before run)')
-                console.log(this.arr)
-
-                var str=helper.convertToCode(arr);
-                try
-                {
-                    await helper.runTestCode2(str,test,{},{
-                        baseUrl:_this.$store.state.baseUrl,
-                        env:env,
-                    },root,[],"ui",undefined,0,_this.testid);
-                    _this.runPending=false;
-                    $.notify("运行结束",1);
-                }
-                catch(e)
-                {
-                    _this.runPending=false;
-                    root.output+=e+"<br>"
-                } 
-                
-                */
-                for (var testCase of this.arr) {
-                    try
-                    {	
-                        var outTestCase=[{
+                    /* var arr=_this.arr.map(function (obj) {
+                        return {
                             type:"test",
-                            data:testCase.test._id,
-                            mode:testCase.mode,
-                            id:testCase.id,
-                            name:testCase.test.name,
-                            argv:testCase.argv,
-                        }]
-                        
-                        var str=helper.convertToCode(outTestCase);
-                       
-                        console.log('collectionInfo.vue>str')
-                        console.log(str)
+                            data:obj.test._id,
+                            mode:obj.mode,
+                            id:obj.id,
+                            name:obj.test.name,
+                            argv:obj.argv,
+                        }
+                    })
 
-                        var runResult=await helper.runTestCode2(str,test,{},{
+                    console.log('collectionInfo.vue>run>_this.arr (before run)')
+                    console.log(_this.arr)
+
+                    var str=helper.convertToCode(arr);
+                    try
+                    {
+                        await helper.runTestCode2(str,test,{},{
                             baseUrl:_this.$store.state.baseUrl,
                             env:env,
-                        },root,[],"ui",undefined,0,_this.testid,'collection');
-
+                        },root,[],"ui",undefined,0,_this.testid);
+                        _this.runPending=false;
+                        $.notify("运行结束",1);
                     }
                     catch(e)
                     {
-                        root.fail++;
-                        root.output+=e+"<br>";
-                        console.log('collectionInfo.vue>run>catch> e')
-                        console.log(e)
+                        _this.runPending=false;
+                        root.output+=e+"<br>"
+                    } 
+                    
+                    */
+                    for (var testCase of _this.arr) {
+                        try
+                        {	
+                            var outTestCase=[{
+                                type:"test",
+                                data:testCase.test._id,
+                                mode:testCase.mode,
+                                id:testCase.id,
+                                name:testCase.test.name,
+                                argv:testCase.argv,
+                            }]
+                            
+                            var str=helper.convertToCode(outTestCase);
+                        
+                            console.log('collectionInfo.vue>str')
+                            console.log(str)
+
+                            var runResult=await helper.runTestCode2(str,test,{},{
+                                baseUrl:_this.$store.state.baseUrl,
+                                env:env,
+                            },root,[],"ui",undefined,0,_this.testid,'collection');
+
+                        }
+                        catch(e)
+                        {
+                            root.fail++;
+                            root.output+=e+"<br>";
+                            console.log('collectionInfo.vue>run>catch> e')
+                            console.log(e)
+                        }
                     }
+                    _this.runPending=false;
+                    $.notify("运行结束",1);
+
+                    _this.info.output.total=root.total;
+                    _this.info.output.success=root.success;
+                    _this.info.output.fail=root.fail;
+                    _this.info.output.unknown=root.unknown;
+                    _this.info.output.time=0;
+                    
+                    _this.hasrun=true;
+                    _this.collectionRunInfo=root;
+                    console.log('collectionInfo.vue>run>_this.collectionRunInfo')
+                    console.log(_this.collectionRunInfo)
+
+                    _this.arr.forEach(function (obj) {
+                        _this.info.output.time+=obj.time;
+                    })
+                    console.log('collectionInfo.vue>run>_this.arr (after run)')
+                    console.log(_this.arr)
                 }
-                 _this.runPending=false;
-                 $.notify("运行结束",1);
-
-                this.info.output.total=root.total;
-                this.info.output.success=root.success;
-                this.info.output.fail=root.fail;
-                this.info.output.unknown=root.unknown;
-                this.info.output.time=0;
                 
-                this.hasrun=true;
-                this.collectionRunInfo=root;
-                console.log('collectionInfo.vue>run>this.collectionRunInfo')
-                console.log(this.collectionRunInfo)
-
-                this.arr.forEach(function (obj) {
-                    _this.info.output.time+=obj.time;
-                })
-                console.log('collectionInfo.vue>run>this.arr (after run)')
-                console.log(this.arr)
             },
 
             save:function () {
