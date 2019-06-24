@@ -101,6 +101,7 @@ if (switchSchedule) {
             console.log('weekDay: '+weekDay)
 
             let arr=await (poll.findAsync({
+                runEnvironment:0,   //0-测试环境，1-生产环境
                 date:weekDay,
                 time:hour,
                 enabled:1
@@ -134,6 +135,7 @@ if (switchSchedule) {
                 console.log('weekDay: '+weekDay)
     
                 let arr=await (poll.findAsync({
+                    runEnvironment:0,   //0-测试环境，1-生产环境
                     date:weekDay,
                     time2:hour,
                     enabled:1
