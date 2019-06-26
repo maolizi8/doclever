@@ -45,7 +45,7 @@
                                  <el-checkbox label="失败次数高的排序靠前" v-model="sortByFail"></el-checkbox>
                             </el-col>
                             <el-col class="col" :span="2">
-                                <el-button type="primary" size="mini" style="margin-left: 10px;" @click.native="query">
+                                <el-button type="primary" size="mini" style="margin-left: 10px;" @click.native="queryRunList">
                                     查询
                                 </el-button>
                             </el-col>
@@ -364,6 +364,7 @@
             },
             changePage:function (page) {
                 var query={
+                    runEnvironment:this.runEnvironment,
                     page:page
                 }
                 console.log("runList.vue>page: "+page)
@@ -376,7 +377,7 @@
                     }
                 });
             },
-            query:function(){
+            queryRunList:function(){
 
                 if (this.periodDate.length==1) {
                     $.tip("统计周期开始和结束时间不可只填一个！",0);

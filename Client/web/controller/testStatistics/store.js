@@ -19,7 +19,9 @@ var store=new Vuex.Store({
     },
     actions:{
         init:function (context) {
-            return net.get("/poll/list",{}).then(function (data) {
+            return net.get("/poll/list",{
+                runEnvironment:0
+            }).then(function (data) {
                 console.log("testStatistics>store.js>init");
                 if(data.code==200)
                 {

@@ -1,0 +1,10 @@
+{
+	"db":"mongodb://[mongbd-username]:[mongbd-password]@[mongbd-host]:27017/[mongbd-database]",	//mongodb的配置
+	"filePath":"[doclever-filepath]",
+	"port":9000,	//服务端口，自己配置
+	"scheduleJobSwitch":false,	//true-定时任务开启，false-定时任务关闭
+	"loggerlevel":"info",	//日志打印的level：info、error、debug等
+	"serverHost":"yyw-0656",	//服务器host，配置两套服务器，目的：定时任务较多，避免互相影响
+	"serverEnv":"test",		//服务器的环境：test、prd	
+	"rsapublickey":"[]"		//登录加密的公钥
+}

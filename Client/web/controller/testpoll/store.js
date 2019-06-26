@@ -103,6 +103,7 @@ var store=new Vuex.Store({
         },
         pollRunHistoryList:function (context,query) {
             return net.post("/poll/runlist",{
+                runEnvironment:query.runEnvironment,
                 poll:context.state.pollid,
                 page:query.page
             }).then(function (data) {

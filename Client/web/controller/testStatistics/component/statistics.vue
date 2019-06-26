@@ -1,7 +1,16 @@
 <template>
     <el-row class="row" id="showContent">
-        <el-form label-position="top" label-width="80px" style="padding: 10px 20px 20px 10px" id="form-info">
+        <el-form label-position="top" label-width="80px" style="padding: 10px;" id="form-info">
             <el-row class="row">
+                <el-col class="col" :span="3">
+                   <span style="color:red">*</span>选择运行环境:
+                </el-col>
+                <el-col class="col" :span="7">
+                    <el-select v-model="runEnvironment"  style="width: 90%"  >
+                       <el-option  value="0" label="测试环境"></el-option>
+                        <el-option  value="1" label="生产环境" style="color:red;"></el-option>
+                    </el-select>
+                </el-col>
                 <el-col class="col" :span="3">
                    选择定时任务:
                 </el-col>
@@ -13,6 +22,8 @@
                         <el-option v-for="(item,index) in pollList"  :value="item._id" :label="item.name" :key="index" ></el-option>
                     </el-select>
                 </el-col>
+            </el-row>
+            <el-row class="row">
 				<el-col class="col" :span="3">
                   <span style="color:red">*</span>选择周期:
                 </el-col>
@@ -27,7 +38,7 @@
 					</el-date-picker>
                 </el-col>
                 <el-col class="col" :span="2">
-                   <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="query">
+                   <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px" @click.native="queryResult">
                         查询
                     </el-button>
                 </el-col>
@@ -41,18 +52,19 @@
 		</el-form>
         <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
 			统计周期：{{periodDate?periodDate[0]:"-"}} 至 {{periodDate?periodDate[1]:"-"}}
+            &nbsp;&nbsp;&nbsp;&nbsp;统计环境：{{runEnvironment==1?"生产环境":"测试环境"}}
 		</el-row> 
 		 <table class="table box-shadow" id="resulttable">
             <thead>
                 <tr>
-                    <th rowspan="2" style="width:100px;">定时任务</th>
-                    <th rowspan="2" style="width:100px;">测试项目/集合</th>
+                    <th rowspan="2" style="width:120px;">定时任务</th>
+                    <th rowspan="2" style="width:150px;">测试项目/集合</th>
                     <!-- <th rowspan="2" style="width:150px;">周期</th> -->
-                    <th rowspan="1"  colspan="3" style="width:50px;">运行次数</th>
+                    <th rowspan="1"  colspan="3" style="">运行次数</th>
                     <!-- <th rowspan="2" style="width:50px;">总共/次</th>
                     <th rowspan="2" style="width:50px;">成功/次</th>
                     <th rowspan="2" style="width:50px;">失败/次</th> -->
-                    <th rowspan="1"  colspan="6" style="width:50px;">失败原因</th>
+                    <th rowspan="1"  colspan="6" style="">失败原因/次数</th>
                     <!-- <th style="background-color: #F5DEB3;">接口变更</th>
                     <th style="background-color: #F5DEB3;">应用异常有bug</th>
                     <th style="background-color: #F5DEB3;">测试环境异常</th>
@@ -145,6 +157,9 @@
         box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.24);
         background-color: white;
     }
+    .row{
+        margin-bottom: 5px;
+    }
     
     .clear{
         height:20px;
@@ -184,6 +199,8 @@
 				//pollList:[{"name":"test1","_id":"111"},{"name":"test2","_id":"222"}],
 				//pollList:[],
                 arr:[],
+
+                runEnvironment:"0",
 				
 				numOfPage:20
             }
@@ -272,10 +289,14 @@
                 
             },
 			
-			query:function(){
+			queryResult:function(){
 
                 if (!this.periodDate) {
-                    $.tip("请选择统计周期",0);
+                    $.tip("请选择统计周期！",0);
+                    return;
+                }
+                if (this.runEnvironment==1) {
+                    $.tip("生产环境的统计还在开发中！",0);
                     return;
                 }
 				// console.log("statistics.vue>query>this.periodDate")
