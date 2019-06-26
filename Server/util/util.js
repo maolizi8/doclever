@@ -54,12 +54,16 @@ var con;
 
 var config=require("../../config.json");
 
+var serverHost=config.serverHost
+var serverPort=config.port
+
 var loggerlevel;
 if (config.loggerlevel!==undefined) {
     loggerlevel=config.loggerlevel;
 } else {
     loggerlevel='error';
 }
+
 
 const log4js = require("log4js"); //gql add
 log4js.configure({
@@ -4470,7 +4474,7 @@ var pollRunMailContent=function(pollInfo,pollRunId,runEnvironment){
             <br />`
     
     if (pollRunId) {
-        html+=` <a style="font-size:14px;font-weight:normal;" href="http://yyw-0656:9000/html/web/views/report.html?id=${pollRunId}&env=${runEnvironment}">查看详细报告</a><br />`
+        html+=` <a style="font-size:14px;font-weight:normal;" href="http://${serverHost}:${serverPort}/html/web/views/report.html?id=${pollRunId}&env=${runEnvironment}">查看详细报告</a><br />`
     }
     html+=` 
             <div class="clear"></div>
