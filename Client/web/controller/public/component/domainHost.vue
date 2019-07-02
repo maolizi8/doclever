@@ -1,7 +1,8 @@
 <template>
     <el-row class="row" id="maincontent">
         <el-row class="row" style="height:40px;line-height: 40px;padding-left: 10px;font-size: 14px;color: #17B9E6">
-            测试环境HOST配置
+            <span style="font-size: 18px;color: black;">测试环境HOST配置</span> 
+            <a href="/html/web/views/statistic/allhost.html" target="_blank" style="margin-left: 50px">导出全部host</a>
             <el-button type="primary" size="mini" style="float: right;margin-right: 10px;margin-top: 5px"  @click.native="openPop()" v-if="sysRole==0 || sysRole==1 || sysRole==2 ">
                 <i class="fa fa-plus"></i> 添加Host
             </el-button>

@@ -82,7 +82,7 @@ function Tools() {
     this.getDomainHostList=async (req,res)=> {
         try
         {
-            let obj=await (domainHost.findAsync({}))
+            let obj=await (domainHost.findAsync({},"domain host platform"))
 
             util.ok(res,obj,"ok");
         }
