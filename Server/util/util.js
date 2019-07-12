@@ -4398,7 +4398,15 @@ let runPollBackend=async function (pollArr,operator) {
                     let content=pollRunMailContent(query,pollRunId,root.runEnvironment)
                     exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,defaultRecievers,subject,content);
                     query.sendmail=true;
+                }else{
+                    subject="[API自动化]-"+envDesc+"-"+pollObj.name+"-测试报告（未校验"+root.unknown+"个) "+moment().format("YYYY-MM-DD HH:mm:ss");
+                
+                    //let content=`<h3>测试共(${root.count}), &nbsp;&nbsp;成功(${root.success}), &nbsp;&nbsp;失败(${root.fail}),&nbsp;&nbsp;未判定(${root.unknown})</h3>`+root.output;
+                    let content=pollRunMailContent(query,pollRunId,root.runEnvironment)
+                    exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,recievUsers,subject,content);
+                    query.sendmail=true;
                 }
+
                 
             }
             else{
