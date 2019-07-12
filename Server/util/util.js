@@ -64,6 +64,12 @@ if (config.loggerlevel!==undefined) {
     loggerlevel='error';
 }
 
+var defaultRecievers;
+if (config.defaultRecievers!==undefined) {
+    defaultRecievers=config.defaultRecievers.split(';');
+} else {
+    defaultRecievers=[];
+}
 
 const log4js = require("log4js"); //gql add
 log4js.configure({
@@ -4385,12 +4391,15 @@ let runPollBackend=async function (pollArr,operator) {
                 query.sendmail=true;
             }
             else if (root.unknown>0) {
-                subject="[API自动化]-"+envDesc+"-"+pollObj.name+"-测试报告（未校验"+root.unknown+"个) "+moment().format("YYYY-MM-DD HH:mm:ss");
+                if (defaultRecievers) {
+                    subject="[API自动化]-"+envDesc+"-"+pollObj.name+"-测试报告（未校验"+root.unknown+"个) "+moment().format("YYYY-MM-DD HH:mm:ss");
                 
-                //let content=`<h3>测试共(${root.count}), &nbsp;&nbsp;成功(${root.success}), &nbsp;&nbsp;失败(${root.fail}),&nbsp;&nbsp;未判定(${root.unknown})</h3>`+root.output;
-                let content=pollRunMailContent(query,pollRunId,root.runEnvironment)
-                exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,['qm_dept@111.com.cn'],subject,content);
-                query.sendmail=true;
+                    //let content=`<h3>测试共(${root.count}), &nbsp;&nbsp;成功(${root.success}), &nbsp;&nbsp;失败(${root.fail}),&nbsp;&nbsp;未判定(${root.unknown})</h3>`+root.output;
+                    let content=pollRunMailContent(query,pollRunId,root.runEnvironment)
+                    exports.sendMail(pollSetInfo.sendInfo.smtp,pollSetInfo.sendInfo.port,pollSetInfo.sendInfo.user,pollSetInfo.sendInfo.password,defaultRecievers,subject,content);
+                    query.sendmail=true;
+                }
+                
             }
             else{
                 subject="[API自动化]-"+envDesc+"-"+pollObj.name+"-测试报告（全通过） "+moment().format("YYYY-MM-DD HH:mm:ss");
