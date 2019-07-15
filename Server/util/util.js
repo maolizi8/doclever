@@ -1143,12 +1143,24 @@ var runBefore2=function (code,requestObj,query,header,body,param) {
     var Base64=BASE64.encoder,MD5=CryptoJS.MD5,SHA1=CryptoJS.SHA1,SHA256=CryptoJS.SHA256,SHA512=CryptoJS.SHA512,SHA3=CryptoJS.SHA3,RIPEMD160=CryptoJS.RIPEMD160,AES=CryptoJS.AES.encrypt,TripleDES=CryptoJS.TripleDES.encrypt,DES=CryptoJS.DES.encrypt,Rabbit=CryptoJS.Rabbit.encrypt,RC4=CryptoJS.RC4.encrypt,RC4Drop=CryptoJS.RC4Drop.encrypt;
     try
     {
-        // console.log('util.js>runBefore2')
-        // console.log(code)
-        // console.log(requestObj)
+        /*
         if(code)
         {
             eval(code);
+        }
+        */
+        logger.info("run runBefore2");
+        logger.info(code);
+        if(code)
+        {
+            eval(code);
+        }
+        logger.info("run runBefore2:  header: ");
+        logger.info(header);
+        if (header.sleep) {
+            logger.info("run runBefore2: sleep1--"+moment());
+            deasync.sleep(header.sleep)
+            logger.info("run runBefore2: sleep2--"+moment());
         }
     }
     catch (err)
