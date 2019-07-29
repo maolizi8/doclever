@@ -3417,7 +3417,8 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
             // console.log(obj)
 			
             //text="(function (opt1) {return helper.runInterface("+obj.replace(/\r|\n/g,"")+",opt,test,root,opt1,"+(level==0?objId:undefined)+",testid)})"
-            text="(function (opt1) {return helper.runInterface("+obj.replace(/\r|\n/g,"")+",opt,test,root,opt1,"+(level==1?objId:undefined)+",testid,source)})"
+            var replaced_obj=obj.replace(/\r|\n|\t/g,"")
+            text="(function (opt1) {return helper.runInterface("+replaced_obj+",opt,test,root,opt1,"+(level==1?objId:undefined)+",testid,source)})"
         }
         else if(type=="2")
         {
@@ -3548,7 +3549,8 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
     
     console.log("client>web>common>js>helpler.js>ele.innerText")
     console.log(ele.innerText)
-    var ret=eval("(async function () {"+ele.innerText+"})()").then(function (ret) {
+    var new_text=ele.innerText.replace(/\r|\n|\t/g,"")
+    var ret=eval("(async function () {"+new_text+"})()").then(function (ret) {
         var obj={
             argv:[]
         };
@@ -3641,6 +3643,13 @@ helper.runTestCode2=async function (code,test,global,opt,root,argv,mode,__id,lev
         root.output+=err.message+"<br>";
         if (level==1) {
             root.output+="[用例执行结束]："+test.name+"(<span style='color:red'>未通过</span>)<br>";
+
+            root.fail++;
+            if (__id) {
+                window.vueObj.$store.state.event.$emit("testRunStatus","testFail",__id);
+                window.vueObj.$store.state.event.$emit("testCollectionRun",__id,root.output.substr(startOutputIndex),Date.now()-startTime);
+            }
+           
         }
         if (level>1) {
             root.output+="[(内嵌)用例执行结束]："+test.name+"(<span style='color:red'>未通过</span>)<br>";
