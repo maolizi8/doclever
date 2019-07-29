@@ -3306,10 +3306,20 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
 
             // logger.info('<runTestCode3>type=2>obj')
             // logger.info(obj);
-            //logger.info('<runTestCode3>type=2>obj.replace(/\r|\n/g,"")')
-            //logger.info(obj.replace(/\r|\n/g,""));
+            
+            let obj_replaced1=obj.replace(/\r|\n|\t/g,"")
 
-            let o=JSON.parse(obj.replace(/\r|\n|\t/g,""));
+            logger.info('<runTestCode3>type=2>>>obj_replaced1')
+            logger.info(obj_replaced1);
+
+            let obj_replaced=obj_replaced1.replace(/\\\\\"/g,"\\\\\\\"")
+            logger.info(obj_replaced);
+
+            logger.info('<runTestCode3>type=2>>JSON.parse(obj_replaced)>>start')
+            let o=JSON.parse(obj_replaced);
+            logger.info('<runTestCode3>type=2>>JSON.parse(obj_replaced)>>end')
+
+
             //let o;
             // try
             // {
@@ -3358,14 +3368,21 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                 //interface is deleted????
                 o.project=null;
                 o.group=null;
+
+                logger.info('!interinfo> JSON.stringify(o)>>start')
                 obj=JSON.stringify(o);
+                logger.info('!interinfo> JSON.stringify(o)>>end')
+
                    
                 opt.baseUrls=[];
                 opt.before=null;
                 opt.after=null;
 
                 var formatObj=obj.replace(/\r|\n|\t/g,"")
-                text="(function (opt1) {return runInterface2("+formatObj+",opt,test,root,opt1,"+(level==0?objId:undefined)+",pollTest,testInterfaces)})"
+
+                text="(function (opt1) {return runInterface2("+formatObj+",opt,test,root,opt1,"+level+",pollTest,testInterfaces)})"
+                /////// (level==0?objId:undefined)  level
+                ///////  var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testInterfaces)
             }else{
 
                 o.project=interinfo.project;
@@ -3455,9 +3472,13 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                         o.name+="("+objExample.name+")"
 
                         logger.info('runTestCode3>type=1> after updatewithexample--o')
-                        logger.info(o);
+                        //logger.info(o);
 
+                        logger.info('runTestCode3>type=1> after updatewithexample--o >>>JSON.stringify(o)>>start')
                         obj=JSON.stringify(o);
+                        logger.info('runTestCode3>type=1> after updatewithexample--o >>>JSON.stringify(o)>>end')
+                       
+
                     }
                     catch (err)
                     {
@@ -3477,7 +3498,11 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                     logger.info(interinfo.param[0].before);
 
                     o.before=interinfo.param[0].before?interinfo.param[0].before:o.before;
+
+                    logger.info('runTestCode3>type=1> add o.before >>>JSON.stringify(o)>>start')
                     obj=JSON.stringify(o);//gql add
+                    logger.info('runTestCode3>type=1> add o.before >>>JSON.stringify(o)>>end')
+
                 }
 
                 opt.baseUrls=objInfo.baseUrls;
@@ -3498,8 +3523,10 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
                 //logger.info('runTestCode3>type=1>before runInterface2>formatObj')
                 //logger.info(formatObj)
                 
-                text="(function (opt1) {return runInterface2("+formatObj+",opt,test,root,opt1,"+(level==0?objId:undefined)+",pollTest,testInterfaces)})"
 
+                text="(function (opt1) {return runInterface2("+formatObj+",opt,test,root,opt1,"+level+",pollTest,testInterfaces)})"
+               /////// (level==0?objId:undefined)  level
+                ///////  var runInterface2=async function (obj,global,test,root,opt,level,pollTest,testInterfaces) 
             }
             
             
@@ -3579,8 +3606,14 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
             }
             logger.debug('runTestCode3>type=2>code')
             //logger.debug(code);
-            text="(function () {var argv=Array.prototype.slice.call(arguments);return runTestCode3('"+code+"',"+JSON.stringify(testObj)+",global,opt,root,argv,'"+testMode+"',"+(level==0?objId:undefined)+","+(level+1)+",pollTest,testInterfaces,testTests)})"
-			
+
+            logger.info('testObjStr>>JSON.stringify(testObj)>>start')
+            let testObjStr=JSON.stringify(testObj)
+            logger.info('testObjStr>>JSON.stringify(testObj)>>end')
+
+            text="(function () {var argv=Array.prototype.slice.call(arguments);return runTestCode3('"+code+"',"+testObjStr+",global,opt,root,argv,'"+testMode+"',"+(level==0?objId:undefined)+","+(level+1)+",pollTest,testInterfaces,testTests)})"
+			////????? __id=level==0?objId:undefined     
+            ////????? __id=level==1?objId:undefined  
 		}
         else
         {
@@ -3739,9 +3772,13 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
     pollTestIndex=pollTest.length-1;
 
 
-    //logger.info('server>util.js>runTestCode3>before eval>text')
-    //logger.info(text)
-    var ret=eval("(async function () {"+text+"})()").then(function (ret) {
+    logger.info('server>util.js>runTestCode3>before eval>text')
+    
+
+    var replaced_text=text.replace(/\r|\n|\t/g,"")
+    logger.info(replaced_text)
+
+    var ret=eval("(async function () {"+replaced_text+"})()").then(function (ret) {
         logger.debug('server>util.js>runTestCode3>in eval>start-------------')
         logger.info('server>util.js>runTestCode3>in eval>then>ret')
         logger.info(ret)
@@ -3884,20 +3921,20 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
         logger.error('<runTestCode3>catch>>root.order')
         logger.error(root.order)
         logger.error('<runTestCode3>catch>test.name');
-        logger.error(test.name);
+        logger.error(test.name?test.name:'unkown <test.name>');
         logger.error('<runTestCode3>catch>test.group.name');
-        logger.error(test.group.name);
+        logger.error(test.group?test.group.name:'unkown <test.group.name>');
         logger.error('<runTestCode3>catch>test.module.name');
-        logger.error(test.module.name);
+        logger.error(test.module?test.module.name:'unkown <test.module.name>');
 
         console.log('<runTestCode3>catch>err');
         console.log(err);
         console.log('<runTestCode3>catch>test.name');
-        console.log(test.name);
+        console.log(test.name?test.name:'unkown <test.name>');
         console.log('<runTestCode3>catch>test.group.name');
-        console.log(test.group.name);
+        console.log(test.group?test.group.name:'unkown <test.group.name>');
         console.log('<runTestCode3>catch>test.module.name');
-        console.log(test.module.name);
+        console.log(test.module?test.module.name:'unkown <test.module.name>');
 
 
         logger.info('<runTestCode3>catch>err>__id');
@@ -3908,11 +3945,23 @@ var runTestCode3=async function (code,test,global,opt,root,argv,mode,__id,level,
         root.output+=err.message+"<br>";
         obj.pass=false;
         test.status=2;
+
+
+        ////?????  __id!=undefined   level==1
         if(__id!=undefined)
         {
             root.fail++;
             root.runTotal++;
+        }else{
+            logger.error('server>util.js>runTestCode3>eval>error>__id==undefined?????????????')
+            root.unknown++;
+            root.runTotal++;
+            root.output+="异常："+err
         }
+
+
+
+
         if(test.module)
         {
             
@@ -3990,6 +4039,44 @@ let runPollBackend=async function (pollArr,operator) {
         {
             continue;
         }
+
+        let root={
+            output:"",
+            count:objCollection.tests.length,
+            success:0,
+            fail:0,
+            unknown:0,
+            exception:0,  //gql add
+            runTotal:0,  //gql add
+            projectInfo:[],
+            order:0,    //gql add
+            runEnvironment:pollObj.runEnvironment,//gql add,0-测试环境，1-生产环境
+            testId:"",   //gql add
+            pollId:pollObj._id,
+            pollRunId:"",   //gql add
+            pollRunTestId:""    //gql add
+        };
+        
+
+        let query={
+            poll:pollObj._id,
+            pollName:pollObj.name,
+            pollRunTime:0,
+            status:99,   //0-unkown,2-success, 3-fail, 99-运行中
+            runEnvironment:pollObj.runEnvironment,//gql add,0-测试环境，1-生产环境
+            operator:operator,
+            testProject:pollObj.testProject._id,
+            projectName:pollObj.testProject.name,
+            testCollection:objCollection._id,
+            collectionName:objCollection.name,
+            testTotal:root.count,
+            testFail:root.fail,
+            testSuccess:root.success,
+            testUnkown:root.unknown,
+            tests:[]
+        }
+        var pollRunId;
+
         try {
             let lastRun;
             if (root.runEnvironment==1) {
@@ -4023,41 +4110,7 @@ let runPollBackend=async function (pollArr,operator) {
         }
 
 
-        let root={
-            output:"",
-            count:objCollection.tests.length,
-            success:0,
-            fail:0,
-            unknown:0,
-            exception:0,  //gql add
-            runTotal:0,  //gql add
-            projectInfo:[],
-            order:0,    //gql add
-            runEnvironment:pollObj.runEnvironment,//gql add,0-测试环境，1-生产环境
-            testId:"",   //gql add
-            pollId:pollObj._id,
-            pollRunId:"",   //gql add
-            pollRunTestId:""    //gql add
-        };
-
-        let query={
-            poll:pollObj._id,
-            pollName:pollObj.name,
-            pollRunTime:0,
-            status:99,   //0-unkown,2-success, 3-fail, 99-运行中
-            runEnvironment:pollObj.runEnvironment,//gql add,0-测试环境，1-生产环境
-            operator:operator,
-            testProject:pollObj.testProject._id,
-            projectName:pollObj.testProject.name,
-            testCollection:objCollection._id,
-            collectionName:objCollection.name,
-            testTotal:root.count,
-            testFail:root.fail,
-            testSuccess:root.success,
-            testUnkown:root.unknown,
-            tests:[]
-        }
-        var pollRunId;
+        
         try
         {
             let createPollRun;
