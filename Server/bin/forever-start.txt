@@ -23,3 +23,4 @@ forever list
 forever start -l forever.log -o out.log -e err.log app.js
 
 forever start -l E:\doclever_mlz\logs\forever.log --append -o E:\doclever_mlz\logs\out.log --append -e E:\doclever_mlz\logs\err.log --append www
+forever start -l D:\doclever\logs\forever.log --append -o D:\doclever\logs\out.log --append -e D:\doclever\logs\err.log --append www
