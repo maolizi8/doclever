@@ -1,0 +1,25 @@
+******> 1安装forever
+npm install forever -g
+
+******> 2启动服务
+service forever start
+
+******> 3使用forever启动js文件
+forever start app.js
+
+******> 4停止js文件
+forever stop app.js
+
+******> 5启动js文件并输出日志文件
+forever start -l forever.log -o out.log -e err.log app.js
+
+******> 6重启js文件
+forever restart app.js
+
+******> 7查看正在运行的进程
+forever list
+
+
+forever start -l forever.log -o out.log -e err.log app.js
+
+forever start -l E:\doclever_mlz\logs\forever.log --append -o E:\doclever_mlz\logs\out.log --append -e E:\doclever_mlz\logs\err.log --append www
