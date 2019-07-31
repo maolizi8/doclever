@@ -106,7 +106,7 @@
                                         <div class="testRightMenu" style="height:26px;width;line-height: 26px;margin-right: 3px;" v-show={this.editRole}>
                                             <i class="el-icon-plus" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.addGroup.bind(this, node)} title="新建业务"></i>
                                             <i class="el-icon-edit" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.renameModule.bind(this, node)} title="修改名称"></i>
-                                            <i class="el-icon-upload" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.migrateModule.bind(this, node)} title="迁移项目"></i>
+                                            <i class="el-icon-rank" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.migrateModule.bind(this, node)} title="迁移项目"></i>
                                             <i class="el-icon-delete" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:red;background-color: white;font-weight: 900" on-click={this.removeModule.bind(this,node)} title="删除" v-show={this.sysRole==0||this.sysRole==1}></i>
                                         </div>
                                     : (node.level == 2 ?
