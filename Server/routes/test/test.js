@@ -3048,9 +3048,39 @@ function Test() {
     this.migrateTestModule=async (req,res)=>{
         try
         {
-            let testData=[]
+            let ret={}
+            let updateModule=await (testModule.updateAsync({
+                _id:req.clientParam.module
+            },{
+                project:req.clientParam.project
+            }))
+            console.log("update Module")
+            console.log(updateModule)
+            ret.module=updateModule
 
-            util.ok(res,testData,"ok");
+            let updateGroup=await (testGroup.updateAsync({
+                module:req.clientParam.module
+            },{
+                project:req.clientParam.project
+            },{
+                multi:true
+            }))
+            console.log("update Group")
+            console.log(updateGroup)
+            ret.group=updateGroup
+
+            let updateTest=await (test.updateAsync({
+                module:req.clientParam.module
+            },{
+                project:req.clientParam.project
+            },{
+                multi:true
+            }))
+            console.log("update tests")
+            console.log(updateTest)
+            ret.test=updateTest
+
+            util.ok(res,ret,"ok");
         }
         catch (err)
         {

@@ -19,6 +19,10 @@ var model=new mongoose.Schema({
     timestamps:true
 });
 
+model.index({
+    "name":1
+});
+
 var dbManage=db.model("TestModule",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));
 module.exports=dbManage;

@@ -819,7 +819,7 @@ var interface=[
         },
         user:1,
         handle:[test.migrateTestTest]
-    },//gql add
+    },//gql add  <TBD>
     {
         "method":"GET",
         "path":"/test/migrategroup",
@@ -833,9 +833,9 @@ var interface=[
         },
         user:1,
         handle:[test.migrateTestGroup]
-    },//gql add
+    },//gql add  <TBD>
     {
-        "method":"GET",
+        "method":"POST",
         "path":"/test/migratemodule",
         "param": {
             module:String,
@@ -846,7 +846,7 @@ var interface=[
         },
         user:1,
         handle:[test.migrateTestModule]
-    },//gql add
+    },//gql add  <TBD>
     
     {
         "method":"GET",

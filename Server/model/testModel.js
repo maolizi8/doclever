@@ -67,6 +67,10 @@ model.index({
     "group":1
 });
 
+model.index({
+    "name":1
+});
+
 var dbManage=db.model("Test",model);
 mongoomise.promisifyAll(dbManage,require("bluebird"));
 module.exports=dbManage;

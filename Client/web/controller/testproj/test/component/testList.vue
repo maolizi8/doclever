@@ -106,6 +106,7 @@
                                         <div class="testRightMenu" style="height:26px;width;line-height: 26px;margin-right: 3px;" v-show={this.editRole}>
                                             <i class="el-icon-plus" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.addGroup.bind(this, node)} title="新建业务"></i>
                                             <i class="el-icon-edit" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.renameModule.bind(this, node)} title="修改名称"></i>
+                                            <i class="el-icon-upload" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:#17B9E6;background-color: white;font-weight: 900;margin-right:3px;"  on-click={this.migrateModule.bind(this, node)} title="迁移项目"></i>
                                             <i class="el-icon-delete" style="border: 1px rgba(226, 226, 226, 0.71) solid;font-size: 12px;padding: 2px;color:red;background-color: white;font-weight: 900" on-click={this.removeModule.bind(this,node)} title="删除" v-show={this.sysRole==0||this.sysRole==1}></i>
                                         </div>
                                     : (node.level == 2 ?
@@ -181,6 +182,61 @@
                     })
                 },item.label);
             },
+            migrateModule:function (item) {
+                var _this=this;
+				console.log("testList.vue>migrateModule: item")
+				console.log(item)
+                
+                var _this=this;
+                $.startHud();
+                var projectGroups;
+
+                net.get("/test/projectlist2",{}).then(function (data) {
+                    $.stopHud();
+                    
+                    if(data.code==200)
+                    {
+                        projectGroups=data.data;
+                    }
+                    else
+                    {
+                        projectGroups=null;
+                    }
+                    
+                    var child=$.showBox(_this,require("./testModuleMigration.vue"),{
+                        "projectGroups":projectGroups,
+                        "projectId":_this.$store.getters.testid,
+                        "moduleId":item.data._id
+                    })
+
+                    child.$on("save",function (result) {
+                        console.log('child.save>result')
+                        console.log(result)
+                        var testProjectData=_this.$store.state.data;
+                        console.log('child.save>testProjectData')
+                        console.log(testProjectData)
+
+                        if (result.project!=item.data.project) {
+                            for(var i=0;i<testProjectData.length;i++)
+                            {
+                                if(testProjectData[i]._id==result.module)
+                                {
+                                    testProjectData.splice(i,1);
+                                    break;
+                                }
+                            }
+                        } 
+                       
+                    })
+
+                }).catch(function (err) {
+                    console.log(err)
+                    $.stopHud();
+                    $.notify(err,0);
+                })
+            },
+
+
             removeModule:function (item) {
                 // console.log("testList.vue>removeModule>item")
                 // console.log(item)
