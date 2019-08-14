@@ -329,6 +329,22 @@ var interface=[
         },
         handle:inter.interfaceAddedList
     },//gql add
+
+    {
+        "method":"GET",
+        "path":"/interface/examplesbyprojects",
+        "param": {
+            project:{
+                type:String,
+                optional:1
+            }
+        },
+        "data":{
+
+        },
+        handle:inter.examplesByProjects
+    },//gql add
+
 ];
 
 module.exports=interface;

@@ -972,6 +972,35 @@ function Interface() {
         }
     }//gql add
 
+
+    this.examplesByProjects=async (req,res)=>{
+        try
+        {
+            //let obj={}
+            let projArr=[]
+            
+            projArr = await(project.findAsync({},'name',{
+                sort:"name"
+            }))
+            if (projArr) {
+                for (let proj of projArr) {
+                    proj._doc.examples=await(example.countAsync({
+                        project:proj._id
+                    }))
+                    proj._doc.interfaces=await(interface.countAsync({
+                        project:proj._id
+                    }))
+                }
+            } 
+            //console.log(projArr)
+            util.ok(res,projArr,"ok")
+        }
+        catch (err)
+        {
+            util.catch(res,err);
+        }
+    }//gql add
+
 }
 
 
