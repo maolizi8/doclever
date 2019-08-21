@@ -4640,11 +4640,11 @@ let handleMysql=async function (host,user,password,port,database,sql,operator) {
     var queryLog=require("../model/sqlQueyLogModel")
     var mysqldb=require('./mysqldb')
     var connectinfo={
-        host     : host,       
-        user     : user,               
-        password : password,        
-        port: port,                      
-        database: database
+         host,       
+         user,               
+         password,        
+         port,                      
+         database
     }
 
     var obj={}
@@ -4677,9 +4677,8 @@ let handleMysql=async function (host,user,password,port,database,sql,operator) {
     //console.log(sql)
     try {
         //let result=await (mysqldb(connectinfo,sql,obj));
-
         let result=await (mysqldb(connectinfo,sql));
-        //console.log("result:")
+
        // console.log(result)
         connectinfo.sql=sql
         connectinfo.sqlType=obj.sqlType
