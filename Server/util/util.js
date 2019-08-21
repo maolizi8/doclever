@@ -4676,7 +4676,9 @@ let handleMysql=async function (host,user,password,port,database,sql,operator) {
     ///console.log("SQL:")
     //console.log(sql)
     try {
-        let result=await (mysqldb(connectinfo,sql,obj));
+        //let result=await (mysqldb(connectinfo,sql,obj));
+
+        let result=await (mysqldb(connectinfo,sql));
         //console.log("result:")
        // console.log(result)
         connectinfo.sql=sql

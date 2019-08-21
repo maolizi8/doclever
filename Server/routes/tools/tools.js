@@ -23,9 +23,13 @@ function Tools() {
             var database=req.clientParam.database;
             var sql=req.clientParam.sql;
             var operator=req.userInfo?req.userInfo.name:"system"
-            let obj=await (util.handleMysql(host,user,password,port,database,sql,operator));
+           // let obj=await (util.handleMysql(host,user,password,port,database,sql,operator));
+
+
            
-            
+           let obj = await (util.handleMysql(host,user,password,port,database,sql,operator));
+
+            // console.log(obj);
             util.ok(res,obj,"ok");
         }
         catch (err)
