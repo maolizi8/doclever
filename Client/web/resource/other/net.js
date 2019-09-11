@@ -108,6 +108,8 @@ var onProxy = function (req, res) {
 };
 
 function mock(req,res) {
+    console.log('net.js>>mock>>mockUrl')
+    console.log(mockUrl)
     var obj=url.parse(mockUrl);
     var path=req.headers.path || url.parse(req.url).path;
     var opt={

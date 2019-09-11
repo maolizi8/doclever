@@ -9,6 +9,7 @@
             <el-select size="small" v-model="runEnvironment" style="margin-top: 4px;margin-right: 0px;margin-left: 5px;width:100px;" :style="{'color':runEnvironment?'red':'black'}" >
                 <el-option  value="0" label="测试环境"></el-option>
                 <el-option  value="1" label="生产环境" style="color:red;" v-if="sysRole==0||sysRole==1||sysRole==2"></el-option>
+                <el-option  value="2" label="MockServer"></el-option>
             </el-select>
 
             <el-button type="primary" size="mini" style="margin-top: 4px;margin-right: 0px;margin-left: 5px" @click="run" title="立即运行" id="run" :loading="runPending">
@@ -242,7 +243,7 @@
                     })
                 }else{
                     _this.runPending=true;
-                    store.dispatch("run",{runEnvironment:0}).then(function (data) {
+                    store.dispatch("run",{runEnvironment:_this.runEnvironment}).then(function (data) {
                         _this.runPending=false;
                         if(data.code==200)
                         {

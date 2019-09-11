@@ -5,7 +5,7 @@
                 <el-dropdown @command="handleCommand">
                     <span class="el-dropdown-link" style="color: #50bfff;cursor: pointer;font-size:22px;">
                         <i class="fa fa-home" style="font-size:40px;"></i>
-                        岗岭API接口测试
+                        API接口测试
                         <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu class="header-menu" slot="dropdown">

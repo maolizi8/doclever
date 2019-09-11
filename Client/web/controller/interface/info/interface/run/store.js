@@ -490,6 +490,10 @@ module.exports={
 
 
             var bMock=false;
+            if (runEnvironment==2) {
+                baseurl="MockServer"
+            }
+            
             if(baseurl!="MockServer")
             {
                 var indexHttp=baseurl.indexOf("://");
